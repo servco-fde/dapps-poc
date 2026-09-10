@@ -6,6 +6,7 @@ A Databricks App proof of concept for discovering a governed Unity Catalog metri
 
 - **Governed reads:** AppKit Analytics queries `hawaii_prod.testing.vw__metrics_test` through `useMetricView`.
 - **Identity:** Metric queries use on-behalf-of execution and the app declares the `sql` user API scope.
+- **Application roles:** Authenticated users are reviewers by default. Emails in the comma-separated `APP_ADMIN_EMAILS` setting are admins and can accept proposals.
 - **Collaboration state:** The AppKit Lakebase plugin stores proposals, immutable versions, comments, status transitions, and audit events in the app-owned `metric_hub` schema.
 - **Publication boundary:** The app only downloads an artifact. It never creates, replaces, or drops a Unity Catalog object.
 
@@ -43,7 +44,7 @@ draft -> in_review -> changes_requested -> in_review
                    -> approved -> exported -> published
 ```
 
-Every status change is enforced on the server and written to the audit log. Content revisions use optimistic version checks and create immutable proposal-version records.
+Every status change is enforced on the server and written to the audit log. Only admins can perform the `in_review -> approved` transition. Content revisions use optimistic version checks and create immutable proposal-version records.
 
 ## Source documentation
 

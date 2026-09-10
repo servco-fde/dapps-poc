@@ -19,7 +19,7 @@ import {
 import { ArrowLeft, Download, MessageSquare } from 'lucide-react';
 import { StatusBadge } from '../components/StatusBadge';
 import { apiRequest } from '../lib/api';
-import type { ProposalDetail, ProposalStatus } from '../lib/types';
+import type { CurrentUser, ProposalDetail, ProposalStatus } from '../lib/types';
 
 const nextActions: Record<
   ProposalStatus,
@@ -28,7 +28,7 @@ const nextActions: Record<
   draft: [{ status: 'in_review', label: 'Submit for review' }],
   in_review: [
     { status: 'changes_requested', label: 'Request changes', variant: 'outline' },
-    { status: 'approved', label: 'Approve' },
+    { status: 'approved', label: 'Accept' },
   ],
   changes_requested: [{ status: 'in_review', label: 'Resubmit for review' }],
   approved: [{ status: 'exported', label: 'Mark exported' }],
@@ -39,6 +39,7 @@ const nextActions: Record<
 export function ProposalDetailPage() {
   const { proposalId } = useParams();
   const [detail, setDetail] = useState<ProposalDetail | null>(null);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [comment, setComment] = useState('');
@@ -48,7 +49,12 @@ export function ProposalDetailPage() {
   const load = useCallback(async () => {
     if (!proposalId) return;
     try {
-      setDetail(await apiRequest<ProposalDetail>(`/api/proposals/${proposalId}`));
+      const [loadedDetail, loadedUser] = await Promise.all([
+        apiRequest<ProposalDetail>(`/api/proposals/${proposalId}`),
+        apiRequest<CurrentUser>('/api/me'),
+      ]);
+      setDetail(loadedDetail);
+      setCurrentUser(loadedUser);
       setError(null);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Failed to load proposal');
@@ -114,6 +120,9 @@ export function ProposalDetailPage() {
 
   const { proposal, versions, comments, auditEvents } = detail;
   const draft = versions[0]?.draft_json;
+  const allowedActions = nextActions[proposal.status].filter(
+    (action) => action.status !== 'approved' || currentUser?.role === 'admin'
+  );
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6">
@@ -133,6 +142,11 @@ export function ProposalDetailPage() {
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge status={proposal.status} />
             <span className="text-sm text-muted-foreground">Version {proposal.current_version}</span>
+            {currentUser && (
+              <span className="rounded-full border px-2 py-0.5 text-xs font-medium capitalize text-muted-foreground">
+                {currentUser.role}
+              </span>
+            )}
           </div>
           <div>
             <h2 className="text-3xl font-bold tracking-tight">{proposal.title}</h2>
@@ -141,7 +155,7 @@ export function ProposalDetailPage() {
           <code className="inline-block rounded bg-muted px-2 py-1 text-sm">{proposal.target_name}</code>
         </div>
         <div className="flex flex-wrap gap-2">
-          {nextActions[proposal.status].map((action) => (
+          {allowedActions.map((action) => (
             <Button
               key={action.status}
               variant={action.variant ?? 'default'}
@@ -159,6 +173,11 @@ export function ProposalDetailPage() {
           </Button>
         </div>
       </section>
+      {proposal.status === 'in_review' && currentUser?.role === 'reviewer' && (
+        <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+          Admin acceptance is required. As a reviewer, you can comment or request changes.
+        </div>
+      )}
 
       <Tabs defaultValue="definition" className="space-y-4">
         <TabsList>

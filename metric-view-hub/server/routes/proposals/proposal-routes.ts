@@ -65,6 +65,12 @@ const TransitionBody = z.object({
 
 type ProposalDraft = z.infer<typeof ProposalDraftSchema>;
 type ProposalStatus = z.infer<typeof TransitionBody>['status'];
+export type AppRole = 'admin' | 'reviewer';
+
+interface RequestActor {
+  email: string;
+  role: AppRole;
+}
 
 const VALID_TRANSITIONS: Record<ProposalStatus, ProposalStatus[]> = {
   draft: ['in_review'],
@@ -77,6 +83,18 @@ const VALID_TRANSITIONS: Record<ProposalStatus, ProposalStatus[]> = {
 
 export const canTransition = (from: ProposalStatus, to: ProposalStatus): boolean =>
   VALID_TRANSITIONS[from].includes(to);
+
+export const resolveRole = (email: string, configuredAdmins = process.env.APP_ADMIN_EMAILS ?? ''): AppRole => {
+  const normalizedEmail = email.trim().toLowerCase();
+  const adminEmails = configuredAdmins
+    .split(',')
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+  return adminEmails.includes(normalizedEmail) ? 'admin' : 'reviewer';
+};
+
+export const canRoleTransition = (role: AppRole, from: ProposalStatus, to: ProposalStatus): boolean =>
+  canTransition(from, to) && (to !== 'approved' || role === 'admin');
 
 const SCHEMA_STATEMENTS = [
   `CREATE SCHEMA IF NOT EXISTS metric_hub`,
@@ -142,7 +160,10 @@ const proposalColumns = `
   created_at, updated_at
 `;
 
-const requestEmail = (req: Request): string => req.header('x-forwarded-email') ?? 'local-developer@databricks.invalid';
+const requestActor = (req: Request): RequestActor => {
+  const email = (req.header('x-forwarded-email') ?? 'local-developer@databricks.invalid').trim().toLowerCase();
+  return { email, role: resolveRole(email) };
+};
 
 const yamlString = (value: string): string => JSON.stringify(value);
 
@@ -207,6 +228,10 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
   await initializeSchema(appkit);
 
   appkit.server.extend((app) => {
+    app.get('/api/me', (req, res) => {
+      res.json(requestActor(req));
+    });
+
     app.get('/api/proposals', async (_req, res) => {
       try {
         const result = await appkit.lakebase.query(`
@@ -275,7 +300,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         res.status(400).json({ error: 'Invalid proposal', fields: parsed.error.flatten().fieldErrors });
         return;
       }
-      const actor = requestEmail(req);
+      const actor = requestActor(req);
       const draft = parsed.data;
       const artifact = generateMetricViewArtifact(draft);
       try {
@@ -310,7 +335,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
             JSON.stringify(draft.acceptanceCriteria),
             draft.rationale,
             draft.desiredDate,
-            actor,
+            actor.email,
             JSON.stringify(draft),
             artifact,
           ]
@@ -328,7 +353,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         res.status(400).json({ error: 'Invalid proposal update', fields: parsed.error.flatten().fieldErrors });
         return;
       }
-      const actor = requestEmail(req);
+      const actor = requestActor(req);
       const { draft, expectedVersion } = parsed.data;
       const nextVersion = expectedVersion + 1;
       const artifact = generateMetricViewArtifact(draft);
@@ -371,7 +396,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
             nextVersion,
             JSON.stringify(draft),
             artifact,
-            actor,
+            actor.email,
           ]
         );
         if (result.rows.length === 0) {
@@ -391,7 +416,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         res.status(400).json({ error: 'Invalid comment' });
         return;
       }
-      const actor = requestEmail(req);
+      const actor = requestActor(req);
       try {
         const result = await appkit.lakebase.query(
           `
@@ -406,7 +431,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
           )
           SELECT * FROM inserted
         `,
-          [req.params.id, parsed.data.fieldAnchor, parsed.data.body, actor]
+          [req.params.id, parsed.data.fieldAnchor, parsed.data.body, actor.email]
         );
         if (result.rows.length === 0) {
           res.status(404).json({ error: 'Proposal not found' });
@@ -425,7 +450,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         res.status(400).json({ error: 'Invalid status' });
         return;
       }
-      const actor = requestEmail(req);
+      const actor = requestActor(req);
       try {
         const current = await appkit.lakebase.query('SELECT status FROM metric_hub.proposals WHERE id = $1', [
           req.params.id,
@@ -438,6 +463,10 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         const toStatus = parsed.data.status;
         if (!canTransition(fromStatus, toStatus)) {
           res.status(409).json({ error: `Transition from ${fromStatus} to ${toStatus} is not allowed` });
+          return;
+        }
+        if (!canRoleTransition(actor.role, fromStatus, toStatus)) {
+          res.status(403).json({ error: 'Only admins can accept proposals' });
           return;
         }
         const result = await appkit.lakebase.query(
@@ -456,7 +485,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
           )
           SELECT * FROM updated
         `,
-          [req.params.id, fromStatus, toStatus, actor]
+          [req.params.id, fromStatus, toStatus, actor.email]
         );
         if (result.rows.length === 0) {
           res.status(409).json({ error: 'Proposal status changed; refresh and try again' });

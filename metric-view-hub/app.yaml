@@ -4,3 +4,5 @@ env:
     valueFrom: sql-warehouse
   - name: LAKEBASE_ENDPOINT
     valueFrom: postgres
+  - name: APP_ADMIN_EMAILS
+    value: 'roberto.delgado@servco.com'

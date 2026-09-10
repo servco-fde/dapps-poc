@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canTransition, generateMetricViewArtifact } from './proposal-routes';
+import { canRoleTransition, canTransition, generateMetricViewArtifact, resolveRole } from './proposal-routes';
 
 const draft = {
   title: 'Add finance penetration',
@@ -55,5 +55,21 @@ describe('proposal workflow', () => {
     expect(canTransition('draft', 'approved')).toBe(false);
     expect(canTransition('in_review', 'published')).toBe(false);
     expect(canTransition('published', 'draft')).toBe(false);
+  });
+});
+
+describe('application roles', () => {
+  it('matches configured admins case-insensitively and defaults other users to reviewer', () => {
+    const configuredAdmins = 'roberto.delgado@servco.com,other.admin@example.com';
+
+    expect(resolveRole('Roberto.Delgado@servco.com', configuredAdmins)).toBe('admin');
+    expect(resolveRole('reviewer@example.com', configuredAdmins)).toBe('reviewer');
+    expect(resolveRole('reviewer@example.com', '')).toBe('reviewer');
+  });
+
+  it('allows only admins to accept an in-review proposal', () => {
+    expect(canRoleTransition('admin', 'in_review', 'approved')).toBe(true);
+    expect(canRoleTransition('reviewer', 'in_review', 'approved')).toBe(false);
+    expect(canRoleTransition('reviewer', 'in_review', 'changes_requested')).toBe(true);
   });
 });

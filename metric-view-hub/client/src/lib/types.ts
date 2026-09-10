@@ -1,4 +1,10 @@
 export type ProposalStatus = 'draft' | 'in_review' | 'changes_requested' | 'approved' | 'exported' | 'published';
+export type AppRole = 'admin' | 'reviewer';
+
+export interface CurrentUser {
+  email: string;
+  role: AppRole;
+}
 
 export interface DraftDimension {
   clientId?: string;

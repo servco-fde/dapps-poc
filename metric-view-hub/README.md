@@ -24,6 +24,18 @@ databricks apps validate --profile hawaii-dev-workspace
 
 Do not run the Lakebase-backed server locally before the app has been deployed once. The first deployed startup lets the app service principal create and own `metric_hub`; creating the schema with local user credentials first would prevent the deployed app from accessing it.
 
+## POC runtime controls
+
+Keep the deployed app stopped outside active development and demos. Start the existing deployment, verify its state, and stop it when the session ends:
+
+```powershell
+databricks apps start metric-view-hub --profile hawaii-dev-workspace
+databricks apps get metric-view-hub --profile hawaii-dev-workspace -o json
+databricks apps stop metric-view-hub --profile hawaii-dev-workspace
+```
+
+Starting the app restores its last successful deployment; it does not require another deployment. Stopping the app stops its app compute but does not delete the deployment, Lakebase data, or resource bindings. The SQL warehouse and Lakebase endpoint retain their separate idle-suspension settings.
+
 ## Bound development resources
 
 | Resource               | Value                                                                        |

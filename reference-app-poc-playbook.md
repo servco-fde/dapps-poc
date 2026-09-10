@@ -21,7 +21,7 @@ This POC has completed environment setup, product framing, architecture research
 | SQL warehouse | Dedicated `metric-view-hub-dev` created and verified |
 | Read identity | OBO authorized; live metric-view data verified |
 | Application roles | Reviewers collaborate; only configured admins can accept |
-| Databricks App | `metric-view-hub` is deployed and running |
+| Databricks App | Deployed; manually stopped outside development and demos |
 | Current deployment | `01f1ad6867261d848551bfc47de19bd1` succeeded |
 | App URL | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
 
@@ -466,6 +466,25 @@ During replacement, the previous app process exceeded Databricks Apps' 15-second
 
 Before the demo, Codex verified that `tausif.islam@servco.com` is an active user in `hawaii-dev-workspace`, belongs to the Databricks `admins` group, and inherits `CAN_MANAGE` on Apps. No additional app ACL change was required. His application-admin setting was committed as `c2ceac4` and deployed successfully as `01f1ad6867261d848551bfc47de19bd1`. The prior process again exceeded the 15-second shutdown grace period, while the replacement app started successfully and remained healthy; graceful shutdown is therefore retained as an operational follow-up.
 
+## Move 13: Use manual runtime control for the POC
+
+Because Databricks Apps compute is billed while running, the POC is now explicitly started only for development sessions and demos, then stopped afterward. Codex stopped `metric-view-hub` and verified that its compute reached `STOPPED`. The successful deployment, Lakebase data, application URL, and resource bindings remain intact.
+
+Use this runbook:
+
+```powershell
+# Start the last successful deployment.
+databricks apps start metric-view-hub --profile hawaii-dev-workspace
+
+# Confirm app and compute state before testing or presenting.
+databricks apps get metric-view-hub --profile hawaii-dev-workspace -o json
+
+# Stop app compute after the session.
+databricks apps stop metric-view-hub --profile hawaii-dev-workspace
+```
+
+The dedicated SQL warehouse still auto-stops after five idle minutes, and the Lakebase endpoint retains its 24-hour idle-suspension setting. Starting or stopping the app does not change those resource policies.
+
 ## Prompts that produced the best results
 
 The most effective prompts in this POC shared several traits:
@@ -513,10 +532,12 @@ When implementation is authorized:
 
 ## Next moves for this POC
 
-1. Refresh the app and verify that `roberto.delgado@servco.com` displays as `Admin`.
-2. Have `tausif.islam@servco.com` sign in and verify that he also displays as `Admin` and can see Accept on an in-review proposal.
-3. Sign in with an unlisted test user and verify that it displays as `Reviewer`, does not show Accept, and can still comment or request changes.
-4. Investigate graceful shutdown for the AppKit Lakebase pools before another routine deployment.
-5. Smoke-test artifact download.
-6. Record the remaining interactive smoke-test evidence and any corrections in this living document.
-7. Decide whether the following increment adds Databricks-group role mapping, editable revisions in the UI, or automated Git pull-request handoff.
+1. Start the app and verify `RUNNING` and `ACTIVE` before the demo.
+2. Verify that `roberto.delgado@servco.com` displays as `Admin`.
+3. Have `tausif.islam@servco.com` sign in and verify that he also displays as `Admin` and can see Accept on an in-review proposal.
+4. Sign in with an unlisted test user and verify that it displays as `Reviewer`, does not show Accept, and can still comment or request changes.
+5. Investigate graceful shutdown for the AppKit Lakebase pools before another routine deployment.
+6. Smoke-test artifact download.
+7. Stop the app after the demo.
+8. Record the remaining interactive smoke-test evidence and any corrections in this living document.
+9. Decide whether the following increment adds Databricks-group role mapping, editable revisions in the UI, or automated Git pull-request handoff.

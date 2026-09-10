@@ -1,82 +1,396 @@
 @import '@databricks/appkit-ui/styles.css';
 
 :root {
-  /* --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.21 0.006 285.885);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --success: oklch(0.603 0.135 166.892);
-  --success-foreground: oklch(1 0 0);
-  --warning: oklch(0.795 0.157 78.748);
-  --warning-foreground: oklch(0.199 0.027 238.732);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.705 0.015 286.067);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067); */
+  color-scheme: light;
+  --radius: 0.5rem;
+  --background: #f6f8fc;
+  --foreground: #1c2940;
+  --card: #ffffff;
+  --card-foreground: #1c2940;
+  --popover: #ffffff;
+  --popover-foreground: #1c2940;
+  --primary: #3155a6;
+  --primary-foreground: #ffffff;
+  --secondary: #e8f5fb;
+  --secondary-foreground: #24488f;
+  --muted: #eef2f7;
+  --muted-foreground: #65646a;
+  --accent: #dff3fb;
+  --accent-foreground: #24488f;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --success: #3fae2a;
+  --success-foreground: #ffffff;
+  --warning: #ffa400;
+  --warning-foreground: #4d2f00;
+  --border: #d8deea;
+  --input: #c7d0df;
+  --ring: #00a0dc;
+
+  --chart-cat-1: hsla(220, 54%, 42%, 1);
+  --chart-cat-2: hsla(197, 100%, 43%, 1);
+  --chart-cat-3: hsla(177, 100%, 34%, 1);
+  --chart-cat-4: hsla(122, 39%, 48%, 1);
+  --chart-cat-5: hsla(36, 100%, 50%, 1);
+  --chart-cat-6: hsla(266, 34%, 52%, 1);
+  --chart-cat-7: hsla(218, 37%, 58%, 1);
+  --chart-cat-8: hsla(239, 3%, 40%, 1);
+
+  --chart-1: var(--chart-cat-1);
+  --chart-2: var(--chart-cat-2);
+  --chart-3: var(--chart-cat-3);
+  --chart-4: var(--chart-cat-4);
+  --chart-5: var(--chart-cat-5);
+  --chart-6: var(--chart-cat-6);
+  --chart-7: var(--chart-cat-7);
+  --chart-8: var(--chart-cat-8);
+
+  --chart-seq-1: hsla(198, 68%, 95%, 1);
+  --chart-seq-2: hsla(198, 70%, 88%, 1);
+  --chart-seq-3: hsla(198, 72%, 78%, 1);
+  --chart-seq-4: hsla(198, 75%, 67%, 1);
+  --chart-seq-5: hsla(198, 78%, 53%, 1);
+  --chart-seq-6: hsla(211, 66%, 46%, 1);
+  --chart-seq-7: hsla(220, 54%, 42%, 1);
+  --chart-seq-8: hsla(220, 58%, 30%, 1);
+
+  --chart-div-1: hsla(220, 58%, 34%, 1);
+  --chart-div-2: hsla(220, 54%, 46%, 1);
+  --chart-div-3: hsla(211, 60%, 64%, 1);
+  --chart-div-4: hsla(204, 52%, 84%, 1);
+  --chart-div-5: hsla(38, 95%, 85%, 1);
+  --chart-div-6: hsla(36, 96%, 70%, 1);
+  --chart-div-7: hsla(36, 100%, 55%, 1);
+  --chart-div-8: hsla(30, 84%, 43%, 1);
+
+  --chart-axis-label: hsla(239, 3%, 40%, 1);
+  --chart-axis-title: hsla(220, 39%, 18%, 1);
+  --chart-grid: hsla(220, 20%, 89%, 1);
+  --chart-tooltip-bg: hsla(0, 0%, 100%, 1);
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1c2940;
+  --sidebar-primary: #3155a6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8f5fb;
+  --sidebar-accent-foreground: #24488f;
+  --sidebar-border: #d8deea;
+  --sidebar-ring: #00a0dc;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* --background: oklch(0.141 0.005 285.823);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.21 0.006 285.885);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.21 0.006 285.885);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.92 0.004 286.32);
-    --primary-foreground: oklch(0.21 0.006 285.885);
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.274 0.006 286.033);
-    --muted-foreground: oklch(0.705 0.015 286.067);
-    --accent: oklch(0.274 0.006 286.033);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --destructive-foreground: oklch(0.985 0 0);
-    --success: oklch(0.67 0.12 167);
-    --success-foreground: oklch(1 0 0);
-    --warning: oklch(0.83 0.165 85);
-    --warning-foreground: oklch(0.199 0.027 238.732);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.552 0.016 285.938);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: oklch(0.21 0.006 285.885);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.274 0.006 286.033);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.552 0.016 285.938); */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  background: var(--background);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  background:
+    radial-gradient(circle at 92% 4%, rgb(0 160 220 / 8%), transparent 24rem),
+    linear-gradient(180deg, #fbfcfe 0%, var(--background) 26rem);
+  color: var(--foreground);
+  font-family: Gotham, 'Avenir Next', Montserrat, 'Segoe UI', sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgb(0 160 220 / 24%);
+  color: #183770;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+pre,
+code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  overflow: auto;
+}
+
+.servco-app-header {
+  position: relative;
+  box-shadow: 0 8px 30px rgb(34 58 105 / 8%);
+}
+
+.servco-app-header::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #00a0dc 0%, #3155a6 62%, #3155a6 100%);
+  content: '';
+}
+
+.servco-brand-icon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 0.5rem;
+  background: #3155a6;
+  box-shadow: 0 6px 16px rgb(49 85 166 / 20%);
+  color: #ffffff;
+}
+
+.servco-brand-label {
+  color: #65646a;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.servco-nav-link {
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.8rem;
+  color: #65646a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.servco-nav-link:hover {
+  background: #e8f5fb;
+  color: #24488f;
+}
+
+.servco-nav-link-active {
+  background: #3155a6;
+  color: #ffffff;
+}
+
+.servco-nav-link-active:hover {
+  background: #28498f;
+  color: #ffffff;
+}
+
+.servco-main {
+  width: 100%;
+  min-width: 0;
+  padding: 2rem 1rem 3rem;
+  overflow-x: clip;
+}
+
+.servco-page {
+  width: 100%;
+  min-width: 0;
+  animation: servco-page-enter 220ms ease-out;
+}
+
+.servco-page > *,
+.servco-page section > *,
+.servco-page [class*='grid'] > *,
+.servco-page [class*='flex'] > * {
+  min-width: 0;
+}
+
+.servco-page p,
+.servco-page li,
+.servco-page dd,
+.servco-page :is(.float-left, .float-right) {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.servco-page input,
+.servco-page textarea,
+.servco-page table {
+  max-width: 100%;
+}
+
+.servco-eyebrow {
+  margin-bottom: 0.35rem;
+  color: #3155a6;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.servco-page-title {
+  color: #294c96;
+  font-size: clamp(1.85rem, 3vw, 2.4rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+}
+
+.servco-hero {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  background: linear-gradient(128deg, #3155a6 0%, #3155a6 68%, #238fcd 100%);
+  box-shadow: 0 18px 46px rgb(39 70 137 / 22%);
+  color: #ffffff;
+}
+
+.servco-hero::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 5px;
+  background: linear-gradient(90deg, #00a0dc 0%, #74c8eb 36%, #3155a6 100%);
+  content: '';
+}
+
+.servco-hero-code {
+  max-width: 100%;
+  border: 1px solid rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 10%);
+  color: rgb(255 255 255 / 88%);
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.servco-kpi-card,
+.servco-section-card,
+.servco-list-card {
+  min-width: 0;
+  overflow: hidden;
+  border-color: #dce3ef;
+  box-shadow: 0 8px 24px rgb(37 66 121 / 7%);
+}
+
+.servco-kpi-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.servco-kpi-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: #3155a6;
+  content: '';
+}
+
+.servco-section-card {
+  background: rgb(255 255 255 / 96%);
+}
+
+.servco-list-card {
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.servco-list-card:hover {
+  transform: translateY(-1px);
+  border-color: #9bcce6;
+  box-shadow: 0 12px 30px rgb(37 66 121 / 12%);
+}
+
+.servco-definition-tile {
+  border-color: #dce3ef;
+  background: #fbfcfe;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.servco-definition-tile:hover {
+  border-color: #9bcce6;
+  background: #f4fafe;
+}
+
+.servco-role-pill {
+  border-color: #b8ddef;
+  background: #e8f5fb;
+  color: #24488f;
+}
+
+.servco-info-panel {
+  border-color: #9bd5ed;
+  background: #eef9fd;
+  color: #183770;
+}
+
+.servco-tabs-list {
+  justify-content: flex-start;
+  scrollbar-color: #9bcce6 transparent;
+  scrollbar-width: thin;
+}
+
+.servco-status-draft {
+  border-color: #d2d2d4;
+  background: #f1f1f2;
+  color: #55545a;
+}
+
+.servco-status-review {
+  border-color: #8dd2ed;
+  background: #e5f6fc;
+  color: #145b7b;
+}
+
+.servco-status-changes {
+  border-color: #ffc47a;
+  background: #fff3e3;
+  color: #7a4300;
+}
+
+.servco-status-approved,
+.servco-status-published {
+  border-color: #a6d99e;
+  background: #edf8eb;
+  color: #286d2c;
+}
+
+.servco-status-exported {
+  border-color: #8ad6d2;
+  background: #e9f8f7;
+  color: #176b67;
+}
+
+@keyframes servco-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .servco-page {
+    animation: none;
+  }
+
+  .servco-list-card {
+    transition: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .servco-main {
+    padding: 2.75rem 1.5rem 4rem;
   }
 }

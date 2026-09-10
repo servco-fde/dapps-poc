@@ -16,14 +16,10 @@ import { ProposalDetailPage } from './pages/ProposalDetailPage';
 import { ProposalListPage } from './pages/ProposalListPage';
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-    isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-  }`;
+  `servco-nav-link ${isActive ? 'servco-nav-link-active' : ''}`;
 
 const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
-  `block rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-    isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-  }`;
+  `servco-nav-link block ${isActive ? 'servco-nav-link-active' : ''}`;
 
 type NavLinkClassFn = (props: { isActive: boolean }) => string;
 
@@ -55,11 +51,16 @@ function Layout() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-20 flex items-center gap-4 border-b bg-background/95 px-4 py-3 backdrop-blur md:px-6">
-        <div className="flex items-center gap-2">
-          <DatabaseZap className="h-5 w-5 text-primary" />
-          <h1 className="text-lg font-semibold text-foreground">Metric View Collaboration Hub</h1>
+    <div className="flex min-h-screen min-w-0 flex-col bg-background">
+      <header className="servco-app-header sticky top-0 z-20 flex min-w-0 items-center gap-4 border-b bg-white/95 px-4 pb-3 pt-4 backdrop-blur md:px-6">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="servco-brand-icon shrink-0" aria-hidden="true">
+            <DatabaseZap className="h-5 w-5" />
+          </span>
+          <div className="min-w-0 leading-tight">
+            <div className="servco-brand-label">Servco</div>
+            <h1 className="truncate text-lg font-bold text-foreground">Metric View Hub</h1>
+          </div>
         </div>
         <NavLinks className="hidden gap-1 md:flex" linkClass={navLinkClass} />
         <div className="ml-auto md:hidden">
@@ -70,7 +71,7 @@ function Layout() {
             </Button>
             <SheetContent side="left">
               <SheetHeader>
-                <SheetTitle>Navigation</SheetTitle>
+                <SheetTitle>Metric View Hub</SheetTitle>
               </SheetHeader>
               <NavLinks
                 className="mt-6 flex flex-col gap-1"
@@ -81,7 +82,7 @@ function Layout() {
           </Sheet>
         </div>
       </header>
-      <main className="flex-1 p-4 md:p-6">
+      <main className="servco-main flex-1">
         <Outlet />
       </main>
     </div>

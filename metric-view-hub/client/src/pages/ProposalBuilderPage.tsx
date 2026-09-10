@@ -103,10 +103,11 @@ export function ProposalBuilderPage() {
       onSubmit={(event) => {
         void submit(event);
       }}
-      className="mx-auto w-full max-w-5xl space-y-6"
+      className="servco-page mx-auto max-w-5xl space-y-6"
     >
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Create a metric-view proposal</h2>
+        <div className="servco-eyebrow">Guided authoring</div>
+        <h2 className="servco-page-title">Create a metric-view proposal</h2>
         <p className="mt-1 text-muted-foreground">
           Capture business intent in structured fields. The app generates the SQL/YAML handoff.
         </p>
@@ -117,7 +118,7 @@ export function ProposalBuilderPage() {
         </div>
       )}
 
-      <Card>
+      <Card className="servco-section-card">
         <CardHeader>
           <CardTitle>Business request</CardTitle>
           <CardDescription>
@@ -207,7 +208,7 @@ export function ProposalBuilderPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="servco-section-card">
         <CardHeader>
           <CardTitle>Metric-view identity</CardTitle>
           <CardDescription>
@@ -248,7 +249,7 @@ export function ProposalBuilderPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="servco-section-card">
         <CardHeader className="flex-row items-start justify-between gap-4">
           <div>
             <CardTitle>Dimensions</CardTitle>
@@ -273,7 +274,7 @@ export function ProposalBuilderPage() {
           {draft.dimensions.map((dimension, index) => (
             <div
               key={dimension.clientId ?? dimension.name}
-              className="grid gap-3 rounded-lg border p-4 md:grid-cols-[1fr_1fr_auto]"
+              className="servco-definition-tile grid min-w-0 gap-3 rounded-lg border p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"
             >
               <div className="space-y-2">
                 <Label>Name</Label>
@@ -323,7 +324,7 @@ export function ProposalBuilderPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="servco-section-card">
         <CardHeader className="flex-row items-start justify-between gap-4">
           <div>
             <CardTitle>Measures</CardTitle>
@@ -348,7 +349,7 @@ export function ProposalBuilderPage() {
           {draft.measures.map((measure, index) => (
             <div
               key={measure.clientId ?? measure.name}
-              className="grid gap-3 rounded-lg border p-4 md:grid-cols-[1fr_1fr_12rem_auto]"
+              className="servco-definition-tile grid min-w-0 gap-3 rounded-lg border p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(10rem,12rem)_auto]"
             >
               <div className="space-y-2">
                 <Label>Name</Label>
@@ -414,7 +415,7 @@ export function ProposalBuilderPage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="servco-section-card">
         <CardHeader className="flex-row items-start justify-between gap-4">
           <div>
             <CardTitle>Acceptance criteria</CardTitle>

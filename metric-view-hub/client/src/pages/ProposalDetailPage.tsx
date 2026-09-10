@@ -106,14 +106,14 @@ export function ProposalDetailPage() {
 
   if (loading)
     return (
-      <div className="mx-auto max-w-6xl space-y-4">
+      <div className="servco-page mx-auto max-w-6xl space-y-4">
         <Skeleton className="h-10 w-80" />
         <Skeleton className="h-48 w-full" />
       </div>
     );
   if (!detail)
     return (
-      <div className="mx-auto max-w-6xl rounded-md border border-destructive/30 bg-destructive/10 p-4 text-destructive">
+      <div className="servco-page mx-auto max-w-6xl rounded-md border border-destructive/30 bg-destructive/10 p-4 text-destructive">
         {error ?? 'Proposal not found'}
       </div>
     );
@@ -125,7 +125,7 @@ export function ProposalDetailPage() {
   );
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6">
+    <div className="servco-page mx-auto max-w-6xl space-y-6">
       <Button asChild variant="ghost" size="sm">
         <Link to="/proposals">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -137,22 +137,25 @@ export function ProposalDetailPage() {
           {error}
         </div>
       )}
-      <section className="flex flex-col gap-5 rounded-xl border bg-card p-6 lg:flex-row lg:items-start lg:justify-between">
+      <section className="servco-section-card flex min-w-0 flex-col gap-5 rounded-xl border p-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
             <StatusBadge status={proposal.status} />
             <span className="text-sm text-muted-foreground">Version {proposal.current_version}</span>
             {currentUser && (
-              <span className="rounded-full border px-2 py-0.5 text-xs font-medium capitalize text-muted-foreground">
+              <span className="servco-role-pill rounded-full border px-2 py-0.5 text-xs font-medium capitalize">
                 {currentUser.role}
               </span>
             )}
           </div>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">{proposal.title}</h2>
+            <div className="servco-eyebrow">Proposal review</div>
+            <h2 className="servco-page-title">{proposal.title}</h2>
             <p className="mt-2 max-w-3xl text-muted-foreground">{proposal.purpose}</p>
           </div>
-          <code className="inline-block rounded bg-muted px-2 py-1 text-sm">{proposal.target_name}</code>
+          <code className="inline-block max-w-full whitespace-normal rounded bg-muted px-2 py-1 text-sm">
+            {proposal.target_name}
+          </code>
         </div>
         <div className="flex flex-wrap gap-2">
           {allowedActions.map((action) => (
@@ -174,20 +177,20 @@ export function ProposalDetailPage() {
         </div>
       </section>
       {proposal.status === 'in_review' && currentUser?.role === 'reviewer' && (
-        <div className="rounded-md border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+        <div className="servco-info-panel rounded-md border p-4 text-sm">
           Admin acceptance is required. As a reviewer, you can comment or request changes.
         </div>
       )}
 
-      <Tabs defaultValue="definition" className="space-y-4">
-        <TabsList>
+      <Tabs defaultValue="definition" className="min-w-0 space-y-4">
+        <TabsList className="servco-tabs-list max-w-full overflow-x-auto">
           <TabsTrigger value="definition">Definition</TabsTrigger>
           <TabsTrigger value="comparison">Comparison</TabsTrigger>
           <TabsTrigger value="discussion">Discussion ({comments.length})</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
         <TabsContent value="definition" className="grid gap-4 lg:grid-cols-2">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Business context</CardTitle>
             </CardHeader>
@@ -212,7 +215,7 @@ export function ProposalDetailPage() {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Acceptance criteria</CardTitle>
             </CardHeader>
@@ -224,14 +227,14 @@ export function ProposalDetailPage() {
               </ul>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Dimensions</CardTitle>
               <CardDescription>Structured fields in the current proposal version.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {draft?.dimensions.map((dimension) => (
-                <div key={dimension.name} className="rounded-lg border p-3">
+                <div key={dimension.name} className="servco-definition-tile min-w-0 rounded-lg border p-3">
                   <div className="font-medium">{dimension.name}</div>
                   <code className="text-xs text-muted-foreground">{dimension.expression}</code>
                   <p className="mt-2 text-sm text-muted-foreground">{dimension.description}</p>
@@ -239,14 +242,14 @@ export function ProposalDetailPage() {
               ))}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Measures</CardTitle>
               <CardDescription>Aggregations and display intent in the current proposal version.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {draft?.measures.map((measure) => (
-                <div key={measure.name} className="rounded-lg border p-3">
+                <div key={measure.name} className="servco-definition-tile min-w-0 rounded-lg border p-3">
                   <div className="flex items-center justify-between gap-3">
                     <span className="font-medium">{measure.name}</span>
                     <span className="text-xs uppercase text-muted-foreground">{measure.format}</span>
@@ -259,7 +262,7 @@ export function ProposalDetailPage() {
           </Card>
         </TabsContent>
         <TabsContent value="comparison">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Published versus proposed</CardTitle>
               <CardDescription>Field-level summary for engineering review.</CardDescription>
@@ -284,7 +287,7 @@ export function ProposalDetailPage() {
           </Card>
         </TabsContent>
         <TabsContent value="discussion" className="grid gap-4 lg:grid-cols-[1fr_22rem]">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Review discussion</CardTitle>
             </CardHeader>
@@ -293,7 +296,7 @@ export function ProposalDetailPage() {
                 <p className="py-8 text-center text-sm text-muted-foreground">No comments yet.</p>
               )}
               {comments.map((item) => (
-                <div key={item.id} className="rounded-lg border p-4">
+                <div key={item.id} className="servco-definition-tile min-w-0 rounded-lg border p-4">
                   <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
                     <span>{item.author_email}</span>
                     <span>{new Date(item.created_at).toLocaleString()}</span>
@@ -306,7 +309,7 @@ export function ProposalDetailPage() {
               ))}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Add comment</CardTitle>
               <CardDescription>Anchor feedback to a field when useful.</CardDescription>
@@ -346,7 +349,7 @@ export function ProposalDetailPage() {
           </Card>
         </TabsContent>
         <TabsContent value="history">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Immutable activity history</CardTitle>
               <CardDescription>Proposal creation, revisions, comments, and state changes.</CardDescription>

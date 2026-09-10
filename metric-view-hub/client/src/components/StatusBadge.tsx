@@ -10,12 +10,19 @@ const labels: Record<ProposalStatus, string> = {
   published: 'Published',
 };
 
+const statusClasses: Record<ProposalStatus, string> = {
+  draft: 'servco-status-draft',
+  in_review: 'servco-status-review',
+  changes_requested: 'servco-status-changes',
+  approved: 'servco-status-approved',
+  exported: 'servco-status-exported',
+  published: 'servco-status-published',
+};
+
 export function StatusBadge({ status }: { status: ProposalStatus }) {
-  const variant =
-    status === 'approved' || status === 'published'
-      ? 'default'
-      : status === 'changes_requested'
-        ? 'destructive'
-        : 'secondary';
-  return <Badge variant={variant}>{labels[status]}</Badge>;
+  return (
+    <Badge variant="outline" className={statusClasses[status]}>
+      {labels[status]}
+    </Badge>
+  );
 }

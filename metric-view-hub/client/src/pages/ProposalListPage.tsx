@@ -27,10 +27,11 @@ export function ProposalListPage() {
   }, []);
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6">
+    <div className="servco-page mx-auto max-w-6xl space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Proposals</h2>
+          <div className="servco-eyebrow">Collaboration workspace</div>
+          <h2 className="servco-page-title">Proposals</h2>
           <p className="mt-1 text-muted-foreground">Draft, review, and hand off governed metric-view changes.</p>
         </div>
         <Button asChild>
@@ -53,7 +54,7 @@ export function ProposalListPage() {
         </div>
       )}
       {!loading && proposals.length === 0 && (
-        <Card>
+        <Card className="servco-section-card">
           <CardHeader>
             <CardTitle>No proposals yet</CardTitle>
             <CardDescription>
@@ -70,7 +71,7 @@ export function ProposalListPage() {
       <div className="space-y-3">
         {proposals.map((proposal) => (
           <Link key={proposal.id} to={`/proposals/${proposal.id}`} className="block">
-            <Card className="transition-colors hover:bg-muted/30">
+            <Card className="servco-list-card">
               <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <div className="min-w-0 space-y-2">
                   <div className="flex flex-wrap items-center gap-2">

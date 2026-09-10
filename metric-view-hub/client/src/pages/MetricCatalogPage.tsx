@@ -76,31 +76,37 @@ export function MetricCatalogPage() {
   const summaryRow = summary.data?.[0];
 
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-6">
-      <section className="flex flex-col gap-4 rounded-xl border bg-card p-6 md:flex-row md:items-start md:justify-between">
+    <div className="servco-page mx-auto max-w-7xl space-y-6">
+      <section className="servco-hero flex flex-col gap-6 rounded-xl p-6 md:flex-row md:items-start md:justify-between md:p-8">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge>Published</Badge>
-            <Badge variant="outline">Auto Retail</Badge>
-            <Badge variant="secondary">OBO access</Badge>
+            <Badge className="border-white/25 bg-white text-primary">Published</Badge>
+            <Badge variant="outline" className="border-white/40 bg-white/10 text-white">
+              Auto Retail
+            </Badge>
+            <Badge className="border-[#7bd0ee] bg-[#00a0dc] text-white">OBO access</Badge>
           </div>
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Auto Retail sales and F&amp;I performance</h2>
-            <p className="mt-2 max-w-3xl text-muted-foreground">
+            <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+              Auto Retail sales and F&amp;I performance
+            </h2>
+            <p className="mt-3 max-w-3xl text-white/80">
               Governed dealership sales, gross-profit, and product-penetration metrics queried as the signed-in user.
             </p>
           </div>
-          <code className="inline-block rounded bg-muted px-2 py-1 text-sm">hawaii_prod.testing.vw__metrics_test</code>
+          <code className="servco-hero-code inline-block rounded px-2.5 py-1.5 text-sm">
+            hawaii_prod.testing.vw__metrics_test
+          </code>
         </div>
-        <div className="grid min-w-64 gap-3 text-sm text-muted-foreground">
+        <div className="grid shrink-0 gap-3 text-sm text-white/80 md:min-w-64">
           <span className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4" /> Unity Catalog governed
+            <ShieldCheck className="h-4 w-4 text-[#7bd0ee]" /> Unity Catalog governed
           </span>
           <span className="flex items-center gap-2">
-            <Database className="h-4 w-4" /> SQL warehouse analytics
+            <Database className="h-4 w-4 text-[#7bd0ee]" /> SQL warehouse analytics
           </span>
           <span className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4" /> 32 measures · 14 dimensions
+            <BookOpen className="h-4 w-4 text-[#7bd0ee]" /> 32 measures · 14 dimensions
           </span>
         </div>
       </section>
@@ -109,7 +115,7 @@ export function MetricCatalogPage() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {summary.loading &&
           Array.from({ length: 4 }, (_, index) => (
-            <Card key={index}>
+            <Card key={index} className="servco-kpi-card">
               <CardContent className="space-y-3 p-6">
                 <Skeleton className="h-4 w-28" />
                 <Skeleton className="h-9 w-36" />
@@ -127,7 +133,7 @@ export function MetricCatalogPage() {
               ['total_product_penetration', 'Share with any F&I product'],
             ] as const
           ).map(([field, context]) => (
-            <Card key={field}>
+            <Card key={field} className="servco-kpi-card">
               <CardHeader className="pb-2">
                 <CardDescription>{formatLabel(field, summary.metadata?.[field])}</CardDescription>
               </CardHeader>
@@ -141,15 +147,15 @@ export function MetricCatalogPage() {
           ))}
       </section>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList>
+      <Tabs defaultValue="overview" className="min-w-0 space-y-4">
+        <TabsList className="servco-tabs-list max-w-full overflow-x-auto">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="measures">Measures</TabsTrigger>
           <TabsTrigger value="dimensions">Dimensions</TabsTrigger>
           <TabsTrigger value="governance">Governance</TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="grid gap-4 xl:grid-cols-2">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Deal volume by dealership</CardTitle>
               <CardDescription>Top eight dealerships by completed deal count.</CardDescription>
@@ -170,7 +176,7 @@ export function MetricCatalogPage() {
               )}
             </CardContent>
           </Card>
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Monthly GPVR</CardTitle>
               <CardDescription>Gross profit per retail vehicle over time.</CardDescription>
@@ -192,14 +198,14 @@ export function MetricCatalogPage() {
           </Card>
         </TabsContent>
         <TabsContent value="measures">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Governed measures</CardTitle>
               <CardDescription>Frequently used measures available from the selected metric view.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {measures.map((measure) => (
-                <div key={measure} className="rounded-lg border p-3">
+                <div key={measure} className="servco-definition-tile min-w-0 rounded-lg border p-3">
                   <div className="font-medium">{measure.replace(/_/g, ' ')}</div>
                   <code className="text-xs text-muted-foreground">{measure}</code>
                 </div>
@@ -208,14 +214,14 @@ export function MetricCatalogPage() {
           </Card>
         </TabsContent>
         <TabsContent value="dimensions">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Governed dimensions</CardTitle>
               <CardDescription>Supported slices for analysis and proposal comparison.</CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {dimensions.map((dimension) => (
-                <div key={dimension} className="rounded-lg border p-3">
+                <div key={dimension} className="servco-definition-tile min-w-0 rounded-lg border p-3">
                   <div className="font-medium">{dimension.replace(/_/g, ' ')}</div>
                   <code className="text-xs text-muted-foreground">{dimension}</code>
                 </div>
@@ -224,7 +230,7 @@ export function MetricCatalogPage() {
           </Card>
         </TabsContent>
         <TabsContent value="governance">
-          <Card>
+          <Card className="servco-section-card">
             <CardHeader>
               <CardTitle>Access and publication boundary</CardTitle>
             </CardHeader>

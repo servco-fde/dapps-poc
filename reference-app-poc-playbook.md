@@ -428,6 +428,8 @@ Post-deployment evidence:
 - Startup log: `[lakebase] metric_hub schema is ready`
 - App URL: `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com`
 - Interactive OBO smoke test: the signed-in user authenticated successfully and saw live metric-view data
+- Lakebase smoke test: a version 1 proposal persisted, accepted a comment, and transitioned from `draft` to `in_review`
+- Authorization finding: the submitting user can also see the Accept action because reviewer-role enforcement is not implemented yet
 
 This exposed a useful OBO deployment rule: build-time metadata discovery and runtime data access use different identities. Generate and validate typed metric contracts during development, commit them, and avoid requiring the app service principal to inspect governed data solely to compile the application.
 
@@ -477,7 +479,8 @@ When implementation is authorized:
 
 ## Next moves for this POC
 
-1. Create a proposal and verify that it persists in Lakebase.
-2. Smoke-test comments, status transitions, version history, and artifact download.
-3. Record the remaining interactive smoke-test evidence and any corrections in this living document.
-4. Decide whether the next increment adds editable revisions in the UI, role mapping from Databricks groups, or automated Git pull-request handoff.
+1. Complete the `in_review` to `approved` transition and verify the audit history.
+2. Smoke-test artifact download.
+3. Add reviewer-role enforcement so submitters cannot approve their own proposals.
+4. Record the remaining interactive smoke-test evidence and any corrections in this living document.
+5. Decide whether the following increment adds editable revisions in the UI or automated Git pull-request handoff.

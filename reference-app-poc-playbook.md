@@ -19,7 +19,7 @@ This POC has completed environment setup, product framing, architecture research
 | Databricks App scaffold | Built with AppKit 0.74.0 and validated |
 | Lakebase project | `projects/metric-view-hub` created and verified |
 | SQL warehouse | Dedicated `metric-view-hub-dev` created and verified |
-| Read identity | OBO with the `sql` user API scope |
+| Read identity | OBO authorized; live metric-view data verified |
 | Databricks App | `metric-view-hub` is deployed and running |
 | Deployment | `01f1ad63f706191abc229e805abb4c04` succeeded |
 | App URL | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
@@ -427,6 +427,7 @@ Post-deployment evidence:
 - Lakebase binding: `projects/metric-view-hub/branches/production`
 - Startup log: `[lakebase] metric_hub schema is ready`
 - App URL: `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com`
+- Interactive OBO smoke test: the signed-in user authenticated successfully and saw live metric-view data
 
 This exposed a useful OBO deployment rule: build-time metadata discovery and runtime data access use different identities. Generate and validate typed metric contracts during development, commit them, and avoid requiring the app service principal to inspect governed data solely to compile the application.
 
@@ -476,7 +477,7 @@ When implementation is authorized:
 
 ## Next moves for this POC
 
-1. Open the deployed app and complete the interactive OBO authorization prompt if Databricks presents it.
-2. Smoke-test metric queries, proposal creation, comments, status transitions, and artifact download with a signed-in workspace user.
-3. Record the interactive smoke-test evidence and any corrections in this living document.
+1. Create a proposal and verify that it persists in Lakebase.
+2. Smoke-test comments, status transitions, version history, and artifact download.
+3. Record the remaining interactive smoke-test evidence and any corrections in this living document.
 4. Decide whether the next increment adds editable revisions in the UI, role mapping from Databricks groups, or automated Git pull-request handoff.

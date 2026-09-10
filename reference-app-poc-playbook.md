@@ -22,7 +22,7 @@ This POC has completed environment setup, product framing, architecture research
 | Read identity | OBO authorized; live metric-view data verified |
 | Application roles | Reviewers collaborate; only configured admins can accept |
 | Databricks App | `metric-view-hub` is deployed and running |
-| Current deployment | `01f1ad67c8de1c5f927254412885db2a` succeeded |
+| Current deployment | `01f1ad6867261d848551bfc47de19bd1` succeeded |
 | App URL | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
 
 The deliberate stopping point matters: the proposal was written before any application code or Databricks resources were created.
@@ -445,7 +445,7 @@ The follow-up requirement was:
 The implementation now applies this policy on both sides of the application:
 
 - Every authenticated user defaults to the `reviewer` role.
-- A comma-separated `APP_ADMIN_EMAILS` deployment setting identifies admins; `roberto.delgado@servco.com` is the initial admin.
+- A comma-separated `APP_ADMIN_EMAILS` deployment setting identifies admins; `roberto.delgado@servco.com` and `tausif.islam@servco.com` are configured for the demo.
 - `GET /api/me` returns the signed-in user's normalized email and resolved role.
 - Reviewers can create proposals, comment, submit for review, resubmit, and request changes.
 - Only admins see the Accept action.
@@ -463,6 +463,8 @@ The change was committed as `0275986` and deployed successfully:
 - Lakebase startup check: `metric_hub schema is ready`
 
 During replacement, the previous app process exceeded Databricks Apps' 15-second `SIGTERM` grace period. The replacement instance still started normally and is healthy. Graceful pool shutdown can be investigated if the message repeats on later deployments.
+
+Before the demo, Codex verified that `tausif.islam@servco.com` is an active user in `hawaii-dev-workspace`, belongs to the Databricks `admins` group, and inherits `CAN_MANAGE` on Apps. No additional app ACL change was required. His application-admin setting was committed as `c2ceac4` and deployed successfully as `01f1ad6867261d848551bfc47de19bd1`. The prior process again exceeded the 15-second shutdown grace period, while the replacement app started successfully and remained healthy; graceful shutdown is therefore retained as an operational follow-up.
 
 ## Prompts that produced the best results
 
@@ -512,7 +514,9 @@ When implementation is authorized:
 ## Next moves for this POC
 
 1. Refresh the app and verify that `roberto.delgado@servco.com` displays as `Admin`.
-2. Sign in with an unlisted test user and verify that it displays as `Reviewer`, does not show Accept, and can still comment or request changes.
-3. Smoke-test artifact download.
-4. Record the remaining interactive smoke-test evidence and any corrections in this living document.
-5. Decide whether the following increment adds Databricks-group role mapping, editable revisions in the UI, or automated Git pull-request handoff.
+2. Have `tausif.islam@servco.com` sign in and verify that he also displays as `Admin` and can see Accept on an in-review proposal.
+3. Sign in with an unlisted test user and verify that it displays as `Reviewer`, does not show Accept, and can still comment or request changes.
+4. Investigate graceful shutdown for the AppKit Lakebase pools before another routine deployment.
+5. Smoke-test artifact download.
+6. Record the remaining interactive smoke-test evidence and any corrections in this living document.
+7. Decide whether the following increment adds Databricks-group role mapping, editable revisions in the UI, or automated Git pull-request handoff.

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://databricks.github.io/appkit/schemas/metric-source.schema.json",
+  "metricViews": {
+    "auto_retail": {
+      "source": "hawaii_prod.testing.vw__metrics_test",
+      "executor": "user"
+    }
+  }
+}

@@ -1,0 +1,50 @@
+bundle:
+  name: metric-view-hub
+
+variables:
+  sql_warehouse_id:
+    description: SQL Warehouse ID
+  postgres_branch:
+    description: Full Lakebase Postgres branch resource name. Obtain by running `databricks postgres list-branches {project-name}`, select the desired item from the output array and use its .name value. Requires the project resource name.
+  postgres_database:
+    description: Full Lakebase Postgres database resource name. Obtain by running `databricks postgres list-databases {branch-name}`, select the desired item from the output array and use its .name value. Requires the branch resource name.
+  postgres_project:
+    description: Full Lakebase Postgres project resource name. Obtain by running `databricks postgres list-projects`, select the desired item from the output array and use its .name value.
+
+resources:
+  apps:
+    app:
+      name: 'metric-view-hub'
+      description: 'Metric view collaboration hub'
+      source_code_path: ./
+
+      # Start the app automatically on deploy.
+      lifecycle:
+        started: true
+      # Query governed metric views as the signed-in user.
+      user_api_scopes:
+        - sql
+
+      # The resources which this app has access to.
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.sql_warehouse_id}
+            permission: CAN_USE
+        - name: postgres
+          postgres:
+            branch: ${var.postgres_branch}
+            database: ${var.postgres_database}
+            permission: CAN_CONNECT_AND_CREATE
+
+targets:
+  default:
+    default: true
+    workspace:
+      host: https://adb-4192082222593323.3.azuredatabricks.net
+
+    variables:
+      sql_warehouse_id: d789a5e994a1ea33
+      postgres_branch: projects/metric-view-hub/branches/production
+      postgres_database: projects/metric-view-hub/branches/production/databases/databricks-postgres
+      postgres_project: projects/metric-view-hub

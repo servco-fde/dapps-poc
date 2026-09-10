@@ -4,7 +4,7 @@ This document records the key moves, prompts, decisions, commands, and troublesh
 
 ## Current state
 
-This POC has completed environment setup, product framing, architecture research, proposal writing, and source-control setup. Phase 0 of implementation is now in progress. Application scaffolding and Databricks resource creation have not started.
+This POC has completed environment setup, product framing, architecture research, source-control setup, and the first functional implementation slice. The application is built and validated against dedicated development resources; deployment is the remaining approval-gated step.
 
 | Artifact or capability | Status |
 |---|---|
@@ -16,9 +16,11 @@ This POC has completed environment setup, product framing, architecture research
 | GitHub repository | Created at `rdelgd/dapps-poc` |
 | Databricks profile | `hawaii-dev-workspace` selected |
 | Initial metric scope | `hawaii_prod.testing.vw__metrics_test` selected |
-| Databricks App scaffold | Pending warehouse, Lakebase, and read-identity choices |
+| Databricks App scaffold | Built with AppKit 0.74.0 and validated |
 | Lakebase project | `projects/metric-view-hub` created and verified |
-| App resource or deployment | Not created |
+| SQL warehouse | Dedicated `metric-view-hub-dev` created and verified |
+| Read identity | OBO with the `sql` user API scope |
+| App resource or deployment | Awaiting explicit deployment approval |
 
 The deliberate stopping point matters: the proposal was written before any application code or Databricks resources were created.
 
@@ -344,7 +346,7 @@ The first create attempt failed before reaching the API because PowerShell strip
 
 The user selected `vw__metrics_test` for the app. Because the dev-catalog object with that name has a broken dependency, the implementation will use the verified live object `hawaii_prod.testing.vw__metrics_test` as its read-only governed metric view.
 
-The implementation data-access decision remains the hybrid proposed in the architecture: SQL warehouse analytics for read-only Unity Catalog metric views, plus Lakebase OLTP for drafts, comments, reviews, and audit history. The warehouse and read identity still require explicit decisions before scaffolding.
+The implementation data-access decision remains the hybrid proposed in the architecture: SQL warehouse analytics for read-only Unity Catalog metric views, plus Lakebase OLTP for drafts, comments, reviews, and audit history.
 
 The source tree also gained a Node/AppKit `.gitignore` before scaffolding so dependencies, generated output, local environment files, logs, test output, and coverage artifacts do not enter source control.
 
@@ -355,6 +357,49 @@ Treat <build-journal.md> as a living implementation record. Implement <proposal.
 
 Before scaffolding, reload the relevant product skills, inspect the current template manifest, list authenticated profiles and selectable resources, and let me choose workspace-specific resources. Keep each phase in its own reviewable commit. Build and validate the application before asking for deployment approval.
 ```
+
+## Move 10: Scaffold, correct resource assumptions, and build the first functional slice
+
+The user required on-behalf-of access for governed metric reads. Codex initially used `app-dev-test` because both the warehouse list and `get-default-warehouse` returned its ID. The user clarified that they did not want to depend on a warehouse created by another engineer. This was corrected before any commit or deployment.
+
+Codex created a dedicated SQL warehouse:
+
+- Name: `metric-view-hub-dev`
+- ID: `d789a5e994a1ea33`
+- Creator: `roberto.delgado@servco.com`
+- Compute: serverless, 2X-Small, Photon enabled
+- Capacity: one cluster minimum and maximum
+- Auto-stop: five minutes
+- Verification: `RUNNING` and `HEALTHY`
+
+The generated app now binds this warehouse with `CAN_USE`, declares the `sql` user API scope, and registers `hawaii_prod.testing.vw__metrics_test` with `executor: "user"`. A real query through the new warehouse returned dealership deal counts and GPVR, confirming the warehouse and metric-view access path.
+
+The first `databricks apps init` attempt wrote the project files but its background dependency install exited with Windows code `0xfffff030`. Running `npm install` directly completed successfully. The template pinned AppKit 0.57.0, while the metric-view hook requires at least 0.59.0; package-registry verification showed 0.74.0 as current, so both AppKit packages were upgraded to 0.74.0 before implementation.
+
+The first functional slice includes:
+
+- A governed Auto Retail metric catalog with OBO KPI, dealership, and monthly GPVR queries through `useMetricView`
+- Loading, empty, error, and warehouse-readiness behavior
+- A guided proposal form for business context, sources, dimensions, measures, formats, and acceptance criteria
+- An app-owned Lakebase `metric_hub` schema with proposals, immutable versions, comments, and audit events
+- Optimistic version checks and server-enforced workflow transitions
+- A review page with published-versus-proposed context, comments, history, and status actions
+- Deterministic SQL/YAML artifact generation and download without direct Unity Catalog publication
+
+Validation caught a Windows-specific server-build issue: the scaffold's `external` predicate treated resolved drive-letter paths as package imports, leaving a TypeScript route import outside `dist`. The predicate was corrected so local server modules are bundled. The emitted server grew from 0.37 KB to 17.30 KB and was inspected to confirm it contains the `metric_hub` schema and routes.
+
+Verification completed before deployment:
+
+- AppKit type generation produced 32 typed measures and 14 typed dimensions for `auto_retail`.
+- TypeScript type checking passed.
+- ESLint passed with no warnings after dynamic form rows received stable client-side keys.
+- Three focused tests for artifact generation and workflow transitions passed.
+- The production server and client build passed.
+- `databricks apps validate --profile hawaii-dev-workspace` passed type generation, AST-grep lint, type checking, build, and tests.
+
+An npm production audit initially reported 21 transitive findings. Compatible updates, patched React Router and Vitest releases, and same-major overrides for DOMPurify, ECharts, `qs`, and `yaml` reduced the result to eight high-severity findings in AppKit/MLflow's remaining OpenTelemetry and `js-yaml` dependency chain. npm's proposed forced fix would downgrade AppKit and is incompatible with the current metric-view implementation, so it was not applied. The complete validation suite passed after the compatible updates.
+
+No app has been deployed yet. This preserves the required approval checkpoint and ensures the first deployed process, running as the app service principal, creates and owns the Lakebase schema.
 
 ## Prompts that produced the best results
 
@@ -401,14 +446,9 @@ When implementation is authorized:
 
 ## Next moves for this POC
 
-Before implementation begins, the outstanding decisions from [`seed-1-proposal.md`](./seed-1-proposal.md) remain:
-
-1. Select the Databricks profile/workspace.
-2. Choose an existing or new Lakebase project, branch, and database.
-3. Select the first business area and representative metric views/source tables.
-4. Choose user-scoped versus app-service-principal reads.
-5. Confirm the artifact/PR/CI publication handoff.
-6. Confirm the MVP boundary for changes to existing views versus creation of new views.
-7. Commit the documentation baseline and `.gitignore` on the implementation feature branch before app scaffolding.
-
-The next implementation action is to resolve those choices, inspect the selected workspace, and run `databricks apps init` on the implementation feature branch.
+1. Review and commit the validated application slice on the implementation branch.
+2. Obtain explicit approval for the first app deployment.
+3. Deploy so the app service principal creates and owns the `metric_hub` Lakebase schema.
+4. Verify the deployment, app URL, OBO prompt/scopes, metric queries, proposal creation, comments, status transitions, and artifact download.
+5. Record deployment evidence and any corrections in this living document.
+6. Decide whether the next increment adds editable revisions in the UI, role mapping from Databricks groups, or automated Git pull-request handoff.

@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "metricViews": {
+    "auto_retail": {
+      "measures": {
+        "deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold.  Deal has been booked/capped in Dealertrack."
+        },
+        "finance_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold through financing."
+        },
+        "aftermarket_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with aftermarket parts installed."
+        },
+        "acp_tw_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with Allstate Complete Protection or Tire and Wheel Protection."
+        },
+        "acp_tw_gross": {
+          "type": "decimal",
+          "description": "The gross value of Allstate Complete Protection and Tire and Wheel Protection products."
+        },
+        "vsc_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with Allstate Complete Platinum Protection or Ally Protection."
+        },
+        "vsc_gross": {
+          "type": "decimal",
+          "description": "The gross value of Allstate Complete Platinum Protection and Ally Protection products"
+        },
+        "gap_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with Gap insurance."
+        },
+        "gap_gross": {
+          "type": "decimal",
+          "description": "The gross value of Gap insurance products."
+        },
+        "reserve_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with a finance or lease reserve."
+        },
+        "reserve_gross": {
+          "type": "decimal",
+          "description": "The gross value of finance or lease reserves."
+        },
+        "sealant_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with a sealant product like Xzilon Evo Protection, Xzilon X7, or All Coat."
+        },
+        "sealant_gross": {
+          "type": "decimal",
+          "description": "The gross value of sealant products like Xzilon Evo Protection, Xzilon X7, or All Coat."
+        },
+        "rust_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with rust protection like Final Coat."
+        },
+        "rust_gross": {
+          "type": "decimal",
+          "description": "The gross value of rust protection products like Final Coat."
+        },
+        "accessory_deal_count": {
+          "type": "bigint",
+          "description": "The number of vehicles sold with accessories installed."
+        },
+        "accessory_gross": {
+          "type": "decimal",
+          "description": "The gross value of any accessories installed."
+        },
+        "total_product_deal_count": {
+          "type": "bigint",
+          "description": "The total number of deals with any F&I product purchased (Allstate, Tire and Wheel, Ally, Gap, Xzilon, All Coat, or Final Coat)."
+        },
+        "total_product_gross": {
+          "type": "decimal",
+          "description": "The total gross of all F&I products (Allstate, Tire and Wheel, Ally, Gap, Xzilon, All Coat, or Final Coat)."
+        },
+        "gpvr": {
+          "type": "decimal",
+          "description": "The gross profit per vehicle retail using front end gross."
+        },
+        "finance_penetration": {
+          "type": "double",
+          "description": "The penetration of finance deals out of the total number of deals."
+        },
+        "aftermarket_penetration": {
+          "type": "double",
+          "description": "The penetration of aftermarket products out of the total number of deals."
+        },
+        "acp_and_tw_penetration": {
+          "type": "double",
+          "description": "The penetration of Allstate Complete Protection and Tire and Wheel Protection products out of the total number of deals"
+        },
+        "vsc_penetration": {
+          "type": "double",
+          "description": "The penetration of Allstate Complete Platinum Protection and Ally Protection products out of the total number of deals."
+        },
+        "gap_penetration": {
+          "type": "double",
+          "description": "The penetration of Gap insurance out of the total number of deals."
+        },
+        "sealant_penetration": {
+          "type": "double",
+          "description": "The penetration of sealant products like Xzilon Evo Protection, Xzilon X7, or All Coat out of the total number of deals."
+        },
+        "rust_penetration": {
+          "type": "double",
+          "description": "The penetration of rust protection products like Final Coat out of the total number of deals."
+        },
+        "accessory_penetration": {
+          "type": "double",
+          "description": "The penetration of accessories installed out of the total number of deals."
+        },
+        "total_product_penetration": {
+          "type": "double",
+          "description": "The penetration of any F&I product out of the total number of deals."
+        },
+        "reserve_penetration": {
+          "type": "double",
+          "description": "The penetration of finance or lease reserve deals out of the total number of deals."
+        },
+        "pvr_without_reserve": {
+          "type": "decimal",
+          "description": "The gross profit per vehicle retail for all F&I products without a finance or lease reserve."
+        },
+        "pvr_with_reserve": {
+          "type": "decimal",
+          "description": "The gross profit per vehicle retail for all F&I products with a finance or lease reserve."
+        }
+      },
+      "dimensions": {
+        "sale_date": {
+          "type": "date",
+          "description": "The sale date for the vehicle deal in the primary model. This is the deal date from the opentrack API and records the sale date for the primary deal table."
+        },
+        "dealership_name": {
+          "type": "string",
+          "description": "Translation of the company number to the dealership name:\n- AFS = Auto Headquarters\n - SAL = Servco Leeward\n - SLH = Servco Lexus Honolulu\n - SBM = Servco Subaru Mapunapuna\n - SBW = Servco Subaru Kaimuki\n - SAH = Servco Toyota Honolulu\n - SAW = Servco Toyota Windward\n - SLM = Servco Lexus Maui\n - SSM = Servco Subaru Maui\n - KAU = Servco Kauai\n - SCI = Servco Scion\n - SFE = Servco Forklift & Industrial Equipment\n - STS = Servco Toyota Service Center\n - SCK = Servco Toyota Kaimuki\n - STC = Servco Tire Center (aka Rex Tire)\n - SHI = Servco Toyota Hilo\n - SKO = Servco Toyota Kona"
+        },
+        "dealership_island": {
+          "type": "string",
+          "description": "Island location of the dealership.\n- Oahu:\n - AFS = Auto Headquarters\n - SAL = Servco Leeward\n - SLH = Servco Lexus Honolulu\n - SBM = Servco Subaru Mapunapuna\n - SBW = Servco Subaru Kaimuki\n - SAH = Servco Toyota Honolulu\n - STS = Servco Toyota Service Center\n - SAW = Servco Toyota Windward\n - SCI = Servco Scion\n - SFE = Servco Forklift & Industrial Equipment\n - SCK = Servco Toyota Kaimuki\n - STC = Servco Tire Center (aka Rex Tire)\n - MIP = Motor Imports\n - Maui:\n - SLM = Servco Lexus Maui\n - SSM = Servco Subaru Maui\n - Kauai:\n - KAU = Servco Kauai\n - Hawaii:\n - SHI = Servco Toyota Hilo\n - SKO = Servco Toyota Kona"
+        },
+        "vehicle_type_description": {
+          "type": "string",
+          "description": "The vehicle type recorded on the deal:\n- N=New\n - U=Used"
+        },
+        "deal_type_description": {
+          "type": "string",
+          "description": "Description is determined by the following values:\n- F=Finance\n - L=Lease\n - C=Cash\n - O=Outside Lien Holder (Like a cash deal to the dealership as there is only one payment, but the buyer secured their own financing)"
+        },
+        "vehicle_make": {
+          "type": "string",
+          "description": "Manufacturer of Vehicle"
+        },
+        "vehicle_model": {
+          "type": "string",
+          "description": "Model Name of Vehicle"
+        },
+        "vehicle_year": {
+          "type": "int",
+          "description": "Year of the Vehicle"
+        },
+        "front_end_gross": {
+          "type": "decimal",
+          "description": "House gross minus the total finance and insurance reserve.\n- Calculated as: house_gross - total_f_and_i_reserve\n - Calculation for house_gross can be found in the house_gross column documentation."
+        },
+        "sale_price": {
+          "type": "decimal",
+          "description": "The sellilng price of the vehicle. The OpenTrack response includes both a lease and retail price on a deal. The following logic is used to consolidate a single selling price in the primary table:\n- For field `deal_type_description`:\n - 'Lease' = lease_price\n - Not 'Lease' (all other values) = retail_price"
+        },
+        "primary_salesperson_name": {
+          "type": "string",
+          "description": "The name of the primary salesperson for the vehicle deal."
+        },
+        "secondary_salesperson_name": {
+          "type": "string",
+          "description": "The name of the secondary salesperson for the vehicle deal."
+        },
+        "f_and_i_manager_name": {
+          "type": "string",
+          "description": "The name of the F&I manager for the vehicle deal."
+        },
+        "sale_manager_name": {
+          "type": "string",
+          "description": "The name of the sale manager for the vehicle deal."
+        }
+      }
+    }
+  }
+}

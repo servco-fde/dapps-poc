@@ -11,6 +11,7 @@ This POC has completed environment setup, product framing, architecture research
 | Product seed | Captured in [`seed-1.md`](./seed-1.md) |
 | Architecture and delivery proposal | Captured in [`seed-1-proposal.md`](./seed-1-proposal.md) |
 | FDE workstation setup guide | Captured in [`dapps-env-setup.md`](./dapps-env-setup.md) |
+| Repository overview | Captured in [`README.md`](./README.md) |
 | Databricks AI tools and skills | Installed for Codex |
 | Developer Hub Docs MCP | Installed and verified |
 | GitHub repository | Created at `rdelgd/dapps-poc` |
@@ -484,6 +485,22 @@ databricks apps stop metric-view-hub --profile hawaii-dev-workspace
 ```
 
 The dedicated SQL warehouse still auto-stops after five idle minutes, and the Lakebase endpoint retains its 24-hour idle-suspension setting. Starting or stopping the app does not change those resource policies.
+
+## Move 14: Add a repository landing page
+
+Once the POC was deployed and its purpose was demonstrable, the root repository gained a concise [`README.md`](./README.md). It is deliberately organized as a landing page rather than a copy of this chronological playbook.
+
+The README explains:
+
+- The business coordination problem the POC addresses
+- The division of responsibility between business users and engineers
+- Current catalog, proposal, review, role, and artifact capabilities
+- The AppKit, SQL warehouse, Unity Catalog, Lakebase, and Git handoff architecture
+- OBO, service-principal, and admin/reviewer security boundaries
+- Manual POC start, status, and stop commands
+- Local validation commands and links to the deeper repository artifacts
+
+This gives a new reader enough context to understand and operate the POC, while the proposal retains the intended architecture and this playbook retains the reproducible build history.
 
 ## Prompts that produced the best results
 

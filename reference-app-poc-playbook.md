@@ -20,8 +20,9 @@ This POC has completed environment setup, product framing, architecture research
 | Lakebase project | `projects/metric-view-hub` created and verified |
 | SQL warehouse | Dedicated `metric-view-hub-dev` created and verified |
 | Read identity | OBO authorized; live metric-view data verified |
+| Application roles | Reviewers collaborate; only configured admins can accept |
 | Databricks App | `metric-view-hub` is deployed and running |
-| Deployment | `01f1ad63f706191abc229e805abb4c04` succeeded |
+| Current deployment | `01f1ad67c8de1c5f927254412885db2a` succeeded |
 | App URL | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
 
 The deliberate stopping point matters: the proposal was written before any application code or Databricks resources were created.
@@ -433,6 +434,36 @@ Post-deployment evidence:
 
 This exposed a useful OBO deployment rule: build-time metadata discovery and runtime data access use different identities. Generate and validate typed metric contracts during development, commit them, and avoid requiring the app service principal to inspect governed data solely to compile the application.
 
+## Move 12: Add admin and reviewer tiers
+
+The first interactive proposal test completed creation, version 1 persistence, commenting, submission for review, and acceptance. It also showed that the initial implementation allowed the proposal author to accept because it enforced valid workflow transitions without enforcing application roles.
+
+The follow-up requirement was:
+
+> Create two tiers for this app: admins and reviewers. Only admins can accept.
+
+The implementation now applies this policy on both sides of the application:
+
+- Every authenticated user defaults to the `reviewer` role.
+- A comma-separated `APP_ADMIN_EMAILS` deployment setting identifies admins; `roberto.delgado@servco.com` is the initial admin.
+- `GET /api/me` returns the signed-in user's normalized email and resolved role.
+- Reviewers can create proposals, comment, submit for review, resubmit, and request changes.
+- Only admins see the Accept action.
+- The status API independently returns `403` if a reviewer attempts the `in_review` to `approved` transition directly.
+- The proposal page displays the current application role and explains when admin acceptance is required.
+
+Five focused tests now cover artifact generation, workflow transitions, case-insensitive admin matching, safe reviewer defaults, and admin-only acceptance. Formatting, ESLint, TypeScript, the production build, and the complete Databricks Apps validator passed before deployment.
+
+The change was committed as `0275986` and deployed successfully:
+
+- Deployment ID: `01f1ad67c8de1c5f927254412885db2a`
+- Deployment state: `SUCCEEDED`
+- App state: `RUNNING`
+- Compute state: `ACTIVE`
+- Lakebase startup check: `metric_hub schema is ready`
+
+During replacement, the previous app process exceeded Databricks Apps' 15-second `SIGTERM` grace period. The replacement instance still started normally and is healthy. Graceful pool shutdown can be investigated if the message repeats on later deployments.
+
 ## Prompts that produced the best results
 
 The most effective prompts in this POC shared several traits:
@@ -475,12 +506,13 @@ When implementation is authorized:
 10. **Test company-machine assumptions without mutating the machine.** Package lookup, policy inspection, and executable verification provide useful evidence before attempting installation.
 11. **Never commit credentials or local environment files.** Review `.gitignore` and staged files before every initial push.
 12. **Separate build-time discovery from runtime OBO access.** A remote builder runs as the app service principal; committed generated types let the build succeed without granting that principal direct catalog access.
-13. **Record the current stopping point.** A strong build journal distinguishes completed work from proposals and next steps.
+13. **Enforce roles on the server.** Hiding an approval button improves the interface, but the API must independently reject unauthorized transitions.
+14. **Record the current stopping point.** A strong build journal distinguishes completed work from proposals and next steps.
 
 ## Next moves for this POC
 
-1. Complete the `in_review` to `approved` transition and verify the audit history.
-2. Smoke-test artifact download.
-3. Add reviewer-role enforcement so submitters cannot approve their own proposals.
+1. Refresh the app and verify that `roberto.delgado@servco.com` displays as `Admin`.
+2. Sign in with an unlisted test user and verify that it displays as `Reviewer`, does not show Accept, and can still comment or request changes.
+3. Smoke-test artifact download.
 4. Record the remaining interactive smoke-test evidence and any corrections in this living document.
-5. Decide whether the following increment adds editable revisions in the UI or automated Git pull-request handoff.
+5. Decide whether the following increment adds Databricks-group role mapping, editable revisions in the UI, or automated Git pull-request handoff.

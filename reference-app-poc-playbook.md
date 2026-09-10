@@ -4,7 +4,7 @@ This document records the key moves, prompts, decisions, commands, and troublesh
 
 ## Current state
 
-This POC has completed environment setup, product framing, architecture research, source-control setup, and the first functional implementation slice. The application is built and validated against dedicated development resources; deployment is the remaining approval-gated step.
+This POC has completed environment setup, product framing, architecture research, source-control setup, the first functional implementation slice, and its first successful Databricks Apps deployment. The application is running against dedicated development resources.
 
 | Artifact or capability | Status |
 |---|---|
@@ -20,7 +20,9 @@ This POC has completed environment setup, product framing, architecture research
 | Lakebase project | `projects/metric-view-hub` created and verified |
 | SQL warehouse | Dedicated `metric-view-hub-dev` created and verified |
 | Read identity | OBO with the `sql` user API scope |
-| App resource or deployment | Awaiting explicit deployment approval |
+| Databricks App | `metric-view-hub` is deployed and running |
+| Deployment | `01f1ad63f706191abc229e805abb4c04` succeeded |
+| App URL | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
 
 The deliberate stopping point matters: the proposal was written before any application code or Databricks resources were created.
 
@@ -399,7 +401,34 @@ Verification completed before deployment:
 
 An npm production audit initially reported 21 transitive findings. Compatible updates, patched React Router and Vitest releases, and same-major overrides for DOMPurify, ECharts, `qs`, and `yaml` reduced the result to eight high-severity findings in AppKit/MLflow's remaining OpenTelemetry and `js-yaml` dependency chain. npm's proposed forced fix would downgrade AppKit and is incompatible with the current metric-view implementation, so it was not applied. The complete validation suite passed after the compatible updates.
 
-No app has been deployed yet. This preserves the required approval checkpoint and ensures the first deployed process, running as the app service principal, creates and owns the Lakebase schema.
+The validated implementation was committed and pushed to `feat/metric-view-collab-poc` before the deployment approval checkpoint.
+
+## Move 11: Deploy, diagnose the remote identity boundary, and redeploy
+
+After the user explicitly approved deployment, Codex ran:
+
+```powershell
+databricks apps deploy --profile hawaii-dev-workspace
+```
+
+The first remote build failed even though local validation had passed. The Databricks build logs showed that the scaffold's `postinstall` and `prebuild` lifecycle scripts were rerunning metric-view type generation as the app service principal. That identity correctly had access to the bound SQL warehouse and Lakebase resource, but it did not have `USE CATALOG` on `hawaii_prod`. Granting that direct catalog privilege would have weakened the intended OBO boundary.
+
+The fix was to keep the generated metric metadata and TypeScript contract in source control and stop regenerating them during the remote package-install/build lifecycle. Development and `databricks apps validate` still regenerate and verify the contract under the developer's selected profile. Runtime metric queries still use `executor: "user"` and the app's `sql` user API scope, so they execute with the signed-in user's OBO authorization.
+
+After the lifecycle change, the full local validation suite passed again. The fix was committed and pushed as `61e958a`, then the approved deployment was retried.
+
+Post-deployment evidence:
+
+- Deployment ID: `01f1ad63f706191abc229e805abb4c04`
+- Deployment state: `SUCCEEDED`
+- App state: `RUNNING`
+- Compute state: `ACTIVE`
+- SQL warehouse binding: `metric-view-hub-dev` (`d789a5e994a1ea33`)
+- Lakebase binding: `projects/metric-view-hub/branches/production`
+- Startup log: `[lakebase] metric_hub schema is ready`
+- App URL: `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com`
+
+This exposed a useful OBO deployment rule: build-time metadata discovery and runtime data access use different identities. Generate and validate typed metric contracts during development, commit them, and avoid requiring the app service principal to inspect governed data solely to compile the application.
 
 ## Prompts that produced the best results
 
@@ -442,13 +471,12 @@ When implementation is authorized:
 9. **Treat local and Git-backed deployments as different workflows.** Private Git-backed deployments need a Git credential for the app service principal; local CLI uploads do not.
 10. **Test company-machine assumptions without mutating the machine.** Package lookup, policy inspection, and executable verification provide useful evidence before attempting installation.
 11. **Never commit credentials or local environment files.** Review `.gitignore` and staged files before every initial push.
-12. **Record the current stopping point.** A strong build journal distinguishes completed work from proposals and next steps.
+12. **Separate build-time discovery from runtime OBO access.** A remote builder runs as the app service principal; committed generated types let the build succeed without granting that principal direct catalog access.
+13. **Record the current stopping point.** A strong build journal distinguishes completed work from proposals and next steps.
 
 ## Next moves for this POC
 
-1. Review and commit the validated application slice on the implementation branch.
-2. Obtain explicit approval for the first app deployment.
-3. Deploy so the app service principal creates and owns the `metric_hub` Lakebase schema.
-4. Verify the deployment, app URL, OBO prompt/scopes, metric queries, proposal creation, comments, status transitions, and artifact download.
-5. Record deployment evidence and any corrections in this living document.
-6. Decide whether the next increment adds editable revisions in the UI, role mapping from Databricks groups, or automated Git pull-request handoff.
+1. Open the deployed app and complete the interactive OBO authorization prompt if Databricks presents it.
+2. Smoke-test metric queries, proposal creation, comments, status transitions, and artifact download with a signed-in workspace user.
+3. Record the interactive smoke-test evidence and any corrections in this living document.
+4. Decide whether the next increment adds editable revisions in the UI, role mapping from Databricks groups, or automated Git pull-request handoff.

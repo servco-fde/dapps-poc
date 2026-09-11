@@ -6,25 +6,25 @@ This document records the key moves, prompts, decisions, commands, and troublesh
 
 This POC has completed environment setup, product framing, architecture research, source-control setup, the first functional implementation slice, and its first successful Databricks Apps deployment. The application is running against dedicated development resources.
 
-| Artifact or capability | Status |
-|---|---|
-| Product seed | Captured in [`seed-1.md`](./seed-1.md) |
-| Architecture and delivery proposal | Captured in [`seed-1-proposal.md`](./seed-1-proposal.md) |
-| FDE workstation setup guide | Captured in [`dapps-env-setup.md`](./dapps-env-setup.md) |
-| Repository overview | Captured in [`README.md`](./README.md) |
-| Databricks AI tools and skills | Installed for Codex |
-| Developer Hub Docs MCP | Installed and verified |
-| GitHub repository | Created at `rdelgd/dapps-poc` |
-| Databricks profile | `hawaii-dev-workspace` selected |
-| Initial metric scope | `hawaii_prod.testing.vw__metrics_test` selected |
-| Databricks App scaffold | Built with AppKit 0.74.0 and validated |
-| Lakebase project | `projects/metric-view-hub` created and verified |
-| SQL warehouse | Dedicated `metric-view-hub-dev` created and verified |
-| Read identity | OBO authorized; live metric-view data verified |
-| Application roles | Reviewers collaborate; only configured admins can accept |
-| Databricks App | Deployed; manually stopped outside development and demos |
-| Current deployment | `01f1ad6867261d848551bfc47de19bd1` succeeded |
-| App URL | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
+| Artifact or capability             | Status                                                                |
+| ---------------------------------- | --------------------------------------------------------------------- |
+| Product seed                       | Captured in [`seed-1.md`](./seed-1.md)                                |
+| Architecture and delivery proposal | Captured in [`seed-1-proposal.md`](./seed-1-proposal.md)              |
+| FDE workstation setup guide        | Captured in [`dapps-env-setup.md`](./dapps-env-setup.md)              |
+| Repository overview                | Captured in [`README.md`](./README.md)                                |
+| Databricks AI tools and skills     | Installed for Codex                                                   |
+| Developer Hub Docs MCP             | Installed and verified                                                |
+| GitHub repository                  | Created at `rdelgd/dapps-poc`                                         |
+| Databricks profile                 | `hawaii-dev-workspace` selected                                       |
+| Initial metric scope               | `hawaii_prod.testing.vw__metrics_test` selected                       |
+| Databricks App scaffold            | Built with AppKit 0.74.0 and validated                                |
+| Lakebase project                   | `projects/metric-view-hub` created and verified                       |
+| SQL warehouse                      | Dedicated `metric-view-hub-dev` created and verified                  |
+| Read identity                      | OBO authorized; live metric-view data verified                        |
+| Application roles                  | Reviewers collaborate; only configured admins can accept              |
+| Databricks App                     | Deployed; manually stopped outside development and demos              |
+| Current deployment                 | `01f1ad6867261d848551bfc47de19bd1` succeeded                          |
+| App URL                            | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
 
 The deliberate stopping point matters: the proposal was written before any application code or Databricks resources were created.
 
@@ -246,11 +246,11 @@ For a private Git-backed deployment, Databricks—not the developer's laptop—m
 
 This creates two practical paths:
 
-| Development path | App service-principal Git credential | Recommended use |
-|---|---:|---|
-| Agent edits locally and runs `databricks apps deploy` | No | Fast development loop |
-| Databricks deploys from a private Git repository | Yes | Shared test and production environments |
-| Automatic deployment on repository push | Yes, plus provider integration/webhook | Mature CI/CD workflow |
+| Development path                                      |   App service-principal Git credential | Recommended use                         |
+| ----------------------------------------------------- | -------------------------------------: | --------------------------------------- |
+| Agent edits locally and runs `databricks apps deploy` |                                     No | Fast development loop                   |
+| Databricks deploys from a private Git repository      |                                    Yes | Shared test and production environments |
+| Automatic deployment on repository push               | Yes, plus provider integration/webhook | Mature CI/CD workflow                   |
 
 The emerging recommendation is to keep the agentic inner loop local and simple, while using an exact Git commit/tag and Git-backed or CI/CD deployment for controlled environments.
 
@@ -552,6 +552,47 @@ Post-deployment evidence:
 - App URL: `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com`
 
 The app remains running for visual review of this frontend change. Stop it after the review session using the manual POC runtime command from Move 13.
+
+## Move 16: Add an isolated full-stack local development loop
+
+After the first deployed iteration, the user asked whether the entire application stack could be served locally before deployment. Databricks supports local app execution through `databricks apps run-local`, which starts an application process and a localhost proxy that injects app-related request headers. The managed dependencies still run in the development workspace.
+
+The first direct `npm run dev` attempt exposed two repository-specific issues:
+
+- The generated npm scripts used Unix-style `NODE_ENV=value` assignment, which Windows rejected.
+- The local process authenticated to Lakebase as the developer, while the deployed `metric_hub` tables are owned by the app service principal. Re-running table/index creation against those tables correctly failed PostgreSQL ownership checks.
+
+The implementation now:
+
+- Uses a small TypeScript development entry point to set development mode without platform-specific shell syntax.
+- Runs the backend watcher with generated AppKit metadata excluded, preventing regeneration from causing restart loops.
+- Accepts a validated `METRIC_HUB_SCHEMA` identifier and defaults to `metric_hub` in production.
+- Uses a stable developer schema such as `metric_hub_local_roberto` for local tables and test records.
+- Accepts `LOCAL_DEV_EMAIL` only in development so local role behavior can be tested without changing production identity handling.
+- Provides `app.local.yaml` as the hot-reload entry point for `databricks apps run-local`.
+
+The verified local command is:
+
+```powershell
+databricks apps run-local `
+  --entry-point app.local.yaml `
+  --profile hawaii-dev-workspace `
+  --env METRIC_HUB_SCHEMA=metric_hub_local_roberto `
+  --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
+```
+
+Verification through `http://localhost:8001` established that:
+
+- The health endpoint returned `200`.
+- The application shell was served by Vite in development mode with hot reload.
+- The local identity resolved to `roberto.delgado@servco.com` with the `admin` role.
+- The isolated proposal list initially returned no records.
+- A metric query using the CLI-authenticated developer identity reached the development SQL warehouse and returned a live deal count of 51,976.
+- A proposal write succeeded in `metric_hub_local_roberto` and remained separate from deployed proposal data.
+
+This is a full local application-runtime loop rather than an offline Databricks emulator. SQL Warehouse, Unity Catalog, OAuth, and the Lakebase engine continue to run as managed workspace services. Each developer recreates the ignored `.env` file locally, uses a unique Lakebase schema, and can reuse the same schema from multiple computers under the same Databricks identity.
+
+AppKit reported that browser-user impersonation was skipped locally because the localhost request has no deployed app user token. Local metric access therefore tests the developer's CLI identity; the OBO authorization boundary still requires a deployed smoke test.
 
 ## Prompts that produced the best results
 

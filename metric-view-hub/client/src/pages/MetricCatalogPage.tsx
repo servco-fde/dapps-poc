@@ -244,7 +244,8 @@ export function MetricCatalogPage() {
                 never replaces this Unity Catalog view directly.
               </p>
               <p>
-                The deployed app service principal owns only the dedicated <code>metric_hub</code> Lakebase schema.
+                The deployed app service principal owns the dedicated <code>metric_hub</code> Lakebase schema. Local
+                development uses a separate developer-owned schema.
               </p>
             </CardContent>
           </Card>

@@ -1,0 +1,4 @@
+command: ['npm', 'run', 'dev']
+env:
+  - name: APP_ADMIN_EMAILS
+    value: 'roberto.delgado@servco.com,tausif.islam@servco.com'

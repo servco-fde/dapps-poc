@@ -77,6 +77,21 @@ App URL: <https://metric-view-hub-4192082222593323.3.azure.databricksapps.com>
 
 Starting the app restores its last successful deployment and existing Lakebase data. It does not require a new deployment.
 
+## Run the full application locally
+
+The client and API support a local hot-reload loop backed by an isolated developer schema in the existing development Lakebase project:
+
+```powershell
+cd metric-view-hub
+databricks apps run-local `
+  --entry-point app.local.yaml `
+  --profile hawaii-dev-workspace `
+  --env METRIC_HUB_SCHEMA=metric_hub_local_roberto `
+  --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
+```
+
+Open <http://localhost:8001>. See [`metric-view-hub/README.md`](./metric-view-hub/README.md) for the one-time `.env` setup, identity behavior, and local-versus-deployed data boundary.
+
 ## Validate the application locally
 
 From `metric-view-hub`:

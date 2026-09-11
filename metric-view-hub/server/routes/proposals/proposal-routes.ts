@@ -96,9 +96,23 @@ export const resolveRole = (email: string, configuredAdmins = process.env.APP_AD
 export const canRoleTransition = (role: AppRole, from: ProposalStatus, to: ProposalStatus): boolean =>
   canTransition(from, to) && (to !== 'approved' || role === 'admin');
 
+const SchemaName = z.string().regex(/^[a-z_][a-z0-9_]*$/, 'Use a lowercase PostgreSQL schema identifier');
+
+export const resolveAppSchema = (configuredSchema = process.env.METRIC_HUB_SCHEMA ?? 'metric_hub'): string =>
+  SchemaName.parse(configuredSchema.trim());
+
+const appSchema = resolveAppSchema();
+const qualifiedSchema = `"${appSchema}"`;
+const tables = {
+  proposals: `${qualifiedSchema}.proposals`,
+  versions: `${qualifiedSchema}.proposal_versions`,
+  comments: `${qualifiedSchema}.comments`,
+  auditEvents: `${qualifiedSchema}.audit_events`,
+};
+
 const SCHEMA_STATEMENTS = [
-  `CREATE SCHEMA IF NOT EXISTS metric_hub`,
-  `CREATE TABLE IF NOT EXISTS metric_hub.proposals (
+  `CREATE SCHEMA IF NOT EXISTS ${qualifiedSchema}`,
+  `CREATE TABLE IF NOT EXISTS ${tables.proposals} (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     title TEXT NOT NULL,
     business_area TEXT NOT NULL,
@@ -118,9 +132,9 @@ const SCHEMA_STATEMENTS = [
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`,
-  `CREATE TABLE IF NOT EXISTS metric_hub.proposal_versions (
+  `CREATE TABLE IF NOT EXISTS ${tables.versions} (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    proposal_id UUID NOT NULL REFERENCES metric_hub.proposals(id) ON DELETE CASCADE,
+    proposal_id UUID NOT NULL REFERENCES ${tables.proposals}(id) ON DELETE CASCADE,
     version INTEGER NOT NULL,
     draft_json JSONB NOT NULL,
     generated_artifact TEXT NOT NULL,
@@ -128,29 +142,29 @@ const SCHEMA_STATEMENTS = [
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE (proposal_id, version)
   )`,
-  `CREATE TABLE IF NOT EXISTS metric_hub.comments (
+  `CREATE TABLE IF NOT EXISTS ${tables.comments} (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    proposal_id UUID NOT NULL REFERENCES metric_hub.proposals(id) ON DELETE CASCADE,
+    proposal_id UUID NOT NULL REFERENCES ${tables.proposals}(id) ON DELETE CASCADE,
     field_anchor TEXT,
     body TEXT NOT NULL,
     author_email TEXT NOT NULL,
     resolved BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`,
-  `CREATE TABLE IF NOT EXISTS metric_hub.audit_events (
+  `CREATE TABLE IF NOT EXISTS ${tables.auditEvents} (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    proposal_id UUID NOT NULL REFERENCES metric_hub.proposals(id) ON DELETE CASCADE,
+    proposal_id UUID NOT NULL REFERENCES ${tables.proposals}(id) ON DELETE CASCADE,
     event_type TEXT NOT NULL,
     actor_email TEXT NOT NULL,
     details JSONB NOT NULL DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   )`,
   `CREATE INDEX IF NOT EXISTS idx_proposals_status_updated
-    ON metric_hub.proposals(status, updated_at DESC)`,
+    ON ${tables.proposals}(status, updated_at DESC)`,
   `CREATE INDEX IF NOT EXISTS idx_comments_proposal_created
-    ON metric_hub.comments(proposal_id, created_at)`,
+    ON ${tables.comments}(proposal_id, created_at)`,
   `CREATE INDEX IF NOT EXISTS idx_audit_proposal_created
-    ON metric_hub.audit_events(proposal_id, created_at)`,
+    ON ${tables.auditEvents}(proposal_id, created_at)`,
 ];
 
 const proposalColumns = `
@@ -161,7 +175,10 @@ const proposalColumns = `
 `;
 
 const requestActor = (req: Request): RequestActor => {
-  const email = (req.header('x-forwarded-email') ?? 'local-developer@databricks.invalid').trim().toLowerCase();
+  const localEmail = process.env.NODE_ENV === 'development' ? process.env.LOCAL_DEV_EMAIL : undefined;
+  const email = (req.header('x-forwarded-email') ?? localEmail ?? 'local-developer@databricks.invalid')
+    .trim()
+    .toLowerCase();
   return { email, role: resolveRole(email) };
 };
 
@@ -221,7 +238,7 @@ async function initializeSchema(appkit: AppKitWithLakebase): Promise<void> {
   for (const statement of SCHEMA_STATEMENTS) {
     await appkit.lakebase.query(statement);
   }
-  console.log('[lakebase] metric_hub schema is ready');
+  console.log(`[lakebase] ${appSchema} schema is ready`);
 }
 
 export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<void> {
@@ -238,7 +255,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
           SELECT id, title, business_area, change_type, target_metric_view,
                  target_name, owner_email, status, current_version,
                  created_by, created_at, updated_at
-          FROM metric_hub.proposals
+          FROM ${tables.proposals}
           ORDER BY updated_at DESC
           LIMIT 200
         `);
@@ -252,11 +269,11 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
     app.get('/api/proposals/:id', async (req, res) => {
       try {
         const [proposal, versions, comments, events] = await Promise.all([
-          appkit.lakebase.query(`SELECT ${proposalColumns} FROM metric_hub.proposals WHERE id = $1`, [req.params.id]),
+          appkit.lakebase.query(`SELECT ${proposalColumns} FROM ${tables.proposals} WHERE id = $1`, [req.params.id]),
           appkit.lakebase.query(
             `
             SELECT version, draft_json, author_email, created_at
-            FROM metric_hub.proposal_versions
+            FROM ${tables.versions}
             WHERE proposal_id = $1 ORDER BY version DESC
           `,
             [req.params.id]
@@ -264,7 +281,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
           appkit.lakebase.query(
             `
             SELECT id, field_anchor, body, author_email, resolved, created_at
-            FROM metric_hub.comments
+            FROM ${tables.comments}
             WHERE proposal_id = $1 ORDER BY created_at ASC
           `,
             [req.params.id]
@@ -272,7 +289,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
           appkit.lakebase.query(
             `
             SELECT id, event_type, actor_email, details, created_at
-            FROM metric_hub.audit_events
+            FROM ${tables.auditEvents}
             WHERE proposal_id = $1 ORDER BY created_at ASC
           `,
             [req.params.id]
@@ -307,18 +324,18 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         const result = await appkit.lakebase.query(
           `
           WITH inserted AS (
-            INSERT INTO metric_hub.proposals (
+            INSERT INTO ${tables.proposals} (
               title, business_area, change_type, target_metric_view, target_name,
               source_fqn, purpose, owner_email, acceptance_criteria, rationale,
               desired_date, created_by
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, NULLIF($11, '')::date, $12)
             RETURNING ${proposalColumns}
           ), versioned AS (
-            INSERT INTO metric_hub.proposal_versions (
+            INSERT INTO ${tables.versions} (
               proposal_id, version, draft_json, generated_artifact, author_email
             ) SELECT id, 1, $13::jsonb, $14, $12 FROM inserted
           ), audited AS (
-            INSERT INTO metric_hub.audit_events (proposal_id, event_type, actor_email, details)
+            INSERT INTO ${tables.auditEvents} (proposal_id, event_type, actor_email, details)
             SELECT id, 'proposal_created', $12, jsonb_build_object('version', 1) FROM inserted
           )
           SELECT * FROM inserted
@@ -361,7 +378,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         const result = await appkit.lakebase.query(
           `
           WITH updated AS (
-            UPDATE metric_hub.proposals
+            UPDATE ${tables.proposals}
             SET title = $3, business_area = $4, change_type = $5,
                 target_metric_view = $6, target_name = $7, source_fqn = $8,
                 purpose = $9, owner_email = $10, acceptance_criteria = $11::jsonb,
@@ -370,11 +387,11 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
             WHERE id = $1 AND current_version = $2 AND status IN ('draft', 'changes_requested')
             RETURNING ${proposalColumns}
           ), versioned AS (
-            INSERT INTO metric_hub.proposal_versions (
+            INSERT INTO ${tables.versions} (
               proposal_id, version, draft_json, generated_artifact, author_email
             ) SELECT id, $14, $15::jsonb, $16, $17 FROM updated
           ), audited AS (
-            INSERT INTO metric_hub.audit_events (proposal_id, event_type, actor_email, details)
+            INSERT INTO ${tables.auditEvents} (proposal_id, event_type, actor_email, details)
             SELECT id, 'proposal_revised', $17, jsonb_build_object('version', $14) FROM updated
           )
           SELECT * FROM updated
@@ -421,12 +438,12 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         const result = await appkit.lakebase.query(
           `
           WITH inserted AS (
-            INSERT INTO metric_hub.comments (proposal_id, field_anchor, body, author_email)
+            INSERT INTO ${tables.comments} (proposal_id, field_anchor, body, author_email)
             SELECT id, NULLIF($2, ''), $3, $4
-            FROM metric_hub.proposals WHERE id = $1
+            FROM ${tables.proposals} WHERE id = $1
             RETURNING id, proposal_id, field_anchor, body, author_email, resolved, created_at
           ), audited AS (
-            INSERT INTO metric_hub.audit_events (proposal_id, event_type, actor_email, details)
+            INSERT INTO ${tables.auditEvents} (proposal_id, event_type, actor_email, details)
             SELECT proposal_id, 'comment_added', $4, jsonb_build_object('comment_id', id) FROM inserted
           )
           SELECT * FROM inserted
@@ -452,7 +469,7 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
       }
       const actor = requestActor(req);
       try {
-        const current = await appkit.lakebase.query('SELECT status FROM metric_hub.proposals WHERE id = $1', [
+        const current = await appkit.lakebase.query(`SELECT status FROM ${tables.proposals} WHERE id = $1`, [
           req.params.id,
         ]);
         if (current.rows.length === 0) {
@@ -472,14 +489,14 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         const result = await appkit.lakebase.query(
           `
           WITH updated AS (
-            UPDATE metric_hub.proposals
+            UPDATE ${tables.proposals}
             SET status = $3,
                 approved_by = CASE WHEN $3 = 'approved' THEN $4 ELSE approved_by END,
                 updated_at = NOW()
             WHERE id = $1 AND status = $2
             RETURNING ${proposalColumns}
           ), audited AS (
-            INSERT INTO metric_hub.audit_events (proposal_id, event_type, actor_email, details)
+            INSERT INTO ${tables.auditEvents} (proposal_id, event_type, actor_email, details)
             SELECT id, 'status_changed', $4,
                    jsonb_build_object('from', $2, 'to', $3) FROM updated
           )
@@ -503,8 +520,8 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
         const result = await appkit.lakebase.query(
           `
           SELECT p.target_name, v.generated_artifact
-          FROM metric_hub.proposals p
-          JOIN metric_hub.proposal_versions v
+          FROM ${tables.proposals} p
+          JOIN ${tables.versions} v
             ON v.proposal_id = p.id AND v.version = p.current_version
           WHERE p.id = $1
         `,

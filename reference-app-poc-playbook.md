@@ -502,6 +502,57 @@ The README explains:
 
 This gives a new reader enough context to understand and operate the POC, while the proposal retains the intended architecture and this playbook retains the reproducible build history.
 
+## Move 15: Apply the Servco visual system and contain responsive content
+
+The frontend styling request was:
+
+> Reference `style/SERVCO_STYLEGUIDE.pdf` and change the styling on the app accordingly.
+
+The responsive follow-up was:
+
+> No float should overflow its container.
+
+Codex extracted and visually reviewed the eight-page local style guide before editing the interface. The application now uses Makai (`#3155a6`) as its dominant color, Nalu (`#00a0dc`) as its complement, and the Makani, Meakanu, and Lava secondary colors selectively for charts and workflow states. Gotham is the preferred font when it is available, with close system fallbacks for environments where the corporate font is not installed.
+
+The brand treatment includes:
+
+- A compact Servco product lockup and Makai navigation state
+- A Makai-to-Nalu catalog hero and a consistent page-title hierarchy
+- Restrained borders, shadows, spacing, and negative space across cards and forms
+- Brand-aware chart tokens and semantic proposal-status badges
+- A forced light color scheme so operating-system dark mode cannot replace the approved palette
+- Responsive tab strips, shrinkable grid columns, wrapping identifiers, constrained media, clipped card decoration, and page-level horizontal containment
+
+No standalone approved logo or Gotham font asset was present in the repository, so the implementation does not recreate or distort the corporate mark and does not redistribute a font. The existing database icon remains a product symbol.
+
+Validation completed before deployment:
+
+- Prettier passed.
+- ESLint passed with no warnings.
+- Server and client TypeScript checks passed.
+- All five focused Vitest tests passed.
+- The production server and client build passed.
+- `databricks apps validate --profile hawaii-dev-workspace` passed generated types, AST-grep lint, type checking, build, and tests.
+
+The validated source was committed as `0aff37e` and pushed to `feat/metric-view-collab-poc`. Deployment from the application root succeeded with:
+
+```powershell
+databricks apps deploy --profile hawaii-dev-workspace
+```
+
+Passing `--source-code-path .` was rejected because that flag expects a Databricks workspace path, not a local path. The bare project command performs the configured bundle upload before deployment.
+
+Post-deployment evidence:
+
+- Deployment ID: `01f1ad73f1e313fb9aac63c0d1046c03`
+- Deployment state: `SUCCEEDED`
+- App state: `RUNNING`
+- Compute state: `ACTIVE`
+- Startup check: `metric_hub schema is ready`
+- App URL: `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com`
+
+The app remains running for visual review of this frontend change. Stop it after the review session using the manual POC runtime command from Move 13.
+
 ## Prompts that produced the best results
 
 The most effective prompts in this POC shared several traits:
@@ -546,10 +597,11 @@ When implementation is authorized:
 12. **Separate build-time discovery from runtime OBO access.** A remote builder runs as the app service principal; committed generated types let the build succeed without granting that principal direct catalog access.
 13. **Enforce roles on the server.** Hiding an approval button improves the interface, but the API must independently reject unauthorized transitions.
 14. **Record the current stopping point.** A strong build journal distinguishes completed work from proposals and next steps.
+15. **Treat overflow as a component-level requirement.** Give flex and grid children permission to shrink, wrap long identifiers, constrain media, let tab strips scroll within their own bounds, and clip purely decorative spill at the card or page boundary.
 
 ## Next moves for this POC
 
-1. Start the app and verify `RUNNING` and `ACTIVE` before the demo.
+1. Visually review the Servco styling at desktop and narrow viewport widths, then stop the app after the review session.
 2. Verify that `roberto.delgado@servco.com` displays as `Admin`.
 3. Have `tausif.islam@servco.com` sign in and verify that he also displays as `Admin` and can see Accept on an in-review proposal.
 4. Sign in with an unlisted test user and verify that it displays as `Reviewer`, does not show Accept, and can still comment or request changes.

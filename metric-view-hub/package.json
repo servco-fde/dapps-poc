@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node --env-file-if-exists=./.env ./dist/start.js",
-    "dev": "tsx watch --tsconfig ./tsconfig.server.json --exclude ./client/**/* --exclude ./config/**/* --exclude ./shared/**/* --env-file-if-exists=./.env ./server/dev.ts",
+    "dev": "tsx watch --tsconfig ./tsconfig.server.json --exclude \"./client/**/*\" --exclude \"./config/**/*\" --exclude \"./shared/**/*\" --env-file-if-exists=./.env ./server/dev.ts",
     "build:client": "tsc -b tsconfig.client.json && vite build --config client/vite.config.ts",
     "build:server": "tsc -b tsconfig.server.json && tsdown -c tsdown.server.config.ts",
     "build": "npm run build:server && npm run build:client",

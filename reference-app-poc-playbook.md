@@ -592,6 +592,14 @@ Verification through `http://localhost:8001` established that:
 
 This is a full local application-runtime loop rather than an offline Databricks emulator. SQL Warehouse, Unity Catalog, OAuth, and the Lakebase engine continue to run as managed workspace services. Each developer recreates the ignored `.env` file locally, uses a unique Lakebase schema, and can reuse the same schema from multiple computers under the same Databricks identity.
 
+### Developer isolation boundary
+
+This POC provides **partial isolation for developers**, not a separate production-independent environment. Each FDE should use a unique `METRIC_HUB_SCHEMA` so local proposal writes and schema initialization target their developer-owned schema instead of the deployed app's `metric_hub` schema.
+
+The developer schemas still share the same Lakebase database and branch as the deployed app. Analytics queries use the dedicated development SQL warehouse but read the production Unity Catalog metric view, `hawaii_prod.testing.vw__metrics_test`, with the developer's existing permissions. A development warehouse does not create a separate copy of that data, and the schema setting does not restrict the developer's underlying database permissions.
+
+This separates the app's development proposal records from deployed proposal records; it does not provide separate database infrastructure or an independent analytics dataset. This boundary applies whether an FDE uses one computer or several.
+
 AppKit reported that browser-user impersonation was skipped locally because the localhost request has no deployed app user token. Local metric access therefore tests the developer's CLI identity; the OBO authorization boundary still requires a deployed smoke test.
 
 ## Prompts that produced the best results

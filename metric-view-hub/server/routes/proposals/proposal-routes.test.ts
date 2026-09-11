@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { canRoleTransition, canTransition, generateMetricViewArtifact, resolveRole } from './proposal-routes';
+import {
+  canRoleTransition,
+  canTransition,
+  generateMetricViewArtifact,
+  resolveAppSchema,
+  resolveRole,
+} from './proposal-routes';
 
 const draft = {
   title: 'Add finance penetration',
@@ -71,5 +77,14 @@ describe('application roles', () => {
     expect(canRoleTransition('admin', 'in_review', 'approved')).toBe(true);
     expect(canRoleTransition('reviewer', 'in_review', 'approved')).toBe(false);
     expect(canRoleTransition('reviewer', 'in_review', 'changes_requested')).toBe(true);
+  });
+});
+
+describe('application schema', () => {
+  it('accepts an isolated local schema and rejects unsafe identifiers', () => {
+    expect(resolveAppSchema('metric_hub_local_roberto')).toBe('metric_hub_local_roberto');
+    expect(() => resolveAppSchema('metric-hub; DROP SCHEMA metric_hub')).toThrow(
+      'Use a lowercase PostgreSQL schema identifier'
+    );
   });
 });

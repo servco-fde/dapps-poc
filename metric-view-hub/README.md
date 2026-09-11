@@ -22,7 +22,35 @@ npm run build
 databricks apps validate --profile hawaii-dev-workspace
 ```
 
-Do not run the Lakebase-backed server locally before the app has been deployed once. The first deployed startup lets the app service principal create and own `metric_hub`; creating the schema with local user credentials first would prevent the deployed app from accessing it.
+## Full-stack local development
+
+The React client and Express API can run locally with hot reload while using the development workspace's SQL warehouse, Unity Catalog metric view, and Lakebase project. Local proposal data uses a developer-owned schema so migrations and test records cannot affect the deployed app's `metric_hub` schema.
+
+Create the ignored local environment file once on each computer:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Populate it with the existing development resource values and set `DATABRICKS_CONFIG_PROFILE=hawaii-dev-workspace`. Keep OAuth tokens and other credentials out of this file; AppKit uses the Databricks CLI profile.
+
+Start the complete local client and API through the Databricks proxy:
+
+```powershell
+databricks apps run-local `
+  --entry-point app.local.yaml `
+  --profile hawaii-dev-workspace `
+  --env METRIC_HUB_SCHEMA=metric_hub_local_roberto `
+  --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
+```
+
+Open <http://localhost:8001>. Vite hot-reloads client changes, and the server watcher restarts for backend changes. Press `Ctrl+C` to stop both processes.
+
+Use a stable, unique lowercase schema such as `metric_hub_local_<name>` for each developer. The first run creates that schema and its tables under the developer's Lakebase identity. Production continues to use `metric_hub` because `METRIC_HUB_SCHEMA` is unset in `app.yaml`.
+
+This loop runs the application stack locally, but it is not offline: SQL Warehouse, Unity Catalog, OAuth, and Lakebase remain managed Databricks services in the development workspace.
+
+Metric queries run with the CLI-authenticated developer identity during local development. AppKit cannot reproduce deployed browser-user OBO impersonation without a forwarded app user token, so verify OBO permissions once after deployment.
 
 ## POC runtime controls
 

@@ -254,10 +254,12 @@ if [ "$git_ready" = 1 ]; then
   fi
 fi
 if [ "$gh_ready" = 1 ]; then
-  if run "$timeout" gh auth status --active --hostname github.com; then
-    report PASS 'GitHub authentication' 'Active github.com account authenticated. Confirm the intended account with gh auth status.'
+  # `gh auth status --active` was added after some still-supported gh 2.x
+  # releases. The API call verifies the currently selected account across gh 2.x.
+  if run "$timeout" gh api --hostname github.com user; then
+    report PASS 'GitHub authentication' 'Selected github.com account can call the API. Confirm the intended account with gh auth status.'
   else
-    report ACTION_REQUIRED 'GitHub authentication' 'Run gh auth status, then explicitly authenticate/switch the intended account. Check network access if the status command fails.'
+    report ACTION_REQUIRED 'GitHub authentication' 'Run gh auth status, then explicitly authenticate/switch the intended account. Check network access if the API call fails.'
   fi
 fi
 report MANUAL 'Git transport' 'Verify your chosen remote and transport separately. For SSH use ssh -T git@github.com after independently verifying the host key; successful GitHub authentication can return exit 1. API authentication does not prove repository access.'

@@ -2,6 +2,26 @@
 
 Use the same workstation setup workflow on macOS and Windows. [`setup.sh`](./setup.sh) checks the common toolchain and integrations, reports gaps, and offers explicitly authorized repairs. Each FDE chooses their own spec-driven development (SDD) framework; setup does not check or install Reffy or any other SDD framework.
 
+## Agent-guided quick start
+
+The shortest handoff is:
+
+> Read `init.md` and set up this repository for local development.
+
+The root [`init.md`](./init.md) points the agent to the canonical setup and app guides, establishes the approval boundaries, and defines the expected local-start result. If the harness needs the complete instruction inline, use this expanded prompt:
+
+> Read `AGENTS.md`, `dapps-env-setup.md`, and `metric-view-hub/README.md`. Prepare this workstation and repository for local development of the app. Detect the operating system and current shell, then run the non-mutating `setup.sh --check` workflow using macOS Bash or Windows Git Bash. On Windows, if Codex starts in PowerShell and Git Bash is already installed, invoke the Git Bash executable directly; do not use WSL. Show me the available Databricks profiles and ask me to choose the intended profile rather than selecting one. Summarize any repairs, then get my approval before running `--install` or a login flow. After workstation checks pass, use the app README to install locked project dependencies, create `.env` from `.env.example` only when it is absent, collect the missing non-secret resource values, use a unique developer schema, validate the app, and start it locally. Never print credentials, overwrite an existing `.env`, provision or reconfigure Databricks cloud resources, deploy the app, or explicitly start stopped remote compute unless I ask.
+
+This prompt lets the agent perform detection and read-only checks immediately. The FDE still chooses identities, approves software changes and login flows, supplies project resource bindings, and separately authorizes cloud changes. Those choices keep the setup reusable across workspaces and accounts.
+
+On Windows, the human terminal path remains Git Bash. A harness launched from PowerShell can use the existing Git Bash runtime without asking the FDE to change terminals, for example:
+
+```powershell
+& "$env:ProgramFiles\Git\bin\bash.exe" ./setup.sh --check
+```
+
+If that path is absent, the agent should look for an approved Git for Windows installation and otherwise guide the FDE through the bootstrap in section 1. It must not substitute `C:\Windows\System32\bash.exe`, which starts WSL on many Windows systems.
+
 ## 1. Obtain the setup files and open the right terminal
 
 Keep `setup.sh` together with `scripts/setup-json.cjs`. Clone this repository if Git is already available, or download/extract its archive using your organization's approved access route. The script works from any working directory, including paths containing spaces.
@@ -159,7 +179,7 @@ python3 -m unittest discover -s tests -p 'test_setup.py' -v
 
 The test harness uses Python 3 and Node.js, with temporary homes and stub vendor executables; Python is not a setup prerequisite. The current harness uses POSIX pseudo-terminals and runs on macOS/Linux. Windows adapter tests on that harness do not substitute for actual Windows Git Bash smoke checks.
 
-Actual macOS check-mode evidence and test results are recorded in the [playbook](./reference-app-poc-playbook.md). Live Windows Git Bash verification and real package-install verification on approved test workstations remain pending. The ReffySpec change stays open for that evidence; Reffy is a maintainer workflow in this repository, not an FDE setup requirement.
+Actual macOS and Windows Git Bash check-mode evidence and test results are recorded in the [playbook](./reference-app-poc-playbook.md). Real package-install verification on approved test workstations remains pending. The ReffySpec change stays open for that evidence; Reffy is a maintainer workflow in this repository, not an FDE setup requirement.
 
 ## Installer and integration references
 

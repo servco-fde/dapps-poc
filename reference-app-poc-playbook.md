@@ -639,7 +639,21 @@ Actual macOS check-mode evidence on 2026-09-14:
 
 Editor access, actual MCP tool use, Git transport/repository permissions, app resource privileges, and local/deployed app behavior remain separate checks. In particular, this run is not macOS local-app/OBO verification. The guide documents the limits of exit 0.
 
-All 26 isolated tests passed. Shell and Node syntax checks also passed. The tests use temporary homes and stub vendor commands to cover both platform adapters, check-mode non-mutation, repair authorization, explicit profile names with spaces, failure/timeout paths, rerun behavior, existing-editor discovery, and SDD independence. Live Windows Git Bash checks and actual package-install tests on approved workstations remain pending; simulated adapter tests are not recorded as live platform evidence. The change stays open until required evidence is collected.
+Actual Windows check-mode evidence on 2026-09-14:
+
+- PowerShell's unqualified `bash` resolved to the Windows WSL launcher and was correctly rejected. Invoking `C:\Program Files\Git\bin\bash.exe` ran the supported Git Bash path.
+- Git Bash resolved native Windows Node.js 24.16.0, npm 11.13.0, Git 2.40.0, GitHub CLI 2.54.0, Databricks CLI 1.15.0, Codex CLI 0.154.0, VS Code 1.136.2, and WinGet 1.29.290.
+- The explicitly supplied `hawaii-dev-workspace` profile authenticated as `roberto.delgado@servco.com`; Databricks skills and Docs MCP registration passed.
+- The initial run exposed that GitHub CLI 2.54.0 lacks the later `gh auth status --active` flag. Setup now verifies the selected GitHub account with the compatible `gh api --hostname github.com user` call and leaves `gh auth status` as the human account-review command.
+- Multiple Git and Codex executable paths remained manual PATH-review items. No installers, login flows, app compute, or database compute ran.
+
+All 27 isolated tests passed after adding the GitHub API compatibility assertion. Shell and Node syntax checks also passed. The tests use temporary homes and stub vendor commands to cover both platform adapters, check-mode non-mutation, repair authorization, explicit profile names with spaces, failure/timeout paths, rerun behavior, existing-editor discovery, and SDD independence. Actual package-install tests on approved workstations remain pending, so the change stays open.
+
+## Move 18: Make onboarding agent-driven
+
+The desired FDE handoff is now one prompt: **“Read `init.md` and set up this repository for local development.”** The root [`init.md`](./init.md) tells the harness to read the canonical setup and app guides, detect the OS and shell, invoke the supported Bash runtime, run read-only checks, show Databricks profiles, and ask once the choices become identity- or mutation-sensitive. It then directs the agent to the app README for locked dependency installation, guarded `.env` creation, unique developer schema configuration, validation, and local startup.
+
+This keeps the fast path continuous while preserving the decisions that cannot be safely inferred across FDEs: GitHub and Databricks identities, software-install approval, workspace resource bindings, and cloud-resource changes. Root `AGENTS.md` also points onboarding requests to the same two guides so a harness can discover the workflow from repository context.
 
 ## Prompts that produced the best results
 

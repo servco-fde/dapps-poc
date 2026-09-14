@@ -71,6 +71,7 @@ class SetupTest(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn('AUTOMATED_CHECKS_PASSED', r.stdout)
         self.assertIn('MANUAL | Live skills', r.stdout)
+        self.assertIn(['gh', 'api', '--hostname', 'github.com', 'user'], self.calls())
         self.assertIn(['databricks', 'current-user', 'me', '--profile', 'Team Profile', '-o', 'json'], self.calls())
         self.assert_no_mutations()
 
@@ -80,6 +81,13 @@ class SetupTest(unittest.TestCase):
         self.assertEqual(r.returncode, 2)
         self.assertNotIn('current-user', str(self.calls()))
         self.assert_no_mutations()
+
+    def test_github_auth_uses_gh2_compatible_api_call(self):
+        r = self.run_setup('--profile', 'Team Profile')
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        gh_calls = [call for call in self.calls() if call[0] == 'gh']
+        self.assertIn(['gh', 'api', '--hostname', 'github.com', 'user'], gh_calls)
+        self.assertFalse(any(call[1:3] == ['auth', 'status'] and '--active' in call for call in gh_calls))
 
     def test_unknown_profile_never_falls_back(self):
         r = self.run_setup('--profile', 'Unknown')

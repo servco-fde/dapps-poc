@@ -60,6 +60,8 @@ The email allowlist is suitable for this small POC. A later production design ca
 
 ## Prepare a macOS or Windows workstation
 
+For an agent-guided setup, open this repository in Codex and prompt: **“Read `init.md` and set up this repository for local development.”** The root [`init.md`](./init.md) sends the agent through read-only checks first, explicit profile and repair decisions, and then the app README toward a verified local start. The expanded prompt is available under [Agent-guided quick start](./dapps-env-setup.md#agent-guided-quick-start).
+
 From the repository root, run the shared setup check in macOS Terminal or Windows Git Bash:
 
 ```sh
@@ -69,7 +71,7 @@ bash ./setup.sh --check --profile "YOUR_PROFILE"
 
 Select your own profile from the first report. Use `--install` for guided missing-tool repairs, or `--install --yes` only when unattended installation is permitted. Windows requires Git Bash first; PowerShell users can keep PowerShell for other development commands. Keep `scripts/setup-json.cjs` with the script.
 
-See the [workstation setup guide](./dapps-env-setup.md) for bootstrap instructions, required checks, manual fallbacks, and exit codes. Setup does not install app dependencies, create `.env`, choose an SDD framework, or provision/deploy resources. An automated pass still leaves manual integration and project checks. macOS check mode has been exercised; live Windows and real installer verification remain pending.
+See the [workstation setup guide](./dapps-env-setup.md) for bootstrap instructions, required checks, manual fallbacks, and exit codes. Setup does not install app dependencies, create `.env`, choose an SDD framework, or provision/deploy resources. An automated pass still leaves manual integration and project checks. macOS and Windows Git Bash check modes have been exercised; real installer verification remains pending.
 
 ## Start and stop the deployed POC
 
@@ -106,7 +108,7 @@ Open <http://localhost:8001>. See [`metric-view-hub/README.md`](./metric-view-hu
 From `metric-view-hub`:
 
 ```sh
-npm install
+npm ci
 npm run typegen -- --wait
 npm run format
 npm run lint

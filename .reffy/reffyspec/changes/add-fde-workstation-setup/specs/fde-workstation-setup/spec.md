@@ -19,6 +19,11 @@ The repository SHALL provide a root `setup.sh` runnable with Bash 3.2-compatible
 - **THEN** it reports the unsupported environment and exits with code 2
 - **AND** it performs no installation or configuration actions
 
+#### Scenario: Agent harness starts in Windows PowerShell
+- **WHEN** an FDE asks a coding harness running in PowerShell to follow the setup guide and Git Bash is installed
+- **THEN** the harness may invoke the existing Git Bash executable directly with the documented setup arguments
+- **AND** it does not run the script through WSL or introduce a second setup engine
+
 ### Requirement: Check mode is the default
 
 Setup SHALL default to non-interactive check mode. Check mode SHALL NOT install/update tools, initiate login, rewrite configuration, run package lifecycle scripts, or mutate cloud resources. Help SHALL make no changes. Invalid or contradictory options SHALL fail with exit code 1.
@@ -173,9 +178,14 @@ Setup SHALL separate machine/integration checks from repository creation, app de
 
 ### Requirement: Documentation and platform verification
 
-The environment guide, playbook, repository README, and app README SHALL describe consistent macOS and Windows invocation, bootstrap prerequisites, mode/exit semantics, installation limits, FDE-owned SDD framework choice, and project follow-ups. Validation SHALL include meaningful failure-path tests plus actual macOS Bash and Windows Git Bash smoke evidence. Stubbed OS detection SHALL NOT be labeled as live platform verification.
+The environment guide, playbook, repository README, and app README SHALL describe consistent macOS and Windows invocation, bootstrap prerequisites, mode/exit semantics, installation limits, FDE-owned SDD framework choice, and project follow-ups. The environment guide SHALL provide a copyable agent-harness prompt that begins with non-mutating workstation checks, requires explicit identity and repair decisions, and continues through the separately documented local-app workflow. Validation SHALL include meaningful failure-path tests plus actual macOS Bash and Windows Git Bash smoke evidence. Stubbed OS detection SHALL NOT be labeled as live platform verification.
 
 #### Scenario: Validation is performed on only one platform
 - **WHEN** tests pass locally and simulated adapter tests cover the other OS but no live run has occurred there
 - **THEN** the change records that platform's live verification as pending
 - **AND** it does not claim that both platforms were verified or mark the corresponding task complete
+
+#### Scenario: FDE delegates onboarding to a coding harness
+- **WHEN** the FDE points a harness at the repository and supplies the documented onboarding prompt
+- **THEN** the harness can discover the supported setup and local-app sequence without inventing resource bindings
+- **AND** installs, login flows, identities, existing environment files, and cloud mutations retain their documented approval boundaries

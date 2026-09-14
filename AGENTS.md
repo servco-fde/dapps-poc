@@ -45,3 +45,7 @@ Use `@/.reffy/reffyspec/AGENTS.md` to learn:
 Keep this managed block so `reffy init` can refresh the instructions.
 
 <!-- REFFYSPEC:END -->
+
+## Workstation onboarding
+
+When a user asks to prepare this repository for local development, read `dapps-env-setup.md` and `metric-view-hub/README.md`. Run the guide's read-only workstation check first. Keep Databricks profile/account selection explicit, obtain approval before repairs or login flows, preserve an existing `.env`, and do not create, start, or deploy cloud resources without an explicit request.

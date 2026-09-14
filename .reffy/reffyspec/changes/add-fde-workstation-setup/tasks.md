@@ -29,13 +29,14 @@
 - [x] 5.2 Add isolated shell tests for parsing, paths with spaces, unsupported hosts, missing/old tools, check-mode non-mutation, install authorization, policy/network failures, profile handling, integration conflicts, redaction, exit codes, and unchanged results with Reffy, another SDD framework, or no SDD framework.
 - [x] 5.3 Test repeated runs and preservation of existing configuration; run shell syntax and appropriate static checks.
 - [x] 5.4 Run actual macOS Bash smoke checks and record versions, commands, outcomes, and manual-verification limits.
-- [ ] 5.5 Run actual Windows Git Bash smoke checks, including native executable resolution, WinGet behavior, and line endings; record evidence and limits.
+- [x] 5.5 Run actual Windows Git Bash smoke checks, including native executable resolution, WinGet behavior, and line endings; record evidence and limits.
 - [ ] 5.6 Exercise authorized repair paths on suitable test environments; distinguish stub tests from actual installation evidence and record unavailable coverage.
 - [x] 5.7 Validate this repository's change with `reffy plan validate add-fde-workstation-setup` and verify its Reffy manifest after planning edits. These maintainer checks are not FDE setup requirements.
 - [ ] 5.8 Present the implemented result and verification evidence for review; archive only after approved scope and required platform checks are complete.
+- [x] 5.9 Add an agent-guided handoff that runs workstation checks first and continues through the separately documented local-app setup without implicit identity or cloud-resource choices.
 
 ## Verification notes
 
 - Actual macOS check mode passed; the script made no installation or cloud-resource changes.
-- Shell/Node syntax checks and all 26 isolated integration tests passed. Tests cover both platform adapters; the harness uses POSIX pseudo-terminals and does not claim native Windows execution.
-- Windows live checks and actual approved-workstation installer checks are still outstanding. Keep this change active and do not archive it until those required checks are complete.
+- Shell/Node syntax checks and all 27 isolated integration tests passed. Tests cover both platform adapters; the harness uses POSIX pseudo-terminals and does not claim native Windows execution.
+- Windows Git Bash check mode passed on the company workstation. Actual approved-workstation installer checks remain outstanding. Keep this change active and do not archive it until those repair paths are exercised or explicitly accepted as a remaining limit.

@@ -88,6 +88,8 @@ Each check reports its name, status, concise evidence, and a next action if need
 
 Project-specific follow-ups include repository setup, selected resource privileges, developer `.env` and unique Lakebase schema, app dependency installation, local startup and data access, and deployed OBO verification. The script reports them as a separate checklist. It must not start compute or execute test writes to prove workstation readiness. Read-only checks can access cloud services, but required workstation checks must not query warehouse data or wake app/database compute.
 
+The guide provides a copyable Codex/harness prompt that joins these two documented stages without expanding `setup.sh` scope. The harness runs check mode first, collects the FDE's explicit profile and repair authorization, then follows the app README for project dependencies, `.env`, validation, and local startup. A Windows harness launched from PowerShell may invoke an existing Git Bash executable directly; this remains the same Bash setup engine and must not fall through to WSL.
+
 ### 7. Verification strategy
 
 Use a shell harness with stub executables and isolated temporary homes/configuration for deterministic checks of mode parsing, missing/incompatible tools, install failure, non-interactive runs, authentication/profile selection, preservation, redaction, and exit codes. Assert that forbidden commands are never invoked in check mode and that no resource mutation command is invoked in any mode. Test twice-run behavior and paths containing spaces. Also verify that absent Reffy/pnpm, a repository declaring Reffy, an alternative SDD framework, and no SDD framework all leave common-toolchain results unchanged and trigger no SDD checks or installs.
@@ -112,9 +114,9 @@ After approval, implement the script and focused tests, update the four onboardi
 - Skills: `databricks aitools install --agents codex --scope global -o json`; status comes from `agents[].installed.global`, not the raw-skills summary. Unknown schemas/network failures never trigger an install.
 - MCP: native `codex mcp add devhub-docs --url https://developers.databricks.com/api/mcp`; conflicting/disabled entries remain for manual repair. The inspected CLI does not provide a general tools-call probe, so live MCP use is explicitly manual.
 - Baselines: Node 22+, Git/GitHub CLI 2+, Databricks CLI 1.0+, plus successful command-surface checks. npm/Codex/editor versions are reported. Exact package and primary documentation references are recorded in `dapps-env-setup.md`.
-- `bash -n setup.sh` and `node --check scripts/setup-json.cjs` passed. All 26 isolated integration tests passed. The POSIX Python harness runs the Bash script with isolated homes, native Node parsing, and stub vendor CLIs; Python is not required by FDE setup.
+- `bash -n setup.sh` and `node --check scripts/setup-json.cjs` passed. All 27 isolated integration tests passed. The POSIX Python harness runs the Bash script with isolated homes, native Node parsing, and stub vendor CLIs; Python is not required by FDE setup.
 - Actual macOS Bash 3.2.57 check mode returned exit 0 with the explicitly selected development profile, and listed manual integration/project checks. See playbook Move 17 for tool versions and evidence.
-- Actual Windows Git Bash validation and real package-install tests remain pending. Stubbed adapter/repair tests do not satisfy those live checks. No app or database compute was started for verification.
+- Actual Windows Git Bash check mode passed with native Windows Node/Git/WinGet resolution and LF script input. GitHub authentication now uses `gh api` for compatibility with older supported GitHub CLI 2.x releases. Real package-install tests remain pending. No app or database compute was started for verification.
 
 ## Reffy Inputs
 

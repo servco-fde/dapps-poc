@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation approved by the user on 2026-09-14. Script, tests, and onboarding documentation are implemented. macOS check-mode verification passed; actual Windows Git Bash and real installer verification remain pending, so this change is not ready to archive.
+Implementation approved by the user on 2026-09-14. Script, tests, and onboarding documentation are implemented. macOS and Windows Git Bash check-mode verification passed; real installer verification remains pending, so this change is not ready to archive.
 
 ## Why
 
@@ -20,6 +20,7 @@ An FDE should be able to run `bash setup.sh`, see what is ready and what needs a
 - Recheck after changes, preserve compatible installations and existing settings, and produce an actionable result with stable exit codes.
 - Update the environment guide, playbook, repository README, and app README to describe the same OS-neutral setup workflow and its limits.
 - Keep onboarding guidance neutral about SDD framework choice; any mention of this repository's Reffy workflow must be clearly local to this repository.
+- Provide a copyable harness prompt that moves from read-only workstation checks to explicit identity/repair choices and then the documented local-app workflow.
 - Add meaningful failure-path tests and record actual macOS and Windows verification before claiming both platforms are verified.
 
 ## Review Decisions

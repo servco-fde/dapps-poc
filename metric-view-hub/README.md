@@ -10,9 +10,19 @@ A Databricks App proof of concept for discovering a governed Unity Catalog metri
 - **Collaboration state:** The AppKit Lakebase plugin stores proposals, immutable versions, comments, status transitions, and audit events in the app-owned `metric_hub` schema.
 - **Publication boundary:** The app only downloads an artifact. It never creates, replaces, or drops a Unity Catalog object.
 
+## Workstation readiness
+
+From this app directory, check the shared toolchain in macOS Terminal or Windows Git Bash:
+
+```sh
+bash ../setup.sh --check --profile "YOUR_PROFILE"
+```
+
+Use your explicitly selected profile. See the [setup guide](../dapps-env-setup.md) for the Windows Git Bash bootstrap and `--install` repairs. Setup leaves app dependencies, resource configuration, `.env`, and your SDD framework choice to you. Live Windows verification is pending; the automated check has been exercised on macOS.
+
 ## Local project commands
 
-```powershell
+```sh
 npm install
 npm run typegen -- --wait
 npm run typecheck
@@ -26,22 +36,19 @@ databricks apps validate --profile hawaii-dev-workspace
 
 The React client and Express API can run locally with hot reload while using the development workspace's SQL warehouse, Unity Catalog metric view, and Lakebase project. Local proposal data uses a developer-owned schema so migrations and test records cannot affect the deployed app's `metric_hub` schema.
 
-Create the ignored local environment file once on each computer:
+Create the ignored local environment file once on each computer, only if `.env` does not already exist:
 
-```powershell
-Copy-Item .env.example .env
-```
+| Shell | Command |
+| --- | --- |
+| macOS Terminal / Windows Git Bash | `cp .env.example .env` |
+| Windows PowerShell | `Copy-Item .env.example .env` |
 
-Populate it with the existing development resource values and set `DATABRICKS_CONFIG_PROFILE=hawaii-dev-workspace`. Keep OAuth tokens and other credentials out of this file; AppKit uses the Databricks CLI profile.
+For this POC, populate it with the existing development resource values and set `DATABRICKS_CONFIG_PROFILE=hawaii-dev-workspace`. Keep OAuth tokens and other credentials out of this file; AppKit uses the Databricks CLI profile.
 
 Start the complete local client and API through the Databricks proxy:
 
-```powershell
-databricks apps run-local `
-  --entry-point app.local.yaml `
-  --profile hawaii-dev-workspace `
-  --env METRIC_HUB_SCHEMA=metric_hub_local_roberto `
-  --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
+```sh
+databricks apps run-local --entry-point app.local.yaml --profile hawaii-dev-workspace --env METRIC_HUB_SCHEMA=metric_hub_local_roberto --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
 ```
 
 Open <http://localhost:8001>. Vite hot-reloads client changes, and the server watcher restarts for backend changes. Press `Ctrl+C` to stop both processes.
@@ -56,7 +63,7 @@ Metric queries run with the CLI-authenticated developer identity during local de
 
 Keep the deployed app stopped outside active development and demos. Start the existing deployment, verify its state, and stop it when the session ends:
 
-```powershell
+```sh
 databricks apps start metric-view-hub --profile hawaii-dev-workspace
 databricks apps get metric-view-hub --profile hawaii-dev-workspace -o json
 databricks apps stop metric-view-hub --profile hawaii-dev-workspace

@@ -1,316 +1,177 @@
 # Databricks Apps Environment Setup for Forward Deployed Engineers
 
-This guide captures the steps and common problems involved in preparing a Windows workstation with VS Code and Codex for Databricks Apps development.
+Use the same workstation setup workflow on macOS and Windows. [`setup.sh`](./setup.sh) checks the common toolchain and integrations, reports gaps, and offers explicitly authorized repairs. Each FDE chooses their own spec-driven development (SDD) framework; setup does not check or install Reffy or any other SDD framework.
 
-## Prerequisites
+## 1. Obtain the setup files and open the right terminal
 
-The local machine needs:
+Keep `setup.sh` together with `scripts/setup-json.cjs`. Clone this repository if Git is already available, or download/extract its archive using your organization's approved access route. The script works from any working directory, including paths containing spaces.
 
-- Visual Studio Code with Codex available (API or ChatGPT?)
-- Git
-- GitHub CLI (`gh`)
-- Databricks CLI v1.0.0 or newer
-- Node.js 22 or newer for AppKit applications
-- Access to a Databricks workspace where Apps is enabled
+| Workstation | Bootstrap                                                                                                                                  | Run setup in                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- |
+| macOS       | Use the built-in Bash; obtain missing tools through your approved company portal/installers or existing Homebrew.                          | Terminal: `bash ./setup.sh`                                             |
+| Windows     | Install [Git for Windows](https://git-scm.com/install/windows) through the company portal or an approved installer if Git Bash is missing. | Open **Git Bash** in the extracted/cloned repository: `bash ./setup.sh` |
 
-Verify the local tools from PowerShell:
+PowerShell cannot directly execute this Bash script. Windows FDEs accustomed to PowerShell should open Git Bash for setup; they can continue using PowerShell for subsequent shared development commands. WSL/Linux are outside this script's current support scope. On Windows, setup verifies that Node is the native Windows runtime.
 
-```powershell
-git --version
-gh --version
-databricks version
-node --version
-npm --version
+Neither Homebrew nor WinGet is mandatory for checks. Setup does not install a package manager, request administrator elevation, change execution policy, or bypass corporate controls. Windows repairs request user-scope installers; packages without an eligible user installer require a company-approved manual installation.
+
+## 2. Check readiness
+
+Start without choosing a workspace implicitly:
+
+```sh
+bash ./setup.sh --check
 ```
 
-If a tool is missing, install it with WinGet and restart PowerShell so the updated `PATH` is loaded:
+The report lists configured Databricks profiles without selecting one. Rerun with your chosen profile; replace `YOUR_PROFILE` with its exact name, retaining quotes for names containing spaces:
 
-```powershell
-winget install --id Microsoft.VisualStudioCode
-winget install --id Git.Git -e
-winget install --id GitHub.cli
-winget install Databricks.DatabricksCLI
-winget install --id OpenJS.NodeJS.LTS
+```sh
+bash ./setup.sh --check --profile "YOUR_PROFILE"
 ```
 
-Use the modern Databricks CLI binary. Do not install the legacy `databricks-cli` Python package from PyPI.
+`DEFAULT`, environment variables, this POC's bindings, and the existence of only one profile do not select a profile automatically. Check mode is non-interactive and does not run installers or login flows. It can contact services using existing credentials, and vendor CLIs may refresh their own authentication caches.
 
-## Required Databricks permissions
+Checks cover:
 
-An FDE should have access to the development workspace and only the permissions needed by the application being built. Coordinate with the workspace administrator to confirm:
+| Area                | Automated check                                                                                                                              |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Git                 | Version 2+ and effective author name/email                                                                                                   |
+| GitHub CLI          | Version 2+ and active github.com account authentication                                                                                      |
+| Node.js / npm       | Node.js 22+; runnable npm (version 1+ baseline)                                                                                              |
+| Databricks CLI      | Version 1.0.0+ and required Apps/agent-scoped AI-tools command availability; legacy Python CLI is incompatible                               |
+| VS Code             | Version/launcher evidence, including standard app locations when `code` is not on PATH                                                       |
+| Codex               | Runnable CLI (version 0.1+ baseline), MCP command compatibility, and default VS Code profile's `openai.chatgpt` registration where queryable |
+| Databricks identity | Current-user lookup only for the explicitly selected profile                                                                                 |
+| Databricks skills   | Codex global integration from structured AI-tools status                                                                                     |
+| Docs MCP            | Enabled `devhub-docs` registration at the expected endpoint                                                                                  |
 
-- Databricks Apps is enabled and the FDE can create and manage development apps.
-- The FDE has `CAN USE` on the selected SQL warehouse.
-- The FDE has `USE CATALOG`, `USE SCHEMA`, and appropriate `SELECT` permissions for Unity Catalog data used by the app.
-- The app's service principal can receive the permissions declared for its Databricks resources during deployment.
-- Lakebase access is available when the app needs persistent forms, comments, workflow state, or other write-back data.
-- User authorization is enabled if the application must query Databricks as the signed-in user rather than as the app service principal.
+These are setup's compatibility baselines, not a claim that every future tool version supports the same commands. Unsupported or changed CLI responses produce action-required results. The script detects duplicate executable paths and reports them for review, preserves compatible installations, and leaves existing outdated/version-managed tools to their current updater or IT.
 
-Avoid using a broad “power user” role as the long-term permission model. Document the specific resources and permissions each application needs.
+Service checks have a 30-second per-command deadline. For a slower network, set `FDE_SETUP_TIMEOUT_SECONDS` to an integer from 1 to 300 in your shell. Repairs have a ten-minute deadline. Raw vendor output and credential-file contents are not printed; temporary command output is private and removed on exit. To investigate an error, rerun the specific diagnostic command yourself without sharing credentials.
 
-## 1. Authenticate the Databricks CLI
+## 3. Repair missing prerequisites
 
-Use OAuth with a descriptive, workspace-specific profile name:
+Review repairs one at a time in an interactive terminal:
 
-```powershell
-databricks auth login --host <workspace-url> --profile <profile-name>
+```sh
+bash ./setup.sh --install --profile "YOUR_PROFILE"
 ```
 
-The CLI opens a browser for authentication and stores the resulting profile locally. Do not create or rely on a profile named `DEFAULT` unless that behavior is explicitly desired.
+When company policy permits unattended package and integration installation:
 
-List every configured profile and verify the selected one:
-
-```powershell
-databricks auth profiles
-databricks current-user me --profile <profile-name>
-databricks apps list --profile <profile-name>
+```sh
+bash ./setup.sh --install --yes --profile "YOUR_PROFILE"
 ```
 
-When multiple profiles exist, Codex should show them to the user and ask which one to use. Every workspace command should then include the explicit flag:
+`--yes` authorizes the displayed supported repairs, including package/source agreements. It does not log in, select an account/profile, accept SSH host keys, or replace conflicting MCP settings. Without `--yes`, non-interactive install mode exits instead of waiting for input.
 
-```powershell
---profile <profile-name>
+Installation adapters use these package identities:
+
+| Missing tool   | macOS with existing Homebrew | Windows with existing WinGet                               |
+| -------------- | ---------------------------- | ---------------------------------------------------------- |
+| Git            | `git`                        | `Git.Git` (Git Bash itself needs the bootstrap step first) |
+| GitHub CLI     | `gh`                         | `GitHub.cli`                                               |
+| Databricks CLI | `databricks/tap/databricks`  | `Databricks.DatabricksCLI`                                 |
+| Node.js + npm  | `node`                       | `OpenJS.NodeJS.LTS`                                        |
+| VS Code        | `visual-studio-code` cask    | `Microsoft.VisualStudioCode`                               |
+
+Codex CLI installation uses `npm install --global @openai/codex` after npm is available. The default VS Code extension uses `code --install-extension openai.chatgpt`. Installation errors, unavailable user-scope installers, permission failures, and missing PATH updates stay incomplete. Setup never falls back to `sudo`, force flags, or another package manager. Restart the terminal when required and rerun checks. Updates to existing tools and repairs to custom installation paths remain manual.
+
+The integration repair commands use the supported native CLIs:
+
+```sh
+databricks aitools install --agents codex --scope global -o json
+codex mcp add devhub-docs --url https://developers.databricks.com/api/mcp
 ```
 
-This prevents a command from accidentally targeting the wrong workspace.
+Setup inspects status first, skips installed integrations, and rechecks after repairs. It does not target other agents. An existing disabled or conflicting `devhub-docs` entry is preserved for explicit review in Codex; repair that specific entry yourself. No unrecognized/network-failed status response is treated as proof that an integration is absent.
 
-## 2. Install the Databricks AI tools and agent skills
+## 4. Resolve identity and functional checks
 
-Run:
+Authenticate only after choosing the intended workspace and account. Run vendor login flows yourself; setup does not launch them automatically:
 
-```powershell
-databricks aitools install
-```
-
-The command detects supported coding agents and installs the Databricks plugin for Codex. A message that another agent, such as GitHub Copilot, was skipped is harmless when that agent's CLI is not installed.
-
-Verify the installation:
-
-```powershell
-databricks aitools list
-databricks aitools version
-```
-
-The output should show the Databricks plugin installed and up to date for Codex.
-
-## 3. Install the Databricks Developer Hub Docs MCP server
-
-Ask Codex to run the following non-interactive command:
-
-```powershell
-npx add-mcp https://developers.databricks.com/api/mcp `
-  --name devhub-docs `
-  --agent codex `
-  --global `
-  --yes
-```
-
-Specifying `--agent codex --yes` avoids the interactive agent-selection prompt, which can fail with `ERR_TTY_INIT_FAILED` when an AI coding harness does not expose a full terminal.
-
-Verify that Codex registered the server:
-
-```powershell
-codex mcp list
-```
-
-The result should contain an enabled entry similar to:
-
-```text
-Name         Url                                        Status
-devhub-docs  https://developers.databricks.com/api/mcp  enabled
-```
-
-Start a new Codex session after installation if the MCP tools or Databricks skills are not visible in the current session. As a functional test, ask Codex to use `devhub-docs` to list the available Databricks Developer Hub pages.
-
-## 4. Authenticate GitHub CLI and verify SSH
-
-Databricks Apps do not automatically create a GitHub repository, commit source code, or push application changes. Databricks deployment records are not a replacement for source control. Create and maintain the Git repository separately.
-
-Authenticate GitHub CLI:
-
-```powershell
+```sh
+databricks auth login --host "https://YOUR_WORKSPACE" --profile "YOUR_PROFILE"
+databricks current-user me --profile "YOUR_PROFILE"
 gh auth login --hostname github.com --git-protocol ssh --web
 gh auth status
 ```
 
-If an SSH key is already registered with GitHub, choose **Skip** when `gh auth login` asks whether it should upload a public key.
+Use your own Git author identity at the intended repository/global scope. Setup never copies the Databricks identity into Git settings:
 
-Verify SSH access:
-
-```powershell
-ssh -T git@github.com
+```sh
+git config --global user.name "YOUR NAME"
+git config --global user.email "YOUR_EMAIL"
 ```
 
-A response such as the following means authentication succeeded, even though GitHub does not provide an interactive shell:
+Verify your chosen Git transport separately. For SSH, independently verify GitHub's host key before accepting it, then run `ssh -T git@github.com`. GitHub's successful authentication message can accompany exit code 1 because it provides no interactive shell. For HTTPS, confirm your credential-helper configuration and access to the intended repository. A successful `gh auth status` does not prove Git transport or repository permissions.
 
-```text
-Hi <username>! You've successfully authenticated, but GitHub does not provide shell access.
+Open VS Code and Codex, sign in through your approved account, and verify the editor profile you use. In a new Codex session, confirm the Databricks skills are available and ask `devhub-docs` to list documentation pages. This live tool call verifies more than registration or an endpoint HTTP response. The script leaves this as a manual check because the inspected Codex MCP CLI exposes registration management rather than a general tools-call probe.
+
+## 5. Interpret the result
+
+Each line has a status, check name, and evidence or next action:
+
+- `PASS`: the stated automated check succeeded.
+- `ACTION_REQUIRED`: a required check is incomplete or needs repair.
+- `MANUAL`: human/integration verification remains.
+- `NOT_APPLICABLE`: outside the applicable inventory (reserved for future checks).
+- `ERROR`: internal/operational error (invalid invocation also prints an error).
+
+| Exit code | Meaning                                                                                |
+| --------- | -------------------------------------------------------------------------------------- |
+| `0`       | `AUTOMATED_CHECKS_PASSED`; complete the listed manual and project follow-ups.          |
+| `2`       | Required checks incomplete, unsupported OS, network/policy blocked, or restart needed. |
+| `1`       | Invalid invocation or internal failure.                                                |
+
+The script does not claim full app readiness when automated checks pass. Profile names/hosts and authenticated user identity are displayed as evidence; credentials and raw configuration are not.
+
+## 6. Continue with your app project
+
+After workstation preparation:
+
+1. Establish source control using your intended GitHub account and repository. Choose your own SDD framework, if any.
+2. Confirm the needed workspace permissions: Apps access, selected SQL warehouse `CAN USE`, appropriate Unity Catalog `USE CATALOG`/`USE SCHEMA`/`SELECT`, and Lakebase access when needed.
+3. Explicitly select resources and inspect the current Apps manifest before scaffolding; do not inherit this POC's IDs.
+4. Install application dependencies separately with the project's package manager. Setup does not execute project lifecycle scripts or change lockfiles.
+5. Create the ignored `.env` only if it does not already exist, then populate it with your selected resource configuration. Keep credentials in approved local/vendor mechanisms.
+6. For this POC, use a unique developer `METRIC_HUB_SCHEMA` and your own development identity. See the [app README](./metric-view-hub/README.md) for the shared-database and local/OBO boundaries.
+7. Validate the app, verify local data access, and separately smoke-test deployed browser-user OBO authorization.
+
+Copy the environment template from the app directory using the appropriate shell:
+
+| Shell                             | One-time command              |
+| --------------------------------- | ----------------------------- |
+| macOS Terminal / Windows Git Bash | `cp .env.example .env`        |
+| Windows PowerShell                | `Copy-Item .env.example .env` |
+
+Setup never creates repositories, provisions or starts cloud compute, queries warehouse data, writes app records, creates schemas, or deploys apps.
+
+## Maintainer verification and current limits
+
+Run syntax checks and the isolated integration tests without installing app dependencies:
+
+```sh
+bash -n setup.sh
+node --check scripts/setup-json.cjs
+python3 -m unittest discover -s tests -p 'test_setup.py' -v
 ```
 
-Confirm the Git author used for commits:
+The test harness uses Python 3 and Node.js, with temporary homes and stub vendor executables; Python is not a setup prerequisite. The current harness uses POSIX pseudo-terminals and runs on macOS/Linux. Windows adapter tests on that harness do not substitute for actual Windows Git Bash smoke checks.
 
-```powershell
-git config --global user.name
-git config --global user.email
-```
+Actual macOS check-mode evidence and test results are recorded in the [playbook](./reference-app-poc-playbook.md). Live Windows Git Bash verification and real package-install verification on approved test workstations remain pending. The ReffySpec change stays open for that evidence; Reffy is a maintainer workflow in this repository, not an FDE setup requirement.
 
-Configure these values if needed:
+## Installer and integration references
 
-```powershell
-git config --global user.name "<full-name>"
-git config --global user.email "<email-address>"
-```
+These primary sources and local CLI help informed the implementation:
 
-## 5. Create the GitHub repository before implementation
+- [Databricks CLI installation](https://docs.databricks.com/aws/en/dev-tools/cli/install): Homebrew and WinGet routes.
+- [Git for Windows](https://git-scm.com/install/windows): Git Bash bootstrap.
+- [GitHub CLI installation](https://github.com/cli/cli#installation): supported package-manager routes.
+- [VS Code on macOS](https://code.visualstudio.com/docs/setup/mac) and [Windows](https://code.visualstudio.com/docs/setup/windows): installation and launcher behavior.
+- [Codex CLI](https://developers.openai.com/codex/cli/) and [official Codex repository](https://github.com/openai/codex#installing-and-running-codex-cli): CLI installation.
+- [Codex MCP documentation](https://developers.openai.com/codex/mcp/): registration and runtime inspection.
+- [Codex editor extension](https://marketplace.visualstudio.com/items?itemName=openai.chatgpt): extension identity.
+- [WinGet install options](https://learn.microsoft.com/en-us/windows/package-manager/winget/install): exact IDs, user scope, and non-interactive flags.
 
-Source control should be established before app scaffolding or implementation begins. From the project directory, create a `.gitignore` appropriate for Node/AppKit development before staging files. At minimum, exclude:
-
-```gitignore
-node_modules/
-dist/
-.env
-.env.*
-!.env.example
-server/.env
-*.log
-```
-
-Never commit Databricks profiles, OAuth tokens, GitHub tokens, client secrets, or local environment files.
-
-Review the files that will be committed, then initialize and commit:
-
-```powershell
-git status --short
-git init -b main
-git add .
-git status --short
-git commit -m "Initial commit"
-```
-
-Create a private repository and push the initial commit:
-
-```powershell
-gh repo create <owner-or-organization>/<repository-name> `
-  --private `
-  --source . `
-  --remote origin `
-  --push
-```
-
-Verify the result:
-
-```powershell
-git status --short --branch
-git remote -v
-gh repo view <owner-or-organization>/<repository-name>
-```
-
-The branch should track `origin/main`, and the working tree should be clean.
-
-For an existing remote repository, clone it instead of running `git init` and `gh repo create`:
-
-```powershell
-git clone git@github.com:<owner-or-organization>/<repository-name>.git
-```
-
-## 6. Start a Databricks App project
-
-Before scaffolding, ask the user to select the Databricks profile and the resources the app will use. Do not guess among multiple workspaces, warehouses, Lakebase projects, or other resources.
-
-Inspect the current AppKit template manifest:
-
-```powershell
-databricks apps manifest -o json
-```
-
-The manifest is the source of truth for plugin names, required resource fields, permissions, and scaffolding rules. A typical AppKit application is then created with `databricks apps init`, using the selected features and resources and including `--run none` so the generated code can be reviewed before execution.
-
-After scaffolding:
-
-1. Review the generated files and update `.gitignore` if necessary.
-2. Commit the scaffold as a separate change.
-3. Develop on a feature branch.
-4. Run type generation, builds, tests, and `databricks apps validate` as required by the selected AppKit plugins.
-5. Open a pull request for review.
-6. Deploy an approved commit and record its Git commit SHA with the deployment.
-
-`databricks apps deploy` uploads and starts application code in a workspace, but it does not commit or push the code to GitHub. CI/CD can later deploy an approved branch, tag, or commit automatically.
-
-## Troubleshooting
-
-### `databricks` is not recognized after installation
-
-Restart PowerShell. If the problem continues, locate duplicate or missing binaries:
-
-```powershell
-where.exe databricks
-```
-
-### Databricks reports `cannot configure default credentials`
-
-List profiles and rerun the command with an explicit valid profile:
-
-```powershell
-databricks auth profiles
-databricks <command> --profile <profile-name>
-```
-
-Reauthenticate with OAuth when necessary:
-
-```powershell
-databricks auth login --host <workspace-url> --profile <profile-name>
-```
-
-### Docs MCP installation fails with `ERR_TTY_INIT_FAILED`
-
-Use the non-interactive command from step 3 with `--agent codex --global --yes`.
-
-### `gh auth status` reports an invalid account
-
-Confirm which account is active. Authenticate or switch to the intended account before creating the repository:
-
-```powershell
-gh auth login --hostname github.com --git-protocol ssh --web
-gh auth switch --hostname github.com --user <username>
-gh auth status
-```
-
-### GitHub device code was entered incorrectly or expired
-
-Cancel the pending command and rerun `gh auth login` to generate a new code. Device codes cannot be reused.
-
-### Git push uses the wrong transport
-
-Set GitHub CLI to use SSH and inspect the remote:
-
-```powershell
-gh config set git_protocol ssh --host github.com
-git remote -v
-```
-
-The remote should resemble:
-
-```text
-git@github.com:<owner-or-organization>/<repository-name>.git
-```
-
-## Setup completion checklist
-
-- [ ] Git, GitHub CLI, Databricks CLI, Node.js, npm, VS Code, and Codex are installed.
-- [ ] A descriptive Databricks OAuth profile is valid.
-- [ ] Required workspace, warehouse, Unity Catalog, and optional Lakebase permissions are confirmed.
-- [ ] Databricks AI tools report the Codex plugin as installed and current.
-- [ ] `devhub-docs` appears as enabled in `codex mcp list` and responds to a documentation request.
-- [ ] GitHub CLI is authenticated as the intended user or organization member.
-- [ ] SSH authentication to GitHub succeeds.
-- [ ] A private GitHub repository exists before implementation starts.
-- [ ] The local `main` branch tracks `origin/main` and the working tree is clean.
-- [ ] `.gitignore` excludes dependencies, build output, environment files, logs, and secrets.
-
-## References
-
-- [Databricks CLI](https://developers.databricks.com/docs/tools/databricks-cli)
-- [Databricks Apps quickstart](https://developers.databricks.com/docs/apps/quickstart)
-- [Databricks Apps development](https://developers.databricks.com/docs/apps/development)
-- [Databricks agent skills](https://developers.databricks.com/docs/tools/ai-tools/agent-skills)
-- [Databricks Developer Hub](https://developers.databricks.com/)
+The command surface was inspected with Databricks CLI 1.16.1 and Codex CLI 0.154.0. Package availability and enterprise policy still need verification on the workstation running setup.

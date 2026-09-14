@@ -1,0 +1,2 @@
+# Git Bash and macOS must read shell entry points with LF endings.
+*.sh text eol=lf

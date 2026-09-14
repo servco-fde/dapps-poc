@@ -58,11 +58,24 @@ The deployed app uses these dedicated development resources:
 
 The email allowlist is suitable for this small POC. A later production design can resolve roles from Databricks groups instead.
 
+## Prepare a macOS or Windows workstation
+
+From the repository root, run the shared setup check in macOS Terminal or Windows Git Bash:
+
+```sh
+bash ./setup.sh --check
+bash ./setup.sh --check --profile "YOUR_PROFILE"
+```
+
+Select your own profile from the first report. Use `--install` for guided missing-tool repairs, or `--install --yes` only when unattended installation is permitted. Windows requires Git Bash first; PowerShell users can keep PowerShell for other development commands. Keep `scripts/setup-json.cjs` with the script.
+
+See the [workstation setup guide](./dapps-env-setup.md) for bootstrap instructions, required checks, manual fallbacks, and exit codes. Setup does not install app dependencies, create `.env`, choose an SDD framework, or provision/deploy resources. An automated pass still leaves manual integration and project checks. macOS check mode has been exercised; live Windows and real installer verification remain pending.
+
 ## Start and stop the deployed POC
 
 The app is deliberately stopped outside development sessions and demos to avoid continuous app-compute charges.
 
-```powershell
+```sh
 # Start the last successful deployment.
 databricks apps start metric-view-hub --profile hawaii-dev-workspace
 
@@ -81,13 +94,9 @@ Starting the app restores its last successful deployment and existing Lakebase d
 
 The client and API support a local hot-reload loop backed by an isolated developer schema in the existing development Lakebase project:
 
-```powershell
+```sh
 cd metric-view-hub
-databricks apps run-local `
-  --entry-point app.local.yaml `
-  --profile hawaii-dev-workspace `
-  --env METRIC_HUB_SCHEMA=metric_hub_local_roberto `
-  --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
+databricks apps run-local --entry-point app.local.yaml --profile hawaii-dev-workspace --env METRIC_HUB_SCHEMA=metric_hub_local_roberto --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
 ```
 
 Open <http://localhost:8001>. See [`metric-view-hub/README.md`](./metric-view-hub/README.md) for the one-time `.env` setup, identity behavior, and local-versus-deployed data boundary.
@@ -96,7 +105,7 @@ Open <http://localhost:8001>. See [`metric-view-hub/README.md`](./metric-view-hu
 
 From `metric-view-hub`:
 
-```powershell
+```sh
 npm install
 npm run typegen -- --wait
 npm run format
@@ -107,6 +116,21 @@ npm run build
 databricks apps validate --profile hawaii-dev-workspace
 ```
 
+## This repository's planning workflow
+
+FDEs choose their own SDD framework. This repository uses Reffy; it is not a shared workstation prerequisite and `setup.sh` does not check or install it.
+
+Repository planning tools use pnpm independently of the npm-managed application in `metric-view-hub/`. From the repository root:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm exec reffy init
+pnpm exec reffy doctor
+pnpm exec reffy validate
+```
+
+Start with [`AGENTS.md`](./AGENTS.md) and the populated [project context](./.reffy/reffyspec/project.md). Reffy maintains ideation artifacts, current specs, and proposed changes under `.reffy/`. The existing seed, proposal, and playbook remain source documents; they have not been automatically converted into canonical specs.
+
 ## Repository guide
 
 | Path                                                               | Purpose                                                                               |
@@ -115,7 +139,8 @@ databricks apps validate --profile hawaii-dev-workspace
 | [`seed-1-proposal.md`](./seed-1-proposal.md)                       | Architecture, governance, delivery phases, and acceptance criteria                    |
 | [`metric-view-hub/`](./metric-view-hub/)                           | AppKit application source and deployment configuration                                |
 | [`metric-view-hub/README.md`](./metric-view-hub/README.md)         | Application-specific development and resource details                                 |
-| [`dapps-env-setup.md`](./dapps-env-setup.md)                       | Windows workstation, CLI, MCP, skills, and GitHub setup guide                         |
+| [`setup.sh`](./setup.sh) | Common workstation checks and opt-in repairs |
+| [`dapps-env-setup.md`](./dapps-env-setup.md)                       | macOS/Windows setup script, CLI, MCP, skills, and GitHub guide                         |
 | [`reference-app-poc-playbook.md`](./reference-app-poc-playbook.md) | Living record of prompts, decisions, failures, corrections, and verification evidence |
 
 ## Next steps

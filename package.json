@@ -1,0 +1,8 @@
+{
+  "name": "dapps-poc",
+  "private": true,
+  "packageManager": "pnpm@10.34.5",
+  "devDependencies": {
+    "reffy-cli": "1.9.4"
+  }
+}

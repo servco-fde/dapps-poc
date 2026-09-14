@@ -1,6 +1,26 @@
 # Building the Reference Databricks App POC
 
-This document records the key moves, prompts, decisions, commands, and troubleshooting lessons used to bootstrap this reference Databricks App proof of concept. It is intended to help other Forward Deployed Engineers repeat the same workflow with Codex on a Windows company workstation.
+This document records the key moves, prompts, decisions, commands, and troubleshooting lessons used to bootstrap this reference Databricks App proof of concept. It is intended to help other Forward Deployed Engineers repeat the same workflow with Codex on either a macOS or Windows company workstation. Workstation operating system is a developer choice; application access, Databricks identity, and the collaboration workflow must not depend on it.
+
+## Workstation support and command conventions
+
+Following the implementation review, this playbook treats macOS and Windows as equally supported workstation targets. Business users access the deployed app through a browser on either operating system. FDEs use the same repository, npm scripts, and Databricks workflow on either platform, with shell-specific setup where needed.
+
+| Concern | macOS | Windows |
+| --- | --- | --- |
+| Terminal | Terminal with zsh or Bash | PowerShell |
+| Tool installation | Company-approved software portal or installers; Homebrew if permitted and available | Company-approved software portal or installers; WinGet if permitted and available |
+| Find an executable | `command -v databricks` | `Get-Command databricks` |
+| Create the local environment file, once from the app directory | `cp .env.example .env` | `Copy-Item .env.example .env` |
+| Home-directory notation | `$HOME` | `$HOME` or `$env:USERPROFILE` |
+| Shell environment assignment, when needed | `export NAME=value` | `$env:NAME = "value"` |
+| Multiline command continuation, when needed | Backslash (`\`) | Backtick (`` ` ``) |
+
+Shared command examples below use single-line invocations that can be pasted into either shell. OS-specific commands are labeled explicitly. Keep environment settings in the ignored local `.env` file where supported, and use project-relative paths so instructions do not depend on a developer's home directory or Windows drive letter. Create `.env` only if it does not already exist, then populate it for the selected workspace and developer identity without committing credentials.
+
+The common toolchain is VS Code with Codex, Git, GitHub CLI, the modern Databricks CLI, Node.js, and npm. Verify installed tools and company installation policy on each workstation; neither WinGet nor Homebrew is a prerequisite in itself. Authenticate locally on each computer and explicitly select a Databricks profile before workspace operations.
+
+The linked [`dapps-env-setup.md`](./dapps-env-setup.md) now covers the shared `setup.sh` workflow for macOS and Windows Git Bash. Its original Windows setup is retained as historical context in the moves below; current onboarding uses the setup guide. Windows-specific failures recorded below describe the original build sessions. They do not establish a Windows requirement or prove that the complete local development loop has been tested on macOS. Record local startup, validation, and browser smoke-test evidence separately for each OS.
 
 ## Current state
 
@@ -60,7 +80,7 @@ The initial prompt was:
 
 Codex ran:
 
-```powershell
+```sh
 databricks aitools install
 ```
 
@@ -68,7 +88,7 @@ The command installed the Databricks plugin for Codex. GitHub Copilot was skippe
 
 The installation was verified with:
 
-```powershell
+```sh
 databricks aitools list
 databricks aitools version
 ```
@@ -95,17 +115,13 @@ ERR_TTY_INIT_FAILED
 
 The installer was trying to display an interactive agent picker in a non-interactive terminal. Codex inspected the command help, identified the supported Codex agent name, and reran the installation without prompts:
 
-```powershell
-npx add-mcp https://developers.databricks.com/api/mcp `
-  --name devhub-docs `
-  --agent codex `
-  --global `
-  --yes
+```sh
+npx add-mcp https://developers.databricks.com/api/mcp --name devhub-docs --agent codex --global --yes
 ```
 
 Registration was verified in two ways:
 
-```powershell
+```sh
 codex mcp list
 npx add-mcp list --agent codex --global
 ```
@@ -186,13 +202,13 @@ SSH authentication worked, but the GitHub CLI had an invalid token for a differe
 
 Codex used the GitHub device flow:
 
-```powershell
+```sh
 gh auth login --hostname github.com --git-protocol ssh --web
 ```
 
 Two device codes were entered incorrectly or expired. Each failed flow was canceled and restarted because GitHub device codes cannot be reused. After authentication succeeded as the intended account, Codex initialized and committed the repository:
 
-```powershell
+```sh
 git init -b main
 git add -- seed-1.md seed-1-proposal.md
 git commit -m "Add metric view collaboration proposal"
@@ -200,12 +216,8 @@ git commit -m "Add metric view collaboration proposal"
 
 It then created a private GitHub repository and pushed `main`:
 
-```powershell
-gh repo create rdelgd/dapps-poc `
-  --private `
-  --source . `
-  --remote origin `
-  --push
+```sh
+gh repo create rdelgd/dapps-poc --private --source . --remote origin --push
 ```
 
 The final checks confirmed that `main` tracked `origin/main`, the remote used SSH, the repository was private, and the working tree was clean at that point.
@@ -254,7 +266,7 @@ This creates two practical paths:
 
 The emerging recommendation is to keep the agentic inner loop local and simple, while using an exact Git commit/tag and Git-backed or CI/CD deployment for controlled environments.
 
-## Move 7: Create the FDE environment setup guide
+## Move 7: Create the initial FDE environment setup guide
 
 The guide began as a short checklist. The prompt was:
 
@@ -274,21 +286,21 @@ The follow-up prompt was:
 
 > Go ahead and make those changes to the Markdown file yourself.
 
-Codex rewrote [`dapps-env-setup.md`](./dapps-env-setup.md) into an ordered Windows/PowerShell guide with prerequisites, OAuth authentication, AI-tools installation, MCP setup, GitHub setup, source-control bootstrap, Databricks Apps initialization guidance, troubleshooting, and a completion checklist.
+For the original Windows workstation, Codex rewrote [`dapps-env-setup.md`](./dapps-env-setup.md) into an ordered Windows/PowerShell guide with prerequisites, OAuth authentication, AI-tools installation, MCP setup, GitHub setup, source-control bootstrap, Databricks Apps initialization guidance, troubleshooting, and a completion checklist.
 
 ### Reusable documentation-improvement prompt
 
 ```text
-Read <guide-file> and update it directly into a repeatable guide for other FDEs. Preserve the original intent, replace vague permissions with concrete resource permissions, include verification after every installation, add troubleshooting based on failures observed in this session, and do not commit or push unless I ask.
+Read <guide-file> and update it directly into a repeatable guide for FDEs using either macOS or Windows. Use shared commands where possible and label shell-specific installation, path, and environment-variable examples. Preserve the original intent, replace vague permissions with concrete resource permissions, include verification after every installation, add troubleshooting based on failures observed in this session, and do not commit or push unless I ask.
 ```
 
-## Move 8: Test assumptions on the company computer
+## Move 8: Test assumptions on the original Windows company computer
 
 The next prompt challenged whether the guide's package-manager commands would work under corporate controls:
 
 > I have a company computer and I don't know if the WinGet commands in the guide will work. Test some to see.
 
-Codex performed read-only checks rather than installing or upgrading software:
+On that Windows workstation, Codex performed read-only checks rather than installing or upgrading software:
 
 ```powershell
 winget --info
@@ -313,7 +325,7 @@ The checks did not run an installer. Package resolution cannot prove that an end
 ### Reusable corporate-workstation prompt
 
 ```text
-Test whether the package-manager commands in <guide-file> are viable on this company computer. Keep the checks read-only: verify the package manager, sources, relevant policy indicators, package IDs, installed versions, executable paths, and available updates. Do not install or upgrade anything. Report what the checks prove and what they cannot prove about administrator or endpoint-security controls.
+Identify this company computer's operating system and shell, then test the applicable setup commands in <guide-file>. Use the approved installation route for that workstation; do not assume WinGet or Homebrew is installed or permitted. Keep the checks read-only: verify the package manager, sources, relevant policy indicators, package IDs, installed versions, executable paths, and available updates. Do not install or upgrade anything. Report what the checks prove and what they cannot prove about administrator or endpoint-security controls.
 ```
 
 ## Move 9: Turn the build journal into a living implementation record
@@ -346,7 +358,7 @@ The user then authorized a new dedicated Lakebase project. Codex created and ver
 - Database resource: `projects/metric-view-hub/branches/production/databases/databricks-postgres`
 - PostgreSQL database: `databricks_postgres`
 
-The first create attempt failed before reaching the API because PowerShell stripped quotes from inline JSON. Writing the exact request body to a temporary JSON file and passing it as `--json @<file>` succeeded. The temporary request file was removed immediately afterward.
+The first create attempt failed before reaching the API because PowerShell stripped quotes from inline JSON. Writing the exact request body to a temporary JSON file and passing it as `--json "@<file>"` succeeded. Quoting the complete file argument also makes this pattern reusable across PowerShell and macOS shells. The temporary request file was removed immediately afterward.
 
 The user selected `vw__metrics_test` for the app. Because the dev-catalog object with that name has a broken dependency, the implementation will use the verified live object `hawaii_prod.testing.vw__metrics_test` as its read-only governed metric view.
 
@@ -409,7 +421,7 @@ The validated implementation was committed and pushed to `feat/metric-view-colla
 
 After the user explicitly approved deployment, Codex ran:
 
-```powershell
+```sh
 databricks apps deploy --profile hawaii-dev-workspace
 ```
 
@@ -473,7 +485,7 @@ Because Databricks Apps compute is billed while running, the POC is now explicit
 
 Use this runbook:
 
-```powershell
+```sh
 # Start the last successful deployment.
 databricks apps start metric-view-hub --profile hawaii-dev-workspace
 
@@ -536,7 +548,7 @@ Validation completed before deployment:
 
 The validated source was committed as `0aff37e` and pushed to `feat/metric-view-collab-poc`. Deployment from the application root succeeded with:
 
-```powershell
+```sh
 databricks apps deploy --profile hawaii-dev-workspace
 ```
 
@@ -571,17 +583,13 @@ The implementation now:
 - Accepts `LOCAL_DEV_EMAIL` only in development so local role behavior can be tested without changing production identity handling.
 - Provides `app.local.yaml` as the hot-reload entry point for `databricks apps run-local`.
 
-The verified local command is:
+From the `metric-view-hub` directory, use the following command in either macOS zsh/Bash or Windows PowerShell. These profile, schema, and email values belong to the original POC developer; other developers must substitute their explicitly selected profile, unique schema, and identity. The original verification below was performed on Windows:
 
-```powershell
-databricks apps run-local `
-  --entry-point app.local.yaml `
-  --profile hawaii-dev-workspace `
-  --env METRIC_HUB_SCHEMA=metric_hub_local_roberto `
-  --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
+```sh
+databricks apps run-local --entry-point app.local.yaml --profile hawaii-dev-workspace --env METRIC_HUB_SCHEMA=metric_hub_local_roberto --env LOCAL_DEV_EMAIL=roberto.delgado@servco.com
 ```
 
-Verification through `http://localhost:8001` established that:
+The original Windows verification through `http://localhost:8001` established that:
 
 - The health endpoint returned `200`.
 - The application shell was served by Vite in development mode with hot reload.
@@ -601,6 +609,37 @@ The developer schemas still share the same Lakebase database and branch as the d
 This separates the app's development proposal records from deployed proposal records; it does not provide separate database infrastructure or an independent analytics dataset. This boundary applies whether an FDE uses one computer or several.
 
 AppKit reported that browser-user impersonation was skipped locally because the localhost request has no deployed app user token. Local metric access therefore tests the developer's CLI identity; the OBO authorization boundary still requires a deployed smoke test.
+
+## Move 17: Add reusable FDE workstation setup
+
+After the workstation assumption was corrected to support both macOS and Windows, the user requested a reusable `setup.sh` and reviewed a ReffySpec change before authorizing implementation. Proposal feedback accepted Git Bash for the Windows entry point and left SDD framework selection to each FDE. Reffy remains this repository's planning tool; setup does not check or install it.
+
+From the repository root, use macOS Terminal or Windows Git Bash:
+
+```sh
+bash ./setup.sh --check
+bash ./setup.sh --check --profile "YOUR_PROFILE"
+bash ./setup.sh --install --profile "YOUR_PROFILE"
+```
+
+The first command lists profile choices without selecting one. `--install` reviews supported repairs; `--install --yes` permits the documented unattended repairs and package agreements. Missing Git Bash on Windows is a bootstrap step through the company portal or approved Git for Windows installer. PowerShell can still be used for other development commands.
+
+The implementation checks versions, the default VS Code profile's Codex extension, Git author configuration, GitHub authentication, explicit Databricks identity, Codex Databricks skills, and Docs MCP registration. It uses structured CLI responses, bounded checks, private temporary output, and narrow JSON projections. Existing compatible tools and configuration are preserved. Outdated or version-managed tools, integration conflicts, and policy-blocked installs receive manual repair guidance.
+
+Databricks CLI inspection established that `aitools list -o json` reports native Codex plugin state in `agents[].installed.global`; the raw-skills summary can be zero even when the plugin is installed. Setup checks the agent's integration entry. Codex's native `mcp add` command supplies the Docs registration without needing the historical third-party `add-mcp` installer.
+
+Actual macOS check-mode evidence on 2026-09-14:
+
+- Host shell: Apple Bash 3.2.57 on arm64 macOS.
+- Node.js 24.12.0, npm 11.6.2, Git 2.39.5, GitHub CLI 2.86.0, Databricks CLI 1.16.1, Codex CLI 0.154.0, and VS Code 1.136.1 passed version checks.
+- The explicitly supplied `hawaii-dev-workspace` profile and active GitHub account authenticated successfully.
+- Codex editor-extension registration, Codex Databricks plugin status, and the expected Docs MCP registration passed.
+- Duplicate Node/npm/Codex paths were reported for manual PATH review.
+- The command returned `AUTOMATED_CHECKS_PASSED` with exit code 0; no installations or resource mutations ran.
+
+Editor access, actual MCP tool use, Git transport/repository permissions, app resource privileges, and local/deployed app behavior remain separate checks. In particular, this run is not macOS local-app/OBO verification. The guide documents the limits of exit 0.
+
+All 26 isolated tests passed. Shell and Node syntax checks also passed. The tests use temporary homes and stub vendor commands to cover both platform adapters, check-mode non-mutation, repair authorization, explicit profile names with spaces, failure/timeout paths, rerun behavior, existing-editor discovery, and SDD independence. Live Windows Git Bash checks and actual package-install tests on approved workstations remain pending; simulated adapter tests are not recorded as live platform evidence. The change stays open until required evidence is collected.
 
 ## Prompts that produced the best results
 
@@ -641,7 +680,7 @@ When implementation is authorized:
 7. **SSH and `gh` authentication are separate.** A successful `ssh -T git@github.com` does not guarantee that GitHub CLI API calls are authenticated.
 8. **Use non-interactive installer flags with coding agents.** Interactive terminal UI can fail inside managed coding harnesses.
 9. **Treat local and Git-backed deployments as different workflows.** Private Git-backed deployments need a Git credential for the app service principal; local CLI uploads do not.
-10. **Test company-machine assumptions without mutating the machine.** Package lookup, policy inspection, and executable verification provide useful evidence before attempting installation.
+10. **Support both macOS and Windows without assuming company-machine configuration.** Detect the OS and shell, use shared commands or label platform-specific variants, and verify the approved installation route. Package lookup, policy inspection, and executable verification provide useful evidence before attempting installation.
 11. **Never commit credentials or local environment files.** Review `.gitignore` and staged files before every initial push.
 12. **Separate build-time discovery from runtime OBO access.** A remote builder runs as the app service principal; committed generated types let the build succeed without granting that principal direct catalog access.
 13. **Enforce roles on the server.** Hiding an approval button improves the interface, but the API must independently reject unauthorized transitions.
@@ -649,6 +688,8 @@ When implementation is authorized:
 15. **Treat overflow as a component-level requirement.** Give flex and grid children permission to shrink, wrap long identifiers, constrain media, let tab strips scroll within their own bounds, and clip purely decorative spill at the card or page boundary.
 
 ## Next moves for this POC
+
+Workstation verification follow-up: run the new setup script on an actual Windows Git Bash workstation, verify real repair paths on approved test machines, and record full local app startup/validation evidence on both operating systems. The setup guide and both READMEs now describe the same macOS/Windows workflow.
 
 1. Visually review the Servco styling at desktop and narrow viewport widths, then stop the app after the review session.
 2. Verify that `roberto.delgado@servco.com` displays as `Admin`.

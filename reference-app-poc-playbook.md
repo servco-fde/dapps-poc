@@ -651,7 +651,7 @@ All 27 isolated tests passed after adding the GitHub API compatibility assertion
 
 ## Move 18: Make onboarding agent-driven
 
-The desired FDE handoff is now one prompt: point Codex at the cloned repository and ask it to follow the agent-guided quick start in [`dapps-env-setup.md`](./dapps-env-setup.md#agent-guided-quick-start). The prompt tells the harness to detect the OS and shell, invoke the supported Bash runtime, run read-only checks, show Databricks profiles, and ask once the choices become identity- or mutation-sensitive. It then directs the agent to the app README for locked dependency installation, guarded `.env` creation, unique developer schema configuration, validation, and local startup.
+The desired FDE handoff is now one prompt: **“Read `init.md` and set up this repository for local development.”** The root [`init.md`](./init.md) tells the harness to read the canonical setup and app guides, detect the OS and shell, invoke the supported Bash runtime, run read-only checks, show Databricks profiles, and ask once the choices become identity- or mutation-sensitive. It then directs the agent to the app README for locked dependency installation, guarded `.env` creation, unique developer schema configuration, validation, and local startup.
 
 This keeps the fast path continuous while preserving the decisions that cannot be safely inferred across FDEs: GitHub and Databricks identities, software-install approval, workspace resource bindings, and cloud-resource changes. Root `AGENTS.md` also points onboarding requests to the same two guides so a harness can discover the workflow from repository context.
 

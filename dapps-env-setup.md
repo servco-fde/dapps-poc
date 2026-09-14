@@ -4,9 +4,13 @@ Use the same workstation setup workflow on macOS and Windows. [`setup.sh`](./set
 
 ## Agent-guided quick start
 
-Open the cloned repository in Codex or another coding harness and give it this prompt:
+The shortest handoff is:
 
-> Read `AGENTS.md`, `dapps-env-setup.md`, and `metric-view-hub/README.md`. Prepare this workstation and repository for local development of the app. Detect the operating system and current shell, then run the non-mutating `setup.sh --check` workflow using macOS Bash or Windows Git Bash. On Windows, if Codex starts in PowerShell and Git Bash is already installed, invoke the Git Bash executable directly; do not use WSL. Show me the available Databricks profiles and ask me to choose the intended profile rather than selecting one. Summarize any repairs, then get my approval before running `--install` or a login flow. After workstation checks pass, use the app README to install locked project dependencies, create `.env` from `.env.example` only when it is absent, collect the missing non-secret resource values, use a unique developer schema, validate the app, and start it locally. Never print credentials, overwrite an existing `.env`, create or start cloud resources, or deploy the app unless I explicitly ask.
+> Read `init.md` and set up this repository for local development.
+
+The root [`init.md`](./init.md) points the agent to the canonical setup and app guides, establishes the approval boundaries, and defines the expected local-start result. If the harness needs the complete instruction inline, use this expanded prompt:
+
+> Read `AGENTS.md`, `dapps-env-setup.md`, and `metric-view-hub/README.md`. Prepare this workstation and repository for local development of the app. Detect the operating system and current shell, then run the non-mutating `setup.sh --check` workflow using macOS Bash or Windows Git Bash. On Windows, if Codex starts in PowerShell and Git Bash is already installed, invoke the Git Bash executable directly; do not use WSL. Show me the available Databricks profiles and ask me to choose the intended profile rather than selecting one. Summarize any repairs, then get my approval before running `--install` or a login flow. After workstation checks pass, use the app README to install locked project dependencies, create `.env` from `.env.example` only when it is absent, collect the missing non-secret resource values, use a unique developer schema, validate the app, and start it locally. Never print credentials, overwrite an existing `.env`, provision or reconfigure Databricks cloud resources, deploy the app, or explicitly start stopped remote compute unless I ask.
 
 This prompt lets the agent perform detection and read-only checks immediately. The FDE still chooses identities, approves software changes and login flows, supplies project resource bindings, and separately authorizes cloud changes. Those choices keep the setup reusable across workspaces and accounts.
 

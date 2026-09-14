@@ -88,7 +88,7 @@ Each check reports its name, status, concise evidence, and a next action if need
 
 Project-specific follow-ups include repository setup, selected resource privileges, developer `.env` and unique Lakebase schema, app dependency installation, local startup and data access, and deployed OBO verification. The script reports them as a separate checklist. It must not start compute or execute test writes to prove workstation readiness. Read-only checks can access cloud services, but required workstation checks must not query warehouse data or wake app/database compute.
 
-The guide provides a copyable Codex/harness prompt that joins these two documented stages without expanding `setup.sh` scope. The harness runs check mode first, collects the FDE's explicit profile and repair authorization, then follows the app README for project dependencies, `.env`, validation, and local startup. A Windows harness launched from PowerShell may invoke an existing Git Bash executable directly; this remains the same Bash setup engine and must not fall through to WSL.
+Root `init.md` provides a stable Codex/harness entry point, while the guide retains the expanded copyable prompt. Both join these two documented stages without expanding `setup.sh` scope. The harness runs check mode first, collects the FDE's explicit profile and repair authorization, then follows the app README for project dependencies, `.env`, validation, and local startup. A Windows harness launched from PowerShell may invoke an existing Git Bash executable directly; this remains the same Bash setup engine and must not fall through to WSL.
 
 ### 7. Verification strategy
 

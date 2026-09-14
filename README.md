@@ -60,7 +60,7 @@ The email allowlist is suitable for this small POC. A later production design ca
 
 ## Prepare a macOS or Windows workstation
 
-For an agent-guided setup, open this repository in Codex and paste the prompt under [Agent-guided quick start](./dapps-env-setup.md#agent-guided-quick-start). The agent will run read-only checks first, ask for the intended Databricks profile and repair authorization, then follow the app README toward a verified local start.
+For an agent-guided setup, open this repository in Codex and prompt: **“Read `init.md` and set up this repository for local development.”** The root [`init.md`](./init.md) sends the agent through read-only checks first, explicit profile and repair decisions, and then the app README toward a verified local start. The expanded prompt is available under [Agent-guided quick start](./dapps-env-setup.md#agent-guided-quick-start).
 
 From the repository root, run the shared setup check in macOS Terminal or Windows Git Bash:
 
@@ -108,7 +108,7 @@ Open <http://localhost:8001>. See [`metric-view-hub/README.md`](./metric-view-hu
 From `metric-view-hub`:
 
 ```sh
-npm install
+npm ci
 npm run typegen -- --wait
 npm run format
 npm run lint

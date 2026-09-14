@@ -33,7 +33,7 @@
 - [ ] 5.6 Exercise authorized repair paths on suitable test environments; distinguish stub tests from actual installation evidence and record unavailable coverage.
 - [x] 5.7 Validate this repository's change with `reffy plan validate add-fde-workstation-setup` and verify its Reffy manifest after planning edits. These maintainer checks are not FDE setup requirements.
 - [ ] 5.8 Present the implemented result and verification evidence for review; archive only after approved scope and required platform checks are complete.
-- [x] 5.9 Add an agent-guided handoff that runs workstation checks first and continues through the separately documented local-app setup without implicit identity or cloud-resource choices.
+- [x] 5.9 Add a root `init.md` agent-guided handoff that runs workstation checks first and continues through the separately documented local-app setup without implicit identity or cloud-resource choices.
 
 ## Verification notes
 

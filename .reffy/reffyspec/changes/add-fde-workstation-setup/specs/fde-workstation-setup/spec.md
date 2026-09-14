@@ -178,7 +178,7 @@ Setup SHALL separate machine/integration checks from repository creation, app de
 
 ### Requirement: Documentation and platform verification
 
-The environment guide, playbook, repository README, and app README SHALL describe consistent macOS and Windows invocation, bootstrap prerequisites, mode/exit semantics, installation limits, FDE-owned SDD framework choice, and project follow-ups. The environment guide SHALL provide a copyable agent-harness prompt that begins with non-mutating workstation checks, requires explicit identity and repair decisions, and continues through the separately documented local-app workflow. Validation SHALL include meaningful failure-path tests plus actual macOS Bash and Windows Git Bash smoke evidence. Stubbed OS detection SHALL NOT be labeled as live platform verification.
+The environment guide, playbook, repository README, and app README SHALL describe consistent macOS and Windows invocation, bootstrap prerequisites, mode/exit semantics, installation limits, FDE-owned SDD framework choice, and project follow-ups. A root `init.md` and the environment guide's expanded prompt SHALL provide agent-harness entry points that begin with non-mutating workstation checks, require explicit identity and repair decisions, and continue through the separately documented local-app workflow. Validation SHALL include meaningful failure-path tests plus actual macOS Bash and Windows Git Bash smoke evidence. Stubbed OS detection SHALL NOT be labeled as live platform verification.
 
 #### Scenario: Validation is performed on only one platform
 - **WHEN** tests pass locally and simulated adapter tests cover the other OS but no live run has occurred there

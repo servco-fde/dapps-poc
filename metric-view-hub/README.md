@@ -12,18 +12,20 @@ A Databricks App proof of concept for discovering a governed Unity Catalog metri
 
 ## Workstation readiness
 
+For agent-guided onboarding from the repository root, ask Codex to read [`init.md`](../init.md).
+
 From this app directory, check the shared toolchain in macOS Terminal or Windows Git Bash:
 
 ```sh
 bash ../setup.sh --check --profile "YOUR_PROFILE"
 ```
 
-Use your explicitly selected profile. See the [setup guide](../dapps-env-setup.md) for the Windows Git Bash bootstrap and `--install` repairs. Setup leaves app dependencies, resource configuration, `.env`, and your SDD framework choice to you. Live Windows verification is pending; the automated check has been exercised on macOS.
+Use your explicitly selected profile. See the [setup guide](../dapps-env-setup.md) for the Windows Git Bash bootstrap and `--install` repairs. Setup leaves app dependencies, resource configuration, `.env`, and your SDD framework choice to you. Automated check mode has been exercised on macOS and Windows Git Bash.
 
 ## Local project commands
 
 ```sh
-npm install
+npm ci
 npm run typegen -- --wait
 npm run typecheck
 npm run lint

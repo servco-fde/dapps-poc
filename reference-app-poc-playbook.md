@@ -34,7 +34,7 @@ This POC has completed environment setup, product framing, architecture research
 | Repository overview                | Captured in [`README.md`](./README.md)                                |
 | Databricks AI tools and skills     | Installed for Codex                                                   |
 | Developer Hub Docs MCP             | Installed and verified                                                |
-| GitHub repository                  | Created at `rdelgd/dapps-poc`                                         |
+| GitHub repository                  | Shared at `servco-fde/dapps-poc`                                      |
 | Databricks profile                 | `hawaii-dev-workspace` selected                                       |
 | Initial metric scope               | `hawaii_prod.testing.vw__metrics_test` selected                       |
 | Databricks App scaffold            | Built with AppKit 0.74.0 and validated                                |
@@ -458,7 +458,8 @@ The follow-up requirement was:
 The implementation now applies this policy on both sides of the application:
 
 - Every authenticated user defaults to the `reviewer` role.
-- A comma-separated `APP_ADMIN_EMAILS` deployment setting identifies admins; `roberto.delgado@servco.com` and `tausif.islam@servco.com` are configured for the demo.
+- A comma-separated `APP_ADMIN_EMAILS` deployment setting identifies admins. The shared dev and BA deployment
+  manifests configure Roberto Delgado, Tausif Islam, Iden Watanabe, Sam Ikemoto, and Katerina Walter for the demo.
 - `GET /api/me` returns the signed-in user's normalized email and resolved role.
 - Reviewers can create proposals, comment, submit for review, resubmit, and request changes.
 - Only admins see the Accept action.
@@ -608,6 +609,11 @@ The developer schemas still share the same Lakebase database and branch as the d
 
 This separates the app's development proposal records from deployed proposal records; it does not provide separate database infrastructure or an independent analytics dataset. This boundary applies whether an FDE uses one computer or several.
 
+Per-FDE isolation ends at the local process and unique schema. The deployed app in `hawaii-dev-workspace` is a
+shared development/integration instance, not a separate app per FDE. The `hawaii-ba` target is another shared
+instance isolated by workspace-local identity and resources. Any deployment or shared-app lifecycle action remains
+separately approval-gated and must use the documented target/profile pair.
+
 AppKit reported that browser-user impersonation was skipped locally because the localhost request has no deployed app user token. Local metric access therefore tests the developer's CLI identity; the OBO authorization boundary still requires a deployed smoke test.
 
 ## Move 17: Add reusable FDE workstation setup
@@ -714,3 +720,91 @@ Workstation verification follow-up: run the new setup script on an actual Window
 7. Stop the app after the demo.
 8. Record the remaining interactive smoke-test evidence and any corrections in this living document.
 9. Decide whether the following increment adds Databricks-group role mapping, editable revisions in the UI, or automated Git pull-request handoff.
+
+## Move 19: Prepare an isolated Hawaii BA deployment target
+
+The user approved repository implementation of the reviewed ReffySpec change to rebuild `metric-view-hub` in
+`hawaii-ba-workspace`. Cloud execution remains a separate approval gate: no warehouse, Lakebase project, app,
+permission, deployment, or compute state was changed during this move.
+
+The bundle now preserves the default development target and adds `hawaii-ba`, pinned to the BA workspace host.
+BA warehouse and Lakebase values intentionally have no committed defaults. Operators must provide the actual
+resource identifiers returned by Databricks, which makes a missing value fail instead of silently selecting a
+development binding. A focused regression test protects the two workspace hosts, existing development bindings,
+absence of BA development values, OBO `sql` scope, and resource permissions.
+
+The BA runbook reuses the proven development sequence:
+
+1. Obtain explicit cloud execution approval and create the reviewed BA-local resources.
+2. Record the returned warehouse, project, branch, and database names as bundle variable overrides.
+3. Strictly validate with both `--target hawaii-ba` and `--profile hawaii-ba-workspace`.
+4. Deploy the app before any local process touches the production `metric_hub` schema so the new app service
+   principal creates and owns it.
+5. Keep committed metric metadata/contracts for remote builds and preserve browser-user OBO at runtime.
+6. Verify identity, governed reads, roles, persistence, logs, and development isolation.
+7. Stop BA app compute after verification unless continued runtime was separately approved.
+
+The detailed prepared commands and safety boundary are documented in
+[`metric-view-hub/README.md`](./metric-view-hub/README.md). The active change remains open because actual BA resource
+creation, strict resolved-target validation, deployment, and interactive smoke testing are pending execution
+approval.
+
+## Move 20: Provision and deploy the Hawaii BA instance
+
+After the separate execution approval, read-only preflight reconfirmed the BA profile, empty app/project names,
+shared metric-view identity, and effective account-group grants. Roberto Delgado and Tausif Islam are active in
+`hawaii-ba-workspace`, belong to `data-hi-digital`, and that group has the complete metric-view traversal/read path.
+
+The approved BA resources were created and verified:
+
+- SQL warehouse `metric-view-hub-ba` (`c369b46fb27b9276`): serverless `Small`, Photon, 1-2 clusters, 10-minute
+  auto-stop, application/environment tags, owner/inherited admin ACLs, and `data-hi-digital` `CAN_USE`.
+- Lakebase `projects/metric-view-hub`: ready `production` branch, active `primary` endpoint, default
+  `databricks_postgres` database, and no migrated development data.
+
+Strict bundle resolution selected the BA host and only those BA identifiers. The full Apps validator passed type
+generation, AST-grep lint, TypeScript, production build, and tests. The app was then deployed using the explicit
+`hawaii-ba` target and `hawaii-ba-workspace` profile.
+
+Post-deployment evidence:
+
+- Deployment `01f1b16360b416ab9b024d36117d3c8e`: `SUCCEEDED`
+- App: `RUNNING`; Medium compute: `ACTIVE`
+- Service principal: `ace3089e-83dd-49f6-8f43-fb8d889a5e9a`
+- URL: `https://metric-view-hub-3146664464193453.13.azure.databricksapps.com`
+- Effective user scope: `sql`
+- Warehouse and Lakebase bindings match the returned BA resources
+- The platform automatically granted the app service principal warehouse `CAN_USE`
+- Startup log: `[lakebase] metric_hub schema is ready`
+- An authorized warehouse query as Roberto returned `deal_count = 51976`
+- The app service principal has no effective metric-view UC grant, preserving browser-user OBO authorization
+- The development app remained stopped with its original identity and bindings
+
+The managed deployment performed an initial start followed by a final snapshot replacement. The first process again
+exceeded the 15-second SIGTERM grace period, matching the known graceful-shutdown follow-up; the final process
+started successfully. Remote npm output also retained the known eight high-severity transitive findings, and the
+client bundle retained its existing large-chunk warning.
+
+Signed-in browser verification remains required for `/api/me`, admin/reviewer enforcement, proposal workflow and
+persistence, and a representative unauthorized user. The BA app remains running for that review and must be stopped
+when it finishes.
+
+## Move 21: Transfer the repository to the shared FDE organization
+
+After explicit approval, the private repository was transferred from the user's corporate account at
+`rdelgd/dapps-poc` to the shared `servco-fde` organization as `servco-fde/dapps-poc`. The local `origin` was updated
+to `git@github.com:servco-fde/dapps-poc.git`, and SSH read access to the transferred repository was verified against
+`main`. GitHub also resolves the former repository path to the organization-owned repository.
+
+The transfer did not commit or push the existing local working-tree changes. The historical repository-creation
+command in Move 5 remains unchanged because it records where the repository was originally created.
+
+## Move 22: Expand the shared app-admin allowlist
+
+Without creating a separate ReffySpec change, the shared `APP_ADMIN_EMAILS` configuration was expanded to include
+Iden Watanabe, Sam Ikemoto, and Katerina Walter alongside Roberto Delgado and Tausif Islam. The backend role test now
+asserts each added email resolves to `admin` while unlisted authenticated users remain reviewers.
+
+Strict bundle validation passed for the development and Hawaii BA target/profile pairs. Both apps deployed
+successfully, and the uploaded `app.yaml` in each workspace was read back to confirm the complete allowlist. Because
+both apps were stopped before this change, their compute was stopped again after verification.

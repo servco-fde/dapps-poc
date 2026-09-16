@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-09-11T19:38:22.590Z",
-  "updated_at": "2026-09-14T22:13:08.380Z",
+  "updated_at": "2026-09-16T00:52:42.592Z",
   "project_id": "dapps-poc",
   "workspace_ids": [
     "dapps-poc"
@@ -13,10 +13,10 @@
       "filename": "fde-workstation-readiness.md",
       "kind": "note",
       "mime_type": "text/markdown",
-      "size_bytes": 2384,
+      "size_bytes": 2406,
       "tags": [],
       "created_at": "2026-09-14T21:10:29.699Z",
-      "updated_at": "2026-09-14T22:13:08.300Z",
+      "updated_at": "2026-09-14T23:18:26.167Z",
       "related_changes": [
         "add-fde-workstation-setup"
       ],
@@ -25,6 +25,31 @@
         ".reffy/reffyspec/changes/add-fde-workstation-setup/tasks.md",
         ".reffy/reffyspec/changes/add-fde-workstation-setup/design.md",
         ".reffy/reffyspec/changes/add-fde-workstation-setup/specs/fde-workstation-setup/spec.md"
+      ]
+    },
+    {
+      "id": "7016cf86-3357-4ba0-8ed4-4a47073ba61a",
+      "name": "hawaii ba app deployment readiness",
+      "filename": "hawaii-ba-app-deployment-readiness.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 6062,
+      "tags": [],
+      "created_at": "2026-09-15T23:40:11.473Z",
+      "updated_at": "2026-09-16T00:52:42.592Z",
+      "related_changes": [
+        "deploy-metric-view-hub-to-hawaii-ba",
+        "show-proposal-lifecycle-transitions"
+      ],
+      "derived_outputs": [
+        ".reffy/reffyspec/changes/archive/2026-09-16-deploy-metric-view-hub-to-hawaii-ba/proposal.md",
+        ".reffy/reffyspec/changes/archive/2026-09-16-deploy-metric-view-hub-to-hawaii-ba/tasks.md",
+        ".reffy/reffyspec/changes/archive/2026-09-16-deploy-metric-view-hub-to-hawaii-ba/design.md",
+        ".reffy/reffyspec/changes/archive/2026-09-16-deploy-metric-view-hub-to-hawaii-ba/specs/deploy-metric-view-hub-to-hawaii-ba/spec.md",
+        ".reffy/reffyspec/changes/archive/2026-09-16-show-proposal-lifecycle-transitions/proposal.md",
+        ".reffy/reffyspec/changes/archive/2026-09-16-show-proposal-lifecycle-transitions/tasks.md",
+        ".reffy/reffyspec/changes/archive/2026-09-16-show-proposal-lifecycle-transitions/design.md",
+        ".reffy/reffyspec/changes/archive/2026-09-16-show-proposal-lifecycle-transitions/specs/show-proposal-lifecycle-transitions/spec.md"
       ]
     }
   ]

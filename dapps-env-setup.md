@@ -10,7 +10,7 @@ The shortest handoff is:
 
 The root [`init.md`](./init.md) points the agent to the canonical setup and app guides, establishes the approval boundaries, and defines the expected local-start result. If the harness needs the complete instruction inline, use this expanded prompt:
 
-> Read `AGENTS.md`, `dapps-env-setup.md`, and `metric-view-hub/README.md`. Prepare this workstation and repository for local development of the app. Detect the operating system and current shell, then run the non-mutating `setup.sh --check` workflow using macOS Bash or Windows Git Bash. On Windows, if Codex starts in PowerShell and Git Bash is already installed, invoke the Git Bash executable directly; do not use WSL. Show me the available Databricks profiles and ask me to choose the intended profile rather than selecting one. Summarize any repairs, then get my approval before running `--install` or a login flow. After workstation checks pass, use the app README to install locked project dependencies, create `.env` from `.env.example` only when it is absent, collect the missing non-secret resource values, use a unique developer schema, validate the app, and start it locally. Never print credentials, overwrite an existing `.env`, provision or reconfigure Databricks cloud resources, deploy the app, or explicitly start stopped remote compute unless I ask.
+> Read `AGENTS.md`, `dapps-env-setup.md`, and `metric-view-hub/README.md`. Prepare this workstation and repository for local development of the app. Detect the operating system and current shell, then run the non-mutating `setup.sh --check` workflow using macOS Bash or Windows Git Bash. On Windows, if Codex starts in PowerShell and Git Bash is already installed, invoke the Git Bash executable directly; do not use WSL. Show me the available Databricks profiles and ask me to choose the intended profile rather than selecting one. Summarize any repairs, then get my approval before running `--install` or a login flow. After workstation checks pass, use the app README to install locked project dependencies, create `.env` from `.env.example` only when it is absent, collect the missing non-secret resource values, use a unique developer schema, validate the app, and start it locally. Treat the local process and unique schema as my per-FDE isolation; the deployed development and BA apps are shared environments, not per-FDE apps. Never print credentials, overwrite an existing `.env`, provision or reconfigure Databricks cloud resources, deploy the app, or explicitly start stopped remote compute unless I ask.
 
 This prompt lets the agent perform detection and read-only checks immediately. The FDE still chooses identities, approves software changes and login flows, supplies project resource bindings, and separately authorizes cloud changes. Those choices keep the setup reusable across workspaces and accounts.
 
@@ -157,6 +157,11 @@ After workstation preparation:
 5. Create the ignored `.env` only if it does not already exist, then populate it with your selected resource configuration. Keep credentials in approved local/vendor mechanisms.
 6. For this POC, use a unique developer `METRIC_HUB_SCHEMA` and your own development identity. See the [app README](./metric-view-hub/README.md) for the shared-database and local/OBO boundaries.
 7. Validate the app, verify local data access, and separately smoke-test deployed browser-user OBO authorization.
+
+The local process and unique schema provide the per-FDE isolation boundary. The deployed development app is a
+shared integration instance, and the BA app is a separate shared instance; onboarding does not deploy one app per
+FDE. Any shared-app deployment or lifecycle operation requires separate approval and its documented explicit
+target/profile pair.
 
 Copy the environment template from the app directory using the appropriate shell:
 

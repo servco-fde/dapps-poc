@@ -48,3 +48,9 @@ targets:
       postgres_branch: projects/metric-view-hub/branches/production
       postgres_database: projects/metric-view-hub/branches/production/databases/databricks-postgres
       postgres_project: projects/metric-view-hub
+
+  # BA resource identifiers are intentionally required at invocation time. This
+  # prevents a missing BA value from falling back to a development binding.
+  hawaii-ba:
+    workspace:
+      host: https://adb-3146664464193453.13.azuredatabricks.net

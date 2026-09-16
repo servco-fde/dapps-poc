@@ -73,6 +73,10 @@ Select your own profile from the first report. Use `--install` for guided missin
 
 See the [workstation setup guide](./dapps-env-setup.md) for bootstrap instructions, required checks, manual fallbacks, and exit codes. Setup does not install app dependencies, create `.env`, choose an SDD framework, or provision/deploy resources. An automated pass still leaves manual integration and project checks. macOS and Windows Git Bash check modes have been exercised; real installer verification remains pending.
 
+Per-FDE isolation uses the local app process and a unique developer Lakebase schema. The deployed development app
+is a shared integration instance, while the BA app is a separate shared environment; neither is deployed per FDE.
+Operating either shared app requires separate approval and its explicit environment target/profile.
+
 ## Start and stop the deployed POC
 
 The app is deliberately stopped outside development sessions and demos to avoid continuous app-compute charges.

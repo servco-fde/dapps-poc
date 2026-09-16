@@ -21,6 +21,9 @@ An FDE should be able to run `bash setup.sh`, see what is ready and what needs a
 - Update the environment guide, playbook, repository README, and app README to describe the same OS-neutral setup workflow and its limits.
 - Keep onboarding guidance neutral about SDD framework choice; any mention of this repository's Reffy workflow must be clearly local to this repository.
 - Provide a root `init.md` harness entry point and copyable prompt that move from read-only workstation checks to explicit identity/repair choices and then the documented local-app workflow.
+- Clarify that per-FDE isolation belongs to the local runtime and unique developer schema. The deployed development
+  and BA apps are shared environments whose lifecycle operations require separate approval and explicit
+  target/profile selection; onboarding does not create a deployed app for each FDE.
 - Add meaningful failure-path tests and record actual macOS and Windows verification before claiming both platforms are verified.
 
 ## Review Decisions
@@ -42,7 +45,7 @@ The Windows entry-point and SDD-choice decisions incorporate the user's proposal
 
 ## Acceptance Summary
 
-An FDE can run the same entry point on both supported OSes, obtain an honest readiness report, repair supported missing prerequisites with explicit authorization, and rerun it without resetting existing configuration. Partial or manual-only checks never appear as fully verified app readiness. Setup operates without hard-coded POC identities or an SDD-framework requirement and never implicitly provisions or starts Databricks resources.
+An FDE can run the same entry point on both supported OSes, obtain an honest readiness report, repair supported missing prerequisites with explicit authorization, and rerun it without resetting existing configuration. Partial or manual-only checks never appear as fully verified app readiness. Setup operates without hard-coded POC identities or an SDD-framework requirement and never implicitly provisions or starts Databricks resources. Project handoff identifies the local runtime and unique schema as the per-FDE boundary and treats deployed development and BA apps as separately approved shared environments.
 
 ## Supersedes
 

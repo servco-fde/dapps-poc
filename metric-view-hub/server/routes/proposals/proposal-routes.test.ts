@@ -66,9 +66,18 @@ describe('proposal workflow', () => {
 
 describe('application roles', () => {
   it('matches configured admins case-insensitively and defaults other users to reviewer', () => {
-    const configuredAdmins = 'roberto.delgado@servco.com,other.admin@example.com';
+    const configuredAdmins = [
+      'roberto.delgado@servco.com',
+      'tausif.islam@servco.com',
+      'iden.watanabe@servco.com',
+      'sam.ikemoto@servco.com',
+      'katerina.walter@servco.com',
+    ].join(',');
 
     expect(resolveRole('Roberto.Delgado@servco.com', configuredAdmins)).toBe('admin');
+    expect(resolveRole('iden.watanabe@servco.com', configuredAdmins)).toBe('admin');
+    expect(resolveRole('sam.ikemoto@servco.com', configuredAdmins)).toBe('admin');
+    expect(resolveRole('katerina.walter@servco.com', configuredAdmins)).toBe('admin');
     expect(resolveRole('reviewer@example.com', configuredAdmins)).toBe('reviewer');
     expect(resolveRole('reviewer@example.com', '')).toBe('reviewer');
   });

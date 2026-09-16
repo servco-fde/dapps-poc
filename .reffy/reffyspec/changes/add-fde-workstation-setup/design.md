@@ -88,6 +88,13 @@ Each check reports its name, status, concise evidence, and a next action if need
 
 Project-specific follow-ups include repository setup, selected resource privileges, developer `.env` and unique Lakebase schema, app dependency installation, local startup and data access, and deployed OBO verification. The script reports them as a separate checklist. It must not start compute or execute test writes to prove workstation readiness. Read-only checks can access cloud services, but required workstation checks must not query warehouse data or wake app/database compute.
 
+For this POC, the per-FDE boundary is the local app process plus a unique `METRIC_HUB_SCHEMA` in the development
+Lakebase project. The deployed `hawaii-dev` app is a shared development/integration instance, and the deployed
+`hawaii-ba` app is a separate shared BA instance; neither is created per FDE. Onboarding ends with the local runtime.
+Operating either shared deployment requires a separate explicit request, and every non-default environment command
+must use its documented target/profile pair. This clarification aligns the workstation handoff with the canonical
+`deploy-metric-view-hub-to-hawaii-ba` spec without expanding workstation setup into deployment orchestration.
+
 Root `init.md` provides a stable Codex/harness entry point, while the guide retains the expanded copyable prompt. Both join these two documented stages without expanding `setup.sh` scope. The harness runs check mode first, collects the FDE's explicit profile and repair authorization, then follows the app README for project dependencies, `.env`, validation, and local startup. A Windows harness launched from PowerShell may invoke an existing Git Bash executable directly; this remains the same Bash setup engine and must not fall through to WSL.
 
 ### 7. Verification strategy

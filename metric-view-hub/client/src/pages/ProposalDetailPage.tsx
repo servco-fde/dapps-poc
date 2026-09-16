@@ -19,6 +19,7 @@ import {
 import { ArrowLeft, Download, MessageSquare } from 'lucide-react';
 import { StatusBadge } from '../components/StatusBadge';
 import { apiRequest } from '../lib/api';
+import { formatAuditEvent } from '../lib/audit-events';
 import type { CurrentUser, ProposalDetail, ProposalStatus } from '../lib/types';
 
 const nextActions: Record<
@@ -357,7 +358,7 @@ export function ProposalDetailPage() {
             <CardContent className="space-y-3">
               {auditEvents.map((event) => (
                 <div key={event.id} className="flex flex-col gap-1 border-b pb-3 text-sm last:border-0">
-                  <div className="font-medium">{event.event_type.replace(/_/g, ' ')}</div>
+                  <div className="font-medium">{formatAuditEvent(event)}</div>
                   <div className="text-muted-foreground">
                     {event.actor_email} · {new Date(event.created_at).toLocaleString()}
                   </div>

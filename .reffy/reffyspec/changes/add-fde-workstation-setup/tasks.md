@@ -34,6 +34,9 @@
 - [x] 5.7 Validate this repository's change with `reffy plan validate add-fde-workstation-setup` and verify its Reffy manifest after planning edits. These maintainer checks are not FDE setup requirements.
 - [ ] 5.8 Present the implemented result and verification evidence for review; archive only after approved scope and required platform checks are complete.
 - [x] 5.9 Add a root `init.md` agent-guided handoff that runs workstation checks first and continues through the separately documented local-app setup without implicit identity or cloud-resource choices.
+- [x] 5.10 Clarify across the change and onboarding documents that per-FDE isolation uses the local runtime and a
+  unique developer schema, while the deployed development and BA apps are shared environments operated only with
+  separate approval and explicit target/profile selection.
 
 ## Verification notes
 

@@ -169,12 +169,22 @@ Each check SHALL report a status of `PASS`, `ACTION_REQUIRED`, `MANUAL`, `NOT_AP
 
 ### Requirement: Workstation and project boundaries
 
-Setup SHALL separate machine/integration checks from repository creation, app dependencies, resource permissions, `.env` creation, schema setup, local runtime checks, and deployed OBO verification. It SHALL provide next steps for those project tasks without executing them. No mode SHALL provision, start, deploy, or mutate Databricks resources, query warehouse data, or write application records.
+Setup SHALL separate machine/integration checks from repository creation, app dependencies, resource permissions, `.env` creation, schema setup, local runtime checks, and deployed OBO verification. It SHALL provide next steps for those project tasks without executing them. For this POC, onboarding SHALL identify the local app process and unique developer schema as the per-FDE isolation boundary and SHALL identify the deployed development and BA apps as shared environments rather than per-FDE apps. No mode SHALL provision, start, deploy, or mutate Databricks resources, query warehouse data, or write application records.
 
 #### Scenario: Authenticated developer lacks app resource configuration
 - **WHEN** workstation authentication is valid but no warehouse/Lakebase configuration or app environment file is supplied
 - **THEN** setup reports project-specific follow-ups separately
 - **AND** it does not select resources, generate `.env`, initialize schemas, or start compute
+
+#### Scenario: FDE completes the local-development handoff
+- **WHEN** an FDE completes workstation checks and follows the project-specific onboarding sequence
+- **THEN** onboarding directs the FDE to run the app locally with a unique developer schema
+- **AND** it does not create or deploy a per-FDE Databricks App
+
+#### Scenario: FDE wants to operate a shared deployment
+- **WHEN** an FDE wants to deploy, start, inspect, or stop the shared development or BA app
+- **THEN** onboarding requires a separate explicit request and the documented environment target/profile pair
+- **AND** it does not treat local-development approval as deployment authorization
 
 ### Requirement: Documentation and platform verification
 

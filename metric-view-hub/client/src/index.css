@@ -337,6 +337,10 @@ pre {
   scrollbar-width: thin;
 }
 
+.servco-doc-section {
+  scroll-margin-top: 8.5rem;
+}
+
 .servco-status-draft {
   border-color: #d2d2d4;
   background: #f1f1f2;

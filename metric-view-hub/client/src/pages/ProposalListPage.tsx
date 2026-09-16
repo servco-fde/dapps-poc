@@ -9,7 +9,8 @@ import {
   CardTitle,
   Skeleton,
 } from '@databricks/appkit-ui/react';
-import { ArrowRight, Plus } from 'lucide-react';
+import { ArrowRight, BookOpen, Plus } from 'lucide-react';
+import { DOCUMENTATION_ROUTES, DOCUMENTATION_SECTION_IDS } from '../content/documentation';
 import { StatusBadge } from '../components/StatusBadge';
 import { apiRequest } from '../lib/api';
 import type { ProposalSummary } from '../lib/types';
@@ -33,6 +34,12 @@ export function ProposalListPage() {
           <div className="servco-eyebrow">Collaboration workspace</div>
           <h2 className="servco-page-title">Proposals</h2>
           <p className="mt-1 text-muted-foreground">Draft, review, and hand off governed metric-view changes.</p>
+          <Button asChild variant="ghost" size="sm" className="-ml-3 mt-2">
+            <Link to={`${DOCUMENTATION_ROUTES.app}#${DOCUMENTATION_SECTION_IDS.proposalWorkflow}`}>
+              <BookOpen className="mr-2 h-4 w-4" />
+              How the proposal workflow works
+            </Link>
+          </Button>
         </div>
         <Button asChild>
           <Link to="/proposals/new">

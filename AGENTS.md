@@ -49,3 +49,13 @@ Keep this managed block so `reffy init` can refresh the instructions.
 ## Workstation onboarding
 
 When a user asks to prepare this repository for local development, follow `init.md`. Run the guide's read-only workstation check first. Keep Databricks profile/account selection explicit, obtain approval before repairs or login flows, preserve an existing `.env`, and do not create, start, or deploy cloud resources without an explicit request.
+
+## Metric View Hub local development
+
+When starting `metric-view-hub` locally, do not run bare `npm run dev` or substitute a client-only preview. The complete local app depends on its existing Lakebase project and a developer-owned schema. Preserve `.env`, obtain or reuse the user's explicit Databricks profile selection, and launch the documented full-stack proxy from `metric-view-hub/README.md`:
+
+```sh
+databricks apps run-local --entry-point app.local.yaml --profile <selected-profile> --env METRIC_HUB_SCHEMA=<developer-schema> --env LOCAL_DEV_EMAIL=<developer-email>
+```
+
+For Roberto's current setup, the developer schema is `metric_hub_local_roberto`. The startup path initializes or migrates that personal schema. Before reporting the app as ready, wait for `[lakebase] <developer-schema> schema is ready`, confirm the routes and server are registered, and make a read-only request to `/api/proposals`. A `must be owner of table appkit_cache_entries` cache warning is separate from the application schema; report it, but treat readiness according to the server and proposal API checks. If startup instead touches the shared `metric_hub` schema or reports ownership failures for `proposals`, stop and verify that `METRIC_HUB_SCHEMA` was passed rather than changing or dropping Lakebase objects.

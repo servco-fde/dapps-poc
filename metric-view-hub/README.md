@@ -10,6 +10,15 @@ A Databricks App proof of concept for discovering a governed Unity Catalog metri
 - **Collaboration state:** The AppKit Lakebase plugin stores proposals, immutable versions, comments, status transitions, and audit events in the app-owned `metric_hub` schema.
 - **Publication boundary:** The app only downloads an artifact. It never creates, replaces, or drops a Unity Catalog object.
 
+## In-app documentation
+
+The deployed UI identifies Metric View Hub as a reference implementation and includes two static, version-controlled guides:
+
+- `/docs/app`: the Metric View Hub Guide for business users, reviewers, admins, and demo participants.
+- `/docs/fde`: the FDE Reference Guide for understanding the demonstrated Databricks primitives, Metric Hub defaults, environment bindings, source locations, and expected customization points.
+
+The in-app guides summarize purpose, behavior, architecture, and adaptation. This README remains the operational source for local commands and current bindings; [`../reference-app-poc-playbook.md`](../reference-app-poc-playbook.md) remains the detailed build journal. The guides do not inspect workspace resources at runtime and do not expose credentials or user-specific local settings.
+
 ## Workstation readiness
 
 For agent-guided onboarding from the repository root, ask Codex to read [`init.md`](../init.md).

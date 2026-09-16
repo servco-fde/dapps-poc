@@ -1,4 +1,8 @@
+import { Link } from 'react-router';
 import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
   Badge,
   BarChart,
   Card,
@@ -6,6 +10,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Button,
   LineChart,
   Skeleton,
   Tabs,
@@ -15,7 +20,8 @@ import {
   useMetricView,
 } from '@databricks/appkit-ui/react';
 import { formatLabel, formatValue } from '@databricks/appkit-ui/js';
-import { BookOpen, Database, ShieldCheck } from 'lucide-react';
+import { BookOpen, Database, Info, ShieldCheck } from 'lucide-react';
+import { DOCUMENTATION_ROUTES, DOCUMENTATION_SECTION_IDS } from '../content/documentation';
 
 const measures = [
   'deal_count',
@@ -77,14 +83,47 @@ export function MetricCatalogPage() {
 
   return (
     <div className="servco-page mx-auto max-w-7xl space-y-6">
+      <Alert className="border-primary/30 bg-accent/40">
+        <Info className="h-4 w-4" />
+        <AlertTitle>This is a reference implementation</AlertTitle>
+        <AlertDescription>
+          <p className="max-w-4xl">
+            Metric View Hub demonstrates one configurable Databricks application. Its Auto Retail data, resource
+            bindings, roles, and proposal workflow are preconfigured examples that should change with your use case.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link to={DOCUMENTATION_ROUTES.app}>How Metric View Hub works</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link to={`${DOCUMENTATION_ROUTES.fde}#${DOCUMENTATION_SECTION_IDS.referenceStatus}`}>
+                Explore the FDE reference guide
+              </Link>
+            </Button>
+          </div>
+        </AlertDescription>
+      </Alert>
+
       <section className="servco-hero flex flex-col gap-6 rounded-xl p-6 md:flex-row md:items-start md:justify-between md:p-8">
         <div className="space-y-3">
           <div className="flex flex-wrap items-center gap-2">
             <Badge className="border-white/25 bg-white text-primary">Published</Badge>
-            <Badge variant="outline" className="border-white/40 bg-white/10 text-white">
-              Auto Retail
+            <Badge
+              asChild
+              variant="outline"
+              className="border-primary-foreground/40 bg-primary-foreground/10 text-primary-foreground"
+            >
+              <Link to={`${DOCUMENTATION_ROUTES.fde}#${DOCUMENTATION_SECTION_IDS.domainData}`}>
+                Auto Retail · example domain
+              </Link>
             </Badge>
-            <Badge className="border-[#7bd0ee] bg-[#00a0dc] text-white">OBO access</Badge>
+            <Badge
+              asChild
+              variant="outline"
+              className="border-primary-foreground/40 bg-primary-foreground/10 text-primary-foreground"
+            >
+              <Link to={`${DOCUMENTATION_ROUTES.fde}#${DOCUMENTATION_SECTION_IDS.executionIdentity}`}>OBO access</Link>
+            </Badge>
           </div>
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
@@ -94,9 +133,17 @@ export function MetricCatalogPage() {
               Governed dealership sales, gross-profit, and product-penetration metrics queried as the signed-in user.
             </p>
           </div>
-          <code className="servco-hero-code inline-block rounded px-2.5 py-1.5 text-sm">
-            hawaii_prod.testing.vw__metrics_test
-          </code>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="border-primary-foreground/40 text-primary-foreground">
+              Example binding
+            </Badge>
+            <Link
+              to={`${DOCUMENTATION_ROUTES.fde}#${DOCUMENTATION_SECTION_IDS.governedMetrics}`}
+              className="servco-hero-code inline-block rounded px-2.5 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground"
+            >
+              <code>hawaii_prod.testing.vw__metrics_test</code>
+            </Link>
+          </div>
         </div>
         <div className="grid shrink-0 gap-3 text-sm text-white/80 md:min-w-64">
           <span className="flex items-center gap-2">

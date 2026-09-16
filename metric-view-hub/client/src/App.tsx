@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { createBrowserRouter, NavLink, Outlet, RouterProvider } from 'react-router';
+import { createBrowserRouter, Link, Navigate, NavLink, Outlet, RouterProvider } from 'react-router';
 import {
+  Badge,
   Button,
   ResourceStatusIndicator,
   ResourceStatusProvider,
@@ -10,6 +11,10 @@ import {
   SheetTitle,
 } from '@databricks/appkit-ui/react';
 import { DatabaseZap, Menu } from 'lucide-react';
+import { DocumentationLayout } from './components/DocumentationLayout';
+import { DOCUMENTATION_ROUTES } from './content/documentation';
+import { AppGuidePage } from './pages/AppGuidePage';
+import { FdeReferenceGuidePage } from './pages/FdeReferenceGuidePage';
 import { MetricCatalogPage } from './pages/MetricCatalogPage';
 import { ProposalBuilderPage } from './pages/ProposalBuilderPage';
 import { ProposalDetailPage } from './pages/ProposalDetailPage';
@@ -43,6 +48,9 @@ function NavLinks({
       <NavLink to="/proposals/new" className={linkClass} onClick={onClick}>
         New proposal
       </NavLink>
+      <NavLink to={DOCUMENTATION_ROUTES.root} className={linkClass} onClick={onClick}>
+        Documentation
+      </NavLink>
     </nav>
   );
 }
@@ -59,11 +67,16 @@ function Layout() {
           </span>
           <div className="min-w-0 leading-tight">
             <div className="servco-brand-label">Servco</div>
-            <h1 className="truncate text-lg font-bold text-foreground">Metric View Hub</h1>
+            <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+              <h1 className="truncate text-lg font-bold text-foreground">Metric View Hub</h1>
+              <Badge asChild variant="secondary" className="shrink-0">
+                <Link to={DOCUMENTATION_ROUTES.fde}>Reference implementation</Link>
+              </Badge>
+            </div>
           </div>
         </div>
-        <NavLinks className="hidden gap-1 md:flex" linkClass={navLinkClass} />
-        <div className="ml-auto md:hidden">
+        <NavLinks className="hidden gap-1 lg:flex" linkClass={navLinkClass} />
+        <div className="ml-auto lg:hidden">
           <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
             <Button variant="ghost" size="icon" onClick={() => setMobileNavOpen(true)}>
               <Menu className="h-5 w-5" />
@@ -72,6 +85,11 @@ function Layout() {
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>Metric View Hub</SheetTitle>
+                <Badge asChild variant="secondary" className="w-fit">
+                  <Link to={DOCUMENTATION_ROUTES.fde} onClick={() => setMobileNavOpen(false)}>
+                    Reference implementation
+                  </Link>
+                </Badge>
               </SheetHeader>
               <NavLinks
                 className="mt-6 flex flex-col gap-1"
@@ -97,6 +115,15 @@ const router = createBrowserRouter([
       { path: '/proposals', element: <ProposalListPage /> },
       { path: '/proposals/new', element: <ProposalBuilderPage /> },
       { path: '/proposals/:proposalId', element: <ProposalDetailPage /> },
+      {
+        path: DOCUMENTATION_ROUTES.root,
+        element: <DocumentationLayout />,
+        children: [
+          { index: true, element: <Navigate to={DOCUMENTATION_ROUTES.app} replace /> },
+          { path: 'app', element: <AppGuidePage /> },
+          { path: 'fde', element: <FdeReferenceGuidePage /> },
+        ],
+      },
     ],
   },
 ]);

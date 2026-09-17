@@ -122,9 +122,18 @@ npm run build
 databricks apps validate --profile hawaii-dev-workspace
 ```
 
-## This repository's planning workflow
+## Optional SDD tooling and team alignment
 
-FDEs choose their own SDD framework. This repository uses Reffy; it is not a shared workstation prerequisite and `setup.sh` does not check or install it.
+This POC used Reffy and ReffySpec for spec-driven development (SDD). Reffy is optional: it is not required to
+develop or deploy the Databricks App, it is not a shared workstation prerequisite, and `setup.sh` does not check or
+install it. Other SDD frameworks can be used.
+
+For collaborative FDE work, the framework choice should not remain implicit or vary indefinitely from person to
+person. The FDE team should discuss and select a shared default SDD framework and minimum workflow so proposals,
+reviews, implementation tasks, validation evidence, and handoffs remain familiar and repeatable across engineers,
+IDEs, and coding agents. That alignment should define the canonical artifacts, review gates, traceability
+expectations, change lifecycle, and lightweight path for small fixes. Until the team makes that decision, the
+`.reffy/` content records this POC's process and should not be read as an organization-wide mandate.
 
 Repository planning tools use pnpm independently of the npm-managed application in `metric-view-hub/`. From the repository root:
 

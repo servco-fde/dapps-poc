@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-09-11T19:38:22.590Z",
-  "updated_at": "2026-09-17T19:57:32.096Z",
+  "updated_at": "2026-09-21T20:17:43.494Z",
   "project_id": "dapps-poc",
   "workspace_ids": [
     "dapps-poc"
@@ -93,6 +93,26 @@
       "tags": [],
       "created_at": "2026-09-17T19:57:32.093Z",
       "updated_at": "2026-09-17T19:57:32.093Z"
+    },
+    {
+      "id": "f50f69e4-2e6c-4e2c-838e-d86dc494c821",
+      "name": "metric view hub architecture audit",
+      "filename": "metric-view-hub-architecture-audit.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 23546,
+      "tags": [],
+      "created_at": "2026-09-21T19:56:09.376Z",
+      "updated_at": "2026-09-21T20:17:43.494Z",
+      "related_changes": [
+        "add-prisma-lakebase-persistence"
+      ],
+      "derived_outputs": [
+        ".reffy/reffyspec/changes/add-prisma-lakebase-persistence/proposal.md",
+        ".reffy/reffyspec/changes/add-prisma-lakebase-persistence/tasks.md",
+        ".reffy/reffyspec/changes/add-prisma-lakebase-persistence/design.md",
+        ".reffy/reffyspec/changes/add-prisma-lakebase-persistence/specs/prisma-lakebase-persistence/spec.md"
+      ]
     }
   ]
 }

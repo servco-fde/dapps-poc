@@ -7,7 +7,6 @@ Always open `@/.reffy/AGENTS.md` when the request:
 - Mentions early-stage ideation, exploration, brainstorming, or raw notes
 - Needs context before drafting specs or proposals
 - Refers to "reffy", "references", "explore", or "context layer"
-- Involves a remote workspace, remote synchronization, shared-reference publication, or Paseo
 
 Use `@/.reffy/AGENTS.md` to learn:
 - Reffy workflow for ideation, artifact indexing, and planning scaffolds
@@ -21,7 +20,7 @@ Before performing any Reffy workflow:
 3. Read the selected `SKILL.md` completely.
 4. Follow that skill before running Reffy commands.
 
-For remote workspace, remote sync, shared-reference publication, or Paseo requests, read `@/.reffy/skills/sync-remote/SKILL.md` first. Loading these instructions does not authorize a remote push or other mutation; execute remote commands only when the request calls for them.
+Personal remote-workspace publishing is outside this repository's shared FDE workflow. Do not configure or invoke it for FDE setup, planning, validation, or source synchronization.
 
 Keep this managed block so `reffy init` can refresh the instructions.
 

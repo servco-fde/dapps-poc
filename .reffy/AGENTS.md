@@ -20,7 +20,7 @@ Before running Reffy commands:
 3. Read the selected `SKILL.md` completely.
 4. Follow that skill before running Reffy commands.
 
-For remote workspace, remote sync, shared-reference publication, or Paseo requests, read `.reffy/skills/sync-remote/SKILL.md` first. Loading these instructions does not authorize a remote push or other mutation; execute remote commands only when the request calls for them.
+Personal remote-workspace publishing is outside this repository's shared FDE workflow. Do not configure or invoke it for FDE setup, planning, validation, or source synchronization.
 
 ## When To Use Reffy
 
@@ -28,7 +28,6 @@ Use Reffy first when the request:
 - Mentions early-stage ideation, exploration, brainstorming, or raw notes
 - Needs context gathering before drafting a concrete implementation plan
 - Refers to "reffy", "references", "explore", "context layer", or research artifacts
-- Involves a remote workspace, remote synchronization, shared-reference publication, or Paseo
 
 ## When To Skip Reffy
 

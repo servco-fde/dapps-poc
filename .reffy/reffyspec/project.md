@@ -66,7 +66,11 @@ Follow the managed skill discovery instructions in AGENTS.md before Reffy workfl
 
 ### Git Workflow
 
-- GitHub repository: servco-fde/dapps-poc; default branch: main. Both laptops synchronize code through GitHub.
+- Source code currently lives in two GitHub repositories, both using `main` as the default branch:
+  - Organizational origin: `servco-fde/dapps-poc`, the team-owned upstream repository.
+  - Personal remote: `rdelgd/dapps-poc`, Roberto's personal repository and the repository some connected clients may access directly.
+- Treat both repositories as intentional remotes. Before any push, pull request, or repository write, confirm the selected target and current branch/commit state; do not assume the two repositories are synchronized or silently propagate changes between them.
+- Both laptops synchronize code through explicitly configured Git remotes.
 - Prefer focused feature branches and pull requests for substantive changes, following the existing repository workflow. Use concise, descriptive commits. Commit/push/deploy when requested; these are separate actions.
 - Keep .env files, credentials, node_modules, build outputs, and logs out of Git. Commit root planning manifests/lockfile and application source/lockfile in their respective scopes.
 - Preserve existing uncommitted work when synchronizing machines. Keep changes reviewable and validate before deployment.
@@ -119,7 +123,7 @@ Databricks-group role mapping, richer revision UI, and automated Git pull-reques
 | Lakebase branch | projects/metric-view-hub/branches/production |
 | Lakebase database | databricks_postgres; database resource ends in databases/databricks-postgres |
 | Lakebase endpoint | projects/metric-view-hub/branches/production/endpoints/primary |
-| Source control | GitHub servco-fde/dapps-poc |
+| Source control | Organizational origin: `servco-fde/dapps-poc`; personal remote: `rdelgd/dapps-poc` |
 | Documentation tooling | Databricks agent skills and Developer Hub Docs MCP, https://developers.databricks.com/api/mcp |
 
 Reffy is initialized locally with project_id and workspace_ids set to dapps-poc. No Reffy remote workspace is configured as part of this setup. Resource identifiers are configuration, not credentials; databricks.yml and verified workspace state are the sources for binding changes.

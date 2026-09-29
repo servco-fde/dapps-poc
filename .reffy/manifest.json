@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-09-11T19:38:22.590Z",
-  "updated_at": "2026-09-21T20:17:43.494Z",
+  "updated_at": "2026-09-29T01:25:41.533Z",
   "project_id": "dapps-poc",
   "workspace_ids": [
     "dapps-poc"
@@ -113,6 +113,17 @@
         ".reffy/reffyspec/changes/add-prisma-lakebase-persistence/design.md",
         ".reffy/reffyspec/changes/add-prisma-lakebase-persistence/specs/prisma-lakebase-persistence/spec.md"
       ]
+    },
+    {
+      "id": "0b21849c-e1b4-417a-86f4-723350707304",
+      "name": "fde databricks ai tools skill strategy",
+      "filename": "fde-databricks-ai-tools-skill-strategy.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 7764,
+      "tags": [],
+      "created_at": "2026-09-29T01:25:41.530Z",
+      "updated_at": "2026-09-29T01:25:41.530Z"
     }
   ]
 }

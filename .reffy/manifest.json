@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-09-11T19:38:22.590Z",
-  "updated_at": "2026-09-29T01:25:41.533Z",
+  "updated_at": "2026-09-29T01:51:13.478Z",
   "project_id": "dapps-poc",
   "workspace_ids": [
     "dapps-poc"
@@ -120,10 +120,21 @@
       "filename": "fde-databricks-ai-tools-skill-strategy.md",
       "kind": "note",
       "mime_type": "text/markdown",
-      "size_bytes": 7764,
+      "size_bytes": 7896,
       "tags": [],
       "created_at": "2026-09-29T01:25:41.530Z",
-      "updated_at": "2026-09-29T01:25:41.530Z"
+      "updated_at": "2026-09-29T01:27:00.905Z"
+    },
+    {
+      "id": "210f2f51-a8c0-4bf4-8a8b-97bf6973b456",
+      "name": "metric view hub database architecture brief",
+      "filename": "metric-view-hub-database-architecture-brief.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 5589,
+      "tags": [],
+      "created_at": "2026-09-29T01:49:26.048Z",
+      "updated_at": "2026-09-29T01:49:26.048Z"
     }
   ]
 }

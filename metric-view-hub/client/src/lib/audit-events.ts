@@ -24,9 +24,13 @@ export function formatAuditEvent(event: Pick<AuditEvent, 'event_type' | 'details
   if (event.event_type === 'status_changed') {
     const from = event.details.from;
     const to = event.details.to;
+    const version = event.details.version;
 
     if (typeof from === 'string' && typeof to === 'string' && from.trim() && to.trim()) {
-      return `Status changed: ${formatStatus(from)} → ${formatStatus(to)}`;
+      const versionLabel = typeof version === 'number' && Number.isInteger(version) && version > 0
+        ? ` (version ${version})`
+        : '';
+      return `Status changed: ${formatStatus(from)} → ${formatStatus(to)}${versionLabel}`;
     }
   }
 

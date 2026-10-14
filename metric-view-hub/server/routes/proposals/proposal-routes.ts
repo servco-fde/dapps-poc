@@ -61,6 +61,7 @@ const CreateCommentBody = z.object({
 });
 const TransitionBody = z.object({
   status: z.enum(['draft', 'in_review', 'changes_requested', 'approved', 'exported', 'published']),
+  expectedVersion: z.number().int().positive(),
 });
 
 type ProposalDraft = z.infer<typeof ProposalDraftSchema>;
@@ -469,11 +470,16 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
       }
       const actor = requestActor(req);
       try {
-        const current = await appkit.lakebase.query(`SELECT status FROM ${tables.proposals} WHERE id = $1`, [
+        const current = await appkit.lakebase.query(`SELECT status, current_version FROM ${tables.proposals} WHERE id = $1`, [
           req.params.id,
         ]);
         if (current.rows.length === 0) {
           res.status(404).json({ error: 'Proposal not found' });
+          return;
+        }
+        const expectedVersion = parsed.data.expectedVersion;
+        if (current.rows[0].current_version !== expectedVersion) {
+          res.status(409).json({ error: 'Proposal version changed; refresh and review the latest version' });
           return;
         }
         const fromStatus = current.rows[0].status as ProposalStatus;
@@ -490,22 +496,22 @@ export async function setupProposalRoutes(appkit: AppKitWithLakebase): Promise<v
           `
           WITH updated AS (
             UPDATE ${tables.proposals}
-            SET status = $3,
-                approved_by = CASE WHEN $3 = 'approved' THEN $4 ELSE approved_by END,
+            SET status = $4,
+                approved_by = CASE WHEN $4 = 'approved' THEN $5 ELSE approved_by END,
                 updated_at = NOW()
-            WHERE id = $1 AND status = $2
+            WHERE id = $1 AND status = $2 AND current_version = $3
             RETURNING ${proposalColumns}
           ), audited AS (
             INSERT INTO ${tables.auditEvents} (proposal_id, event_type, actor_email, details)
-            SELECT id, 'status_changed', $4,
-                   jsonb_build_object('from', $2, 'to', $3) FROM updated
+            SELECT id, 'status_changed', $5,
+                   jsonb_build_object('from', $2, 'to', $4, 'version', $3) FROM updated
           )
           SELECT * FROM updated
         `,
-          [req.params.id, fromStatus, toStatus, actor.email]
+          [req.params.id, fromStatus, expectedVersion, toStatus, actor.email]
         );
         if (result.rows.length === 0) {
-          res.status(409).json({ error: 'Proposal status changed; refresh and try again' });
+          res.status(409).json({ error: 'Proposal status or version changed; refresh and review the latest version' });
           return;
         }
         res.json(result.rows[0]);

@@ -69,13 +69,13 @@ export function ProposalDetailPage() {
   }, [load]);
 
   const transition = async (status: ProposalStatus) => {
-    if (!proposalId) return;
+    if (!proposalId || !detail) return;
     setWorking(true);
     try {
       await apiRequest(`/api/proposals/${proposalId}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, expectedVersion: detail.proposal.current_version }),
       });
       await load();
     } catch (reason) {
@@ -120,8 +120,9 @@ export function ProposalDetailPage() {
     );
 
   const { proposal, versions, comments, auditEvents } = detail;
-  const draft = versions[0]?.draft_json;
-  const allowedActions = nextActions[proposal.status].filter(
+  const reviewedVersion = versions.find((version) => version.version === proposal.current_version);
+  const draft = reviewedVersion?.draft_json;
+  const allowedActions = (reviewedVersion ? nextActions[proposal.status] : []).filter(
     (action) => action.status !== 'approved' || currentUser?.role === 'admin'
   );
 

@@ -18,6 +18,13 @@ describe('formatAuditEvent', () => {
     ).toBe('Status changed: Changes requested → In review');
   });
 
+  it('shows the reviewed version for new transitions', () => {
+    expect(formatAuditEvent({
+      event_type: 'status_changed',
+      details: { from: 'in_review', to: 'approved', version: 2 },
+    })).toBe('Status changed: In review → Approved (version 2)');
+  });
+
   it('humanizes forward-compatible lifecycle identifiers', () => {
     expect(
       formatAuditEvent({

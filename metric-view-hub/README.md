@@ -58,7 +58,7 @@ Create the ignored local environment file once on each computer, only if `.env` 
 | macOS Terminal / Windows Git Bash | `cp .env.example .env`        |
 | Windows PowerShell                | `Copy-Item .env.example .env` |
 
-For this POC, populate it with the existing development resource values and set `DATABRICKS_CONFIG_PROFILE=hawaii-dev-workspace`. Keep OAuth tokens and other credentials out of this file; AppKit uses the Databricks CLI profile.
+For this POC, populate it with the existing development resource values and set `DATABRICKS_CONFIG_PROFILE=hawaii-dev-workspace`. AppKit uses the Databricks CLI profile for Databricks authentication; do not copy its OAuth tokens into `.env`.
 
 Start the complete local client and API through the Databricks proxy:
 
@@ -73,6 +73,16 @@ Use a stable, unique lowercase schema such as `metric_hub_local_<name>` for each
 This loop runs the application stack locally, but it is not offline: SQL Warehouse, Unity Catalog, OAuth, and Lakebase remain managed Databricks services in the development workspace.
 
 Metric queries run with the CLI-authenticated developer identity during local development. AppKit cannot reproduce deployed browser-user OBO impersonation without a forwarded app user token, so verify OBO permissions once after deployment.
+
+### Microsoft profile proof
+
+The `My Microsoft profile` page at `/profile` is currently an app-only connection prototype. The server selects the current user's email from Databricks' forwarded identity header; the local proxy uses `LOCAL_DEV_EMAIL` as its development-only stand-in. The existing registration can return a photo, but its application token cannot read the profile text fields: the observed `/users/{email}` response is Graph 403. This does not prove that the signed-in user is connected to Microsoft. The proposed `Connect Microsoft` experience and delegated Graph `/me` authentication are tracked separately in `.reffy/reffyspec/changes/add-microsoft-profile-proof/` and `.reffy/reffyspec/changes/add-microsoft-delegated-connection/`. Manager, Teams, mail, and SharePoint actions are not part of this proof.
+
+For local preview, set `MICROSOFT_GRAPH_TENANT_ID` and `MICROSOFT_GRAPH_CLIENT_ID` from `.env.example` in your existing ignored `.env`. Add `MICROSOFT_GRAPH_CLIENT_SECRET` there only on your own workstation, or provide it as a private process environment variable. Do not put the value in a tracked file, terminal command line, or chat. Keep any existing `.env` entries intact. Without these settings the page should show a configuration error while the rest of the app remains available.
+
+The shared development deployment configuration references `MICROSOFT_GRAPH_CLIENT_SECRET` in Databricks secret scope `metric-view-hub-dev-graph`, key `client-secret`, using the `default` bundle target. That scope/key has not been provisioned or verified. An authorized administrator must create/update it and grant the app access before any separately authorized deployment. The Hawaii BA target has no Microsoft Graph binding. A delegated profile connection also needs the registration owner to add an exact Web redirect URI for each environment; that flow is planned, not implemented.
+
+If the page shows **Profile details need permission** while the photo appears, the app-only token and photo access are working but Graph denied `/users/{userPrincipalName}`. The intended next step is the separate delegated `User.Read` connection for `/me`, not an application-wide directory permission grant. Do not treat the photo as proof of a user-delegated connection.
 
 ## POC runtime controls
 

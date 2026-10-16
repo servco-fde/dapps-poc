@@ -43,6 +43,33 @@ targets:
     workspace:
       host: https://adb-4192082222593323.3.azuredatabricks.net
 
+    # This Graph proof is bound only in the development workspace. The shared
+    # app.yaml remains usable by the Hawaii BA target without a Graph secret.
+    resources:
+      apps:
+        app:
+          resources:
+            - name: microsoft-graph-client-secret
+              secret:
+                scope: metric-view-hub-dev-graph
+                key: client-secret
+                permission: READ
+          config:
+            command: ['npm', 'run', 'start']
+            env:
+              - name: DATABRICKS_WAREHOUSE_ID
+                value_from: sql-warehouse
+              - name: LAKEBASE_ENDPOINT
+                value_from: postgres
+              - name: APP_ADMIN_EMAILS
+                value: 'roberto.delgado@servco.com,tausif.islam@servco.com,iden.watanabe@servco.com,sam.ikemoto@servco.com,katerina.walter@servco.com'
+              - name: MICROSOFT_GRAPH_TENANT_ID
+                value: '9dbf86ac-e706-4657-a4ab-4e7f21704abc'
+              - name: MICROSOFT_GRAPH_CLIENT_ID
+                value: 'de20878a-8ec2-4238-a2c6-ea756cc9bf60'
+              - name: MICROSOFT_GRAPH_CLIENT_SECRET
+                value_from: microsoft-graph-client-secret
+
     variables:
       sql_warehouse_id: d789a5e994a1ea33
       postgres_branch: projects/metric-view-hub/branches/production

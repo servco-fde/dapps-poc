@@ -16,6 +16,7 @@ import { DOCUMENTATION_ROUTES } from './content/documentation';
 import { AppGuidePage } from './pages/AppGuidePage';
 import { FdeReferenceGuidePage } from './pages/FdeReferenceGuidePage';
 import { MetricCatalogPage } from './pages/MetricCatalogPage';
+import { MicrosoftProfilePage } from './pages/MicrosoftProfilePage';
 import { ProposalBuilderPage } from './pages/ProposalBuilderPage';
 import { ProposalDetailPage } from './pages/ProposalDetailPage';
 import { ProposalListPage } from './pages/ProposalListPage';
@@ -47,6 +48,9 @@ function NavLinks({
       </NavLink>
       <NavLink to="/proposals/new" className={linkClass} onClick={onClick}>
         New proposal
+      </NavLink>
+      <NavLink to="/profile" className={linkClass} onClick={onClick}>
+        My Microsoft profile
       </NavLink>
       <NavLink to={DOCUMENTATION_ROUTES.root} className={linkClass} onClick={onClick}>
         Documentation
@@ -115,6 +119,7 @@ const router = createBrowserRouter([
       { path: '/proposals', element: <ProposalListPage /> },
       { path: '/proposals/new', element: <ProposalBuilderPage /> },
       { path: '/proposals/:proposalId', element: <ProposalDetailPage /> },
+      { path: '/profile', element: <MicrosoftProfilePage /> },
       {
         path: DOCUMENTATION_ROUTES.root,
         element: <DocumentationLayout />,

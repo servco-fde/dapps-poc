@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-09-11T19:38:22.590Z",
-  "updated_at": "2026-09-29T01:51:13.478Z",
+  "updated_at": "2026-10-16T00:11:53.098Z",
   "project_id": "dapps-poc",
   "workspace_ids": [
     "dapps-poc"
@@ -135,6 +135,53 @@
       "tags": [],
       "created_at": "2026-09-29T01:49:26.048Z",
       "updated_at": "2026-09-29T01:49:26.048Z"
+    },
+    {
+      "id": "b36724c6-f3a8-4edb-84a5-5188408f76b0",
+      "name": "azure app services integration response",
+      "filename": "azure-app-services-integration-response.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 3624,
+      "tags": [],
+      "created_at": "2026-10-15T21:10:56.607Z",
+      "updated_at": "2026-10-15T21:15:22.181Z"
+    },
+    {
+      "id": "ad85ddcd-eaaf-417a-bbeb-bfc9f55f8650",
+      "name": "azure app services seed",
+      "filename": "azure-app-services-seed.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 698,
+      "tags": [],
+      "created_at": "2026-10-15T21:10:56.610Z",
+      "updated_at": "2026-10-16T00:11:49.644Z",
+      "related_changes": [
+        "add-microsoft-profile-proof",
+        "add-microsoft-delegated-connection"
+      ],
+      "derived_outputs": [
+        ".reffy/reffyspec/changes/add-microsoft-profile-proof/proposal.md",
+        ".reffy/reffyspec/changes/add-microsoft-profile-proof/tasks.md",
+        ".reffy/reffyspec/changes/add-microsoft-profile-proof/design.md",
+        ".reffy/reffyspec/changes/add-microsoft-profile-proof/specs/microsoft-profile-proof/spec.md",
+        ".reffy/reffyspec/changes/add-microsoft-delegated-connection/proposal.md",
+        ".reffy/reffyspec/changes/add-microsoft-delegated-connection/tasks.md",
+        ".reffy/reffyspec/changes/add-microsoft-delegated-connection/design.md",
+        ".reffy/reffyspec/changes/add-microsoft-delegated-connection/specs/microsoft-delegated-connection/spec.md"
+      ]
+    },
+    {
+      "id": "ffa8b8e9-607b-4d87-a0da-ec8d53da6951",
+      "name": "azure app configs",
+      "filename": "azure-app-configs.png",
+      "kind": "image",
+      "mime_type": "image/png",
+      "size_bytes": 127535,
+      "tags": [],
+      "created_at": "2026-10-16T00:11:53.095Z",
+      "updated_at": "2026-10-16T00:11:53.095Z"
     }
   ]
 }

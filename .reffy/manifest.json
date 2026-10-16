@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-09-11T19:38:22.590Z",
-  "updated_at": "2026-10-16T00:11:53.098Z",
+  "updated_at": "2026-10-16T01:49:42.756Z",
   "project_id": "dapps-poc",
   "workspace_ids": [
     "dapps-poc"
@@ -142,10 +142,10 @@
       "filename": "azure-app-services-integration-response.md",
       "kind": "note",
       "mime_type": "text/markdown",
-      "size_bytes": 3624,
+      "size_bytes": 3679,
       "tags": [],
       "created_at": "2026-10-15T21:10:56.607Z",
-      "updated_at": "2026-10-15T21:15:22.181Z"
+      "updated_at": "2026-10-16T00:12:19.125Z"
     },
     {
       "id": "ad85ddcd-eaaf-417a-bbeb-bfc9f55f8650",
@@ -156,7 +156,7 @@
       "size_bytes": 698,
       "tags": [],
       "created_at": "2026-10-15T21:10:56.610Z",
-      "updated_at": "2026-10-16T00:11:49.644Z",
+      "updated_at": "2026-10-16T00:12:19.125Z",
       "related_changes": [
         "add-microsoft-profile-proof",
         "add-microsoft-delegated-connection"
@@ -181,7 +181,18 @@
       "size_bytes": 127535,
       "tags": [],
       "created_at": "2026-10-16T00:11:53.095Z",
-      "updated_at": "2026-10-16T00:11:53.095Z"
+      "updated_at": "2026-10-16T00:12:19.117Z"
+    },
+    {
+      "id": "e722e020-bc89-4a22-9439-974ace84b346",
+      "name": "microsoft delegated auth options",
+      "filename": "microsoft-delegated-auth-options.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 10639,
+      "tags": [],
+      "created_at": "2026-10-16T01:40:13.178Z",
+      "updated_at": "2026-10-16T01:49:39.569Z"
     }
   ]
 }

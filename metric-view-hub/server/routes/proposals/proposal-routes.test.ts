@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { Application, Request, Response } from 'express';
+import express, { type Request, type Response } from 'express';
+import { IncomingMessage, ServerResponse } from 'node:http';
+import { Socket } from 'node:net';
 import {
   canRoleTransition,
   canTransition,
@@ -111,15 +113,14 @@ describe('version-aware status transitions', () => {
     const events: Array<{ from: string; to: string; version: number }> = [];
     let transitionSql = '';
     let beforeUpdate: (() => void) | undefined;
-    let handler: (req: Request, res: Response) => Promise<void> = async () => {
-      throw new Error('Status route was not registered');
-    };
+    let handler: (req: Request, res: Response) => Promise<void> = () =>
+      Promise.reject(new Error('Status route was not registered'));
 
     await setupProposalRoutes({
       lakebase: {
-        query: async (sql: string, params: unknown[] = []) => {
+        query: (sql: string, params: unknown[] = []) => {
           if (sql.includes('SELECT status, current_version')) {
-            return { rows: [{ status, current_version: version }] };
+            return Promise.resolve({ rows: [{ status, current_version: version }] });
           }
           if (sql.includes('WITH updated AS') && sql.includes('status_changed')) {
             transitionSql = sql;
@@ -127,27 +128,26 @@ describe('version-aware status transitions', () => {
             beforeUpdate = undefined;
             // Model the WHERE clause: only a matching status AND version may write.
             if (params[1] !== status || params[2] !== version || !sql.includes('AND current_version = $3')) {
-              return { rows: [] };
+              return Promise.resolve({ rows: [] });
             }
             const from = status;
             status = params[3] as string;
             if (status === 'approved') approvedBy = params[4] as string;
             if (sql.includes("'version', $3")) events.push({ from, to: status, version });
-            return { rows: [{ status, current_version: version, approved_by: approvedBy }] };
+            return Promise.resolve({ rows: [{ status, current_version: version, approved_by: approvedBy }] });
           }
-          return { rows: [] };
+          return Promise.resolve({ rows: [] });
         },
       },
       server: {
         extend: (register) => {
-          const app = {
-            get: () => undefined,
-            post: () => undefined,
-            put: () => undefined,
-            patch: (path: string, callback: typeof handler) => {
-              if (path === '/api/proposals/:id/status') handler = callback;
-            },
-          } as unknown as Application;
+          const app = express();
+          vi.spyOn(app, 'patch').mockImplementation((path, ...callbacks) => {
+            const callback = callbacks[0];
+            if (path === '/api/proposals/:id/status' && typeof callback === 'function')
+              handler = callback as typeof handler;
+            return app;
+          });
           register(app);
         },
       },
@@ -156,23 +156,38 @@ describe('version-aware status transitions', () => {
     const transition = async (body: unknown, email = 'admin@example.com') => {
       let code = 200;
       let payload: Record<string, unknown> = {};
-      const request = {
-        body,
-        params: { id: 'proposal-1' },
-        header: (name: string) => name === 'x-forwarded-email' ? email : undefined,
-      } as unknown as Request;
-      const response = {
-        status(value: number) { code = value; return this; },
-        json(value: Record<string, unknown>) { payload = value; return this; },
-      } as unknown as Response;
+      const request = new IncomingMessage(new Socket()) as Request;
+      Object.setPrototypeOf(request, express.request);
+      request.body = body;
+      request.params = { id: 'proposal-1' };
+      request.headers = { 'x-forwarded-email': email };
+      const response = new ServerResponse(request) as Response;
+      Object.setPrototypeOf(response, express.response);
+      vi.spyOn(response, 'status').mockImplementation((value) => {
+        code = value;
+        return response;
+      });
+      vi.spyOn(response, 'json').mockImplementation((value: Record<string, unknown>) => {
+        payload = value;
+        return response;
+      });
       await handler(request, response);
       return { code, payload };
     };
     return {
       transition,
-      revise: () => { version += 1; status = 'in_review'; },
-      raceWithRevision: () => { beforeUpdate = () => { version += 1; }; },
-      get state() { return { status, version, approvedBy, events, transitionSql }; },
+      revise: () => {
+        version += 1;
+        status = 'in_review';
+      },
+      raceWithRevision: () => {
+        beforeUpdate = () => {
+          version += 1;
+        };
+      },
+      get state() {
+        return { status, version, approvedBy, events, transitionSql };
+      },
     };
   }
 
@@ -191,7 +206,8 @@ describe('version-aware status transitions', () => {
 
     expect((await harness.transition({ status: 'approved', expectedVersion: 2 })).code).toBe(200);
     expect(harness.state).toMatchObject({
-      status: 'approved', approvedBy: 'admin@example.com',
+      status: 'approved',
+      approvedBy: 'admin@example.com',
       events: [{ from: 'in_review', to: 'approved', version: 2 }],
     });
     expect(harness.state.transitionSql).toContain('WHERE id = $1 AND status = $2 AND current_version = $3');
@@ -206,8 +222,9 @@ describe('version-aware status transitions', () => {
 
   it('preserves the admin-only approval permission', async () => {
     const harness = await routeHarness();
-    expect((await harness.transition({ status: 'approved', expectedVersion: 1 }, 'reviewer@example.com')).code)
-      .toBe(403);
+    expect((await harness.transition({ status: 'approved', expectedVersion: 1 }, 'reviewer@example.com')).code).toBe(
+      403
+    );
     expect(harness.state.events).toEqual([]);
   });
 });

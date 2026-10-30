@@ -186,10 +186,18 @@ export function ProposalDetailPage() {
 
       <Tabs defaultValue="definition" className="min-w-0 space-y-4">
         <TabsList className="servco-tabs-list max-w-full overflow-x-auto">
-          <TabsTrigger value="definition">Definition</TabsTrigger>
-          <TabsTrigger value="comparison">Comparison</TabsTrigger>
-          <TabsTrigger value="discussion">Discussion ({comments.length})</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="definition" className="px-4">
+            Definition
+          </TabsTrigger>
+          <TabsTrigger value="comparison" className="px-4">
+            Comparison
+          </TabsTrigger>
+          <TabsTrigger value="discussion" className="px-4">
+            Discussion ({comments.length})
+          </TabsTrigger>
+          <TabsTrigger value="history" className="px-4">
+            History
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="definition" className="grid gap-4 lg:grid-cols-2">
           <Card className="servco-section-card">

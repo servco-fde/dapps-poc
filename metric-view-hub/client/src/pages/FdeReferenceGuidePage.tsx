@@ -99,8 +99,8 @@ export function FdeReferenceGuidePage() {
             <CardDescription>Metric Hub default · Replace for your app</CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Auto Retail sales, F&I performance, dealership dimensions, and penetration measures demonstrate the UX. They
-            are not a required Databricks application domain.
+            Auto Retail sales and F&I performance, plus Sample Orders revenue, customers, and market segments,
+            demonstrate the UX. They are not a required Databricks application domain.
           </CardContent>
         </Card>
         <Card id={DOCUMENTATION_SECTION_IDS.governedMetrics} className="servco-doc-section servco-section-card">
@@ -110,7 +110,10 @@ export function FdeReferenceGuidePage() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             AppKit alias <code>{PUBLIC_BINDINGS.metricViewAlias}</code> reads <code>{PUBLIC_BINDINGS.metricView}</code>.
-            Bind your own governed Metric View or query surface.
+            The selectable Sample Orders example uses <code>{PUBLIC_BINDINGS.sampleMetricViewAlias}</code> to read{' '}
+            <code>{PUBLIC_BINDINGS.sampleMetricView}</code>. Both use user execution. Register additional bindings in{' '}
+            <code>config/metric-views/definitions.json</code>, regenerate types, and configure their catalog
+            presentation.
           </CardContent>
         </Card>
         <Card id={DOCUMENTATION_SECTION_IDS.executionIdentity} className="servco-doc-section servco-section-card">

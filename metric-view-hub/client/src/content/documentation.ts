@@ -75,6 +75,8 @@ export const PUBLIC_BINDINGS = {
   appName: 'metric-view-hub',
   metricViewAlias: 'auto_retail',
   metricView: 'hawaii_prod.testing.vw__metrics_test',
+  sampleMetricViewAlias: 'sample_orders',
+  sampleMetricView: 'hawaii_dev.testing.vw__sample_orders_test',
   sqlWarehouse: 'metric-view-hub-dev',
   lakebaseProject: 'metric-view-hub',
   lakebaseSchema: 'metric_hub',
@@ -84,7 +86,7 @@ export const APP_CAPABILITIES: readonly AppCapability[] = [
   {
     title: 'Discover governed metrics',
     description:
-      'Browse the published Auto Retail metric view, its headline measures, supported dimensions, trends, and governance context.',
+      'Select Auto Retail or Sample Orders in the metric catalog to browse its headline measures, supported dimensions, trends, and governance context. The proposal builder starts with Auto Retail example values that you can edit.',
   },
   {
     title: 'Describe a proposed change',

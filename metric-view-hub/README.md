@@ -4,7 +4,7 @@ A Databricks App proof of concept for discovering a governed Unity Catalog metri
 
 ## Architecture
 
-- **Governed reads:** AppKit Analytics queries `hawaii_prod.testing.vw__metrics_test` through `useMetricView`.
+- **Governed reads:** The metric catalog selector offers Auto Retail (`hawaii_prod.testing.vw__metrics_test`, the default) and Sample Orders (`hawaii_dev.testing.vw__sample_orders_test`). Each uses AppKit `useMetricView` with user/OBO execution. Selecting an example switches its summaries, charts, source, and generated measure/dimension lists. Sample Orders shows order count, total revenue, unique customers, average order value, orders by market segment, and monthly revenue. Revenue uses source units because the view does not declare a currency format.
 - **Identity:** Metric queries use on-behalf-of execution and the app declares the `sql` user API scope.
 - **Application roles:** Authenticated users are reviewers by default. Emails in the comma-separated `APP_ADMIN_EMAILS` setting are admins and can accept proposals.
 - **Collaboration state:** The AppKit Lakebase plugin stores proposals, immutable versions, comments, status transitions, and audit events in the app-owned `metric_hub` schema.
@@ -108,6 +108,8 @@ Starting the app restores its last successful deployment; it does not require an
 | Lakebase database      | `projects/metric-view-hub/branches/production/databases/databricks-postgres` |
 
 Workspace-specific identifiers live in `databricks.yml` target variables and resource bindings. Credentials belong only in local ignored environment files or platform-injected values.
+
+Metric-view bindings live in `config/metric-views/definitions.json`; regenerate their metadata/types after changing bindings. Each querying user needs Unity Catalog access to the selected view. Sample Orders has been verified in the development workspace; verify availability and user permissions separately before deploying it elsewhere. Catalog selection does not change the editable Auto Retail defaults in the proposal builder.
 
 ## Hawaii BA deployment target
 

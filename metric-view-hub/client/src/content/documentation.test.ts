@@ -40,7 +40,16 @@ describe('in-app documentation content', () => {
 
   it('keeps the public binding inventory deliberately small and non-secret', () => {
     expect(Object.keys(PUBLIC_BINDINGS).sort()).toEqual(
-      ['appName', 'lakebaseProject', 'lakebaseSchema', 'metricView', 'metricViewAlias', 'sqlWarehouse'].sort()
+      [
+        'appName',
+        'lakebaseProject',
+        'lakebaseSchema',
+        'metricView',
+        'metricViewAlias',
+        'sampleMetricView',
+        'sampleMetricViewAlias',
+        'sqlWarehouse',
+      ].sort()
     );
 
     const prohibitedValuePatterns = [

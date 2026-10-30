@@ -4,6 +4,10 @@
     "auto_retail": {
       "source": "hawaii_prod.testing.vw__metrics_test",
       "executor": "user"
+    },
+    "sample_orders": {
+      "source": "hawaii_dev.testing.vw__sample_orders_test",
+      "executor": "user"
     }
   }
 }

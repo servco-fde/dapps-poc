@@ -298,5 +298,217 @@ declare module "@databricks/appkit-ui/react" {
     };
       };
     };
+    "sample_orders": {
+      key: "sample_orders";
+      source: "hawaii_dev.testing.vw__sample_orders_test";
+      lane: "obo";
+      measures: {
+      /** @sqlType bigint */
+      "order_count": string | null;
+      /** @sqlType decimal */
+      "total_revenue": string | null;
+      /** @sqlType double */
+      "discounted_revenue": string | null;
+      /** @sqlType bigint */
+      "unique_customers": string | null;
+      /** @sqlType decimal */
+      "avg_order_value": string | null;
+      /** @sqlType decimal */
+      "revenue_per_customer": string | null;
+      /** @sqlType decimal */
+      "open_order_revenue": string | null;
+      /** @sqlType decimal */
+      "fulfilled_order_revenue": string | null;
+      /** @sqlType bigint */
+      "t7d_customers": string | null;
+    };
+      dimensions: {
+      /** @sqlType date @timeGrain day|month|quarter|week|year */
+      "order_date": string | null;
+      /** @sqlType string */
+      "order_status": string | null;
+      /** @sqlType string */
+      "o_orderpriority": string | null;
+      /** @sqlType bigint */
+      "o_orderkey": string | null;
+      /** @sqlType bigint */
+      "o_custkey": string | null;
+      /** @sqlType decimal */
+      "o_totalprice": string | null;
+      /** @sqlType string */
+      "o_clerk": string | null;
+      /** @sqlType int */
+      "o_shippriority": string | null;
+      /** @sqlType string */
+      "o_comment": string | null;
+      /** @sqlType bigint */
+      "c_custkey": string | null;
+      /** @sqlType string */
+      "c_name": string | null;
+      /** @sqlType string */
+      "c_address": string | null;
+      /** @sqlType bigint */
+      "c_nationkey": string | null;
+      /** @sqlType string */
+      "c_phone": string | null;
+      /** @sqlType decimal */
+      "c_acctbal": string | null;
+      /** @sqlType string */
+      "c_mktsegment": string | null;
+      /** @sqlType string */
+      "c_comment": string | null;
+      /** @sqlType bigint */
+      "n_nationkey": string | null;
+      /** @sqlType string */
+      "n_name": string | null;
+      /** @sqlType bigint */
+      "n_regionkey": string | null;
+      /** @sqlType string */
+      "n_comment": string | null;
+      /** @sqlType timestamp_ltz @timeGrain day|hour|minute|month|quarter|week|year */
+      "order_month": string | null;
+      /** @sqlType int */
+      "order_year": string | null;
+      /** @sqlType string */
+      "customer_name": string | null;
+      /** @sqlType string */
+      "market_segment": string | null;
+      /** @sqlType string */
+      "customer_nation": string | null;
+    };
+      measureKeys: "order_count" | "total_revenue" | "discounted_revenue" | "unique_customers" | "avg_order_value" | "revenue_per_customer" | "open_order_revenue" | "fulfilled_order_revenue" | "t7d_customers";
+      dimensionKeys: "order_date" | "order_status" | "o_orderpriority" | "o_orderkey" | "o_custkey" | "o_totalprice" | "o_clerk" | "o_shippriority" | "o_comment" | "c_custkey" | "c_name" | "c_address" | "c_nationkey" | "c_phone" | "c_acctbal" | "c_mktsegment" | "c_comment" | "n_nationkey" | "n_name" | "n_regionkey" | "n_comment" | "order_month" | "order_year" | "customer_name" | "market_segment" | "customer_nation";
+      timeGrains: "day" | "hour" | "minute" | "month" | "quarter" | "week" | "year";
+      metadata: {
+        measures: {
+      "order_count": {
+        type: "bigint";
+        display_name: "Order Count";
+      };
+      "total_revenue": {
+        type: "decimal";
+        display_name: "Total Revenue";
+      };
+      "discounted_revenue": {
+        type: "double";
+        display_name: "Discounted Revenue";
+      };
+      "unique_customers": {
+        type: "bigint";
+        display_name: "Unique Customers";
+      };
+      "avg_order_value": {
+        type: "decimal";
+        display_name: "Avg Order Value";
+      };
+      "revenue_per_customer": {
+        type: "decimal";
+        display_name: "Revenue Per Customer";
+      };
+      "open_order_revenue": {
+        type: "decimal";
+        display_name: "Open Order Revenue";
+      };
+      "fulfilled_order_revenue": {
+        type: "decimal";
+        display_name: "Fulfilled Revenue";
+      };
+      "t7d_customers": {
+        type: "bigint";
+        display_name: "7-Day Rolling Customer";
+      };
+    };
+        dimensions: {
+      "order_date": {
+        type: "date";
+        display_name: "Order Date";
+        time_grain: readonly ["day", "month", "quarter", "week", "year"];
+      };
+      "order_status": {
+        type: "string";
+        display_name: "Order Status";
+      };
+      "o_orderpriority": {
+        type: "string";
+        display_name: "Priority";
+      };
+      "o_orderkey": {
+        type: "bigint";
+      };
+      "o_custkey": {
+        type: "bigint";
+      };
+      "o_totalprice": {
+        type: "decimal";
+      };
+      "o_clerk": {
+        type: "string";
+      };
+      "o_shippriority": {
+        type: "int";
+      };
+      "o_comment": {
+        type: "string";
+      };
+      "c_custkey": {
+        type: "bigint";
+      };
+      "c_name": {
+        type: "string";
+      };
+      "c_address": {
+        type: "string";
+      };
+      "c_nationkey": {
+        type: "bigint";
+      };
+      "c_phone": {
+        type: "string";
+      };
+      "c_acctbal": {
+        type: "decimal";
+      };
+      "c_mktsegment": {
+        type: "string";
+      };
+      "c_comment": {
+        type: "string";
+      };
+      "n_nationkey": {
+        type: "bigint";
+      };
+      "n_name": {
+        type: "string";
+      };
+      "n_regionkey": {
+        type: "bigint";
+      };
+      "n_comment": {
+        type: "string";
+      };
+      "order_month": {
+        type: "timestamp_ltz";
+        display_name: "Order Month";
+        time_grain: readonly ["day", "hour", "minute", "month", "quarter", "week", "year"];
+      };
+      "order_year": {
+        type: "int";
+        display_name: "Order Year";
+      };
+      "customer_name": {
+        type: "string";
+        display_name: "Customer Name";
+      };
+      "market_segment": {
+        type: "string";
+        display_name: "Market Segment";
+      };
+      "customer_nation": {
+        type: "string";
+        display_name: "Country";
+      };
+    };
+      };
+    };
   }
 }

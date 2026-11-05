@@ -2,6 +2,8 @@
 
 A Databricks App proof of concept for discovering a governed Unity Catalog metric view, proposing structured changes, reviewing them, and exporting an engineering-ready SQL/YAML artifact.
 
+This is the working example in an FDE reference repository for composing and adapting Databricks Apps. Its operational guidance covers this app's resources, configuration, permissions, local/deployed behavior, and lifecycle. General workstation preparation, editor/agent integrations, CI/CD, and development-environment certification belong to a separate colleague-led DevOps project; see the [scope and handoff notice](../dapps-env-setup.md).
+
 ## Architecture
 
 - **Governed reads:** The metric catalog selector offers Auto Retail (`hawaii_prod.testing.vw__metrics_test`, the default) and Sample Orders (`hawaii_dev.testing.vw__sample_orders_test`). Each uses AppKit `useMetricView` with user/OBO execution. Selecting an example switches its summaries, charts, source, and generated measure/dimension lists. Sample Orders shows order count, total revenue, unique customers, average order value, orders by market segment, and monthly revenue. Revenue uses source units because the view does not declare a currency format.
@@ -19,17 +21,11 @@ The deployed UI identifies Metric View Hub as a reference implementation and inc
 
 The in-app guides summarize purpose, behavior, architecture, and adaptation. This README remains the operational source for local commands and current bindings; [`../reference-app-poc-playbook.md`](../reference-app-poc-playbook.md) remains the detailed build journal. The guides do not inspect workspace resources at runtime and do not expose credentials or user-specific local settings.
 
-## Workstation readiness
+## App prerequisites and configuration
 
-For agent-guided onboarding from the repository root, ask Codex to read [`init.md`](../init.md).
+Use an already prepared workstation with Node.js 22+, npm, a modern Databricks CLI 1.0.0+, and an authenticated profile for the selected workspace. This app also requires access to its SQL warehouse, Unity Catalog metric views, and existing Lakebase resources. Required permissions and bindings are application-specific; having the tools installed does not prove access.
 
-From this app directory, check the shared toolchain in macOS Terminal or Windows Git Bash:
-
-```sh
-bash ../setup.sh --check --profile "YOUR_PROFILE"
-```
-
-Use your explicitly selected profile. See the [setup guide](../dapps-env-setup.md) for the Windows Git Bash bootstrap and `--install` repairs. Setup leaves app dependencies, resource configuration, `.env`, and your SDD framework choice to you. Automated check mode has been exercised on macOS and Windows Git Bash.
+For agent-guided app configuration, use [`init.md`](../init.md). It leads through an explicitly selected profile, app dependencies, resource values, existing `.env` preservation, and the full-stack local proxy. Missing general prerequisites go through the external ownership handoff; this repository provides no workstation scanner or installer.
 
 ## Local project commands
 

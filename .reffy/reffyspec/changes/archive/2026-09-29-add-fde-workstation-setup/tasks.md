@@ -30,9 +30,9 @@
 - [x] 5.3 Test repeated runs and preservation of existing configuration; run shell syntax and appropriate static checks.
 - [x] 5.4 Run actual macOS Bash smoke checks and record versions, commands, outcomes, and manual-verification limits.
 - [x] 5.5 Run actual Windows Git Bash smoke checks, including native executable resolution, WinGet behavior, and line endings; record evidence and limits.
-- [ ] 5.6 Exercise authorized repair paths on suitable test environments; distinguish stub tests from actual installation evidence and record unavailable coverage.
+- [x] 5.6 Record that authorized repair paths have stub-test coverage but no live installer evidence; the user accepted this remaining verification limit on 2026-09-28.
 - [x] 5.7 Validate this repository's change with `reffy plan validate add-fde-workstation-setup` and verify its Reffy manifest after planning edits. These maintainer checks are not FDE setup requirements.
-- [ ] 5.8 Present the implemented result and verification evidence for review; archive only after approved scope and required platform checks are complete.
+- [x] 5.8 Present the implemented result and verification evidence for review; the user approved archiving with live installer coverage outstanding on 2026-09-28.
 - [x] 5.9 Add a root `init.md` agent-guided handoff that runs workstation checks first and continues through the separately documented local-app setup without implicit identity or cloud-resource choices.
 - [x] 5.10 Clarify across the change and onboarding documents that per-FDE isolation uses the local runtime and a
   unique developer schema, while the deployed development and BA apps are shared environments operated only with
@@ -42,4 +42,4 @@
 
 - Actual macOS check mode passed; the script made no installation or cloud-resource changes.
 - Shell/Node syntax checks and all 27 isolated integration tests passed. Tests cover both platform adapters; the harness uses POSIX pseudo-terminals and does not claim native Windows execution.
-- Windows Git Bash check mode passed on the company workstation. Actual approved-workstation installer checks remain outstanding. Keep this change active and do not archive it until those repair paths are exercised or explicitly accepted as a remaining limit.
+- Windows Git Bash check mode passed on the company workstation. Actual approved-workstation installer checks remain outstanding. The user explicitly accepted this remaining limit for archiving on 2026-09-28; live installer behavior is not verified.

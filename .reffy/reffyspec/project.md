@@ -2,9 +2,11 @@
 
 ## Purpose
 
-Metric View Collaboration Hub is a Databricks App proof of concept for business stakeholders, reviewers, and engineers to discover governed Unity Catalog metrics, propose structured changes, discuss and approve proposals, and download deterministic SQL/YAML candidates for engineering review. Business users do not need Unity Catalog write access or SQL/YAML expertise.
+This repository is an FDE reference for composing and adapting Databricks Apps. Metric View Collaboration Hub is its working example: a Databricks App where business stakeholders, reviewers, and engineers discover governed metrics, propose changes, review versions, and download SQL/YAML candidates without Unity Catalog write access.
 
-The repository also records a repeatable Forward Deployed Engineer (FDE) workflow from product seed to deployed POC. Reffy now provides the repository's planning workspace; existing project documents remain source material rather than being copied into new specs automatically.
+Maintained operations guidance is specific to the app: prerequisites and project commands, manifests, target/profile selection, resource bindings, SP/OBO permissions, secret references, local proxy behavior, personal Lakebase schemas, validation, deployment, readiness, and start/stop controls. General workstation preparation, editor/agent integrations, local/remote environment certification, CI/CD, and broader DevOps tooling belong to a separate colleague-led project. Its name and URL remain to be supplied; do not invent a link or a completed tooling transfer.
+
+The app-specific entry point assumes an already prepared workstation. The general setup checker, installer, and exclusive tests are retired; dapps-env-setup.md is an ownership handoff notice. App dependencies, tests, source control, and the exported engineering candidate remain necessary app work. Reffy/ReffySpec records this repository's ideation, current requirements, and reviewed changes; it is not an FDE workstation prerequisite. Historical build evidence and archived decisions remain intact and must not be read as current setup guidance.
 
 ## Tech Stack
 
@@ -29,9 +31,9 @@ The repository also records a repeatable Forward Deployed Engineer (FDE) workflo
 
 ### Architecture Patterns
 
-- Repository root contains the product seed, proposal, workstation guide, playbook, and Reffy workspace. The deployable app lives in metric-view-hub/.
+- Repository root contains the product seed, proposal, app-specific entry point, scope/handoff notice, historical playbook, and Reffy workspace. The deployable app lives in metric-view-hub/.
 - server/server.ts composes AppKit plugins; server/dev.ts and server/start.ts set the environment before loading the application. Keep startup commands compatible with Windows and macOS; quote shell glob arguments.
-- Analytics reads use useMetricView and the auto_retail definition, currently hawaii_prod.testing.vw__metrics_test. Deployed queries use executor: "user" and the app's sql user API scope for on-behalf-of (OBO) authorization.
+- Analytics reads use useMetricView and the auto_retail definition, currently hawaii_prod.testing.vw\_\_metrics_test. Deployed queries use executor: "user" and the app's sql user API scope for on-behalf-of (OBO) authorization.
 - Lakebase stores proposals, immutable versions, comments, transitions, and audit events. The deployed service principal owns metric_hub. Local development selects a validated METRIC_HUB_SCHEMA such as metric_hub_local_roberto.
 - API routes enforce workflow transitions and admin-only acceptance independently of UI controls. Configured APP_ADMIN_EMAILS grant admin; other users default to reviewer. LOCAL_DEV_EMAIL is a development-only identity fallback.
 - The app generates downloadable engineering artifacts; it does not execute their Unity Catalog CREATE/REPLACE statements. A publication-record status is not proof that the app published a catalog object.
@@ -95,7 +97,8 @@ Existing source documents (paths relative to repository root):
 - seed-1.md: original product intent.
 - seed-1-proposal.md: architecture and delivery proposal; some items describe future work.
 - metric-view-hub/README.md: current app commands and resources.
-- dapps-env-setup.md: FDE workstation guide, originally written for Windows.
+- init.md: app-specific configuration and full-stack local startup on a prepared workstation.
+- dapps-env-setup.md: scope and external DevOps ownership handoff; retained for older guide links.
 - reference-app-poc-playbook.md: build journal, decisions, verification, and partial-isolation boundary.
 
 Databricks-group role mapping, richer revision UI, and automated Git pull-request handoff are future directions, not completed capabilities. Consult current code and specs before assuming a proposal or journal entry describes shipped behavior.
@@ -113,17 +116,17 @@ Databricks-group role mapping, richer revision UI, and automated Git pull-reques
 
 ## External Dependencies
 
-| Service/resource | Current POC binding |
-| --- | --- |
-| Workspace/profile | hawaii-dev-workspace at https://adb-4192082222593323.3.azuredatabricks.net |
-| Databricks App | metric-view-hub |
-| SQL warehouse | metric-view-hub-dev (d789a5e994a1ea33) |
-| Unity Catalog metric view | hawaii_prod.testing.vw__metrics_test |
-| Lakebase project | projects/metric-view-hub |
-| Lakebase branch | projects/metric-view-hub/branches/production |
-| Lakebase database | databricks_postgres; database resource ends in databases/databricks-postgres |
-| Lakebase endpoint | projects/metric-view-hub/branches/production/endpoints/primary |
-| Source control | Organizational origin: `servco-fde/dapps-poc`; personal remote: `rdelgd/dapps-poc` |
-| Documentation tooling | Databricks agent skills and Developer Hub Docs MCP, https://developers.databricks.com/api/mcp |
+| Service/resource          | Current POC binding                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| Workspace/profile         | hawaii-dev-workspace at https://adb-4192082222593323.3.azuredatabricks.net                    |
+| Databricks App            | metric-view-hub                                                                               |
+| SQL warehouse             | metric-view-hub-dev (d789a5e994a1ea33)                                                        |
+| Unity Catalog metric view | hawaii_prod.testing.vw\_\_metrics_test                                                        |
+| Lakebase project          | projects/metric-view-hub                                                                      |
+| Lakebase branch           | projects/metric-view-hub/branches/production                                                  |
+| Lakebase database         | databricks_postgres; database resource ends in databases/databricks-postgres                  |
+| Lakebase endpoint         | projects/metric-view-hub/branches/production/endpoints/primary                                |
+| Source control            | Organizational origin: `servco-fde/dapps-poc`; personal remote: `rdelgd/dapps-poc`            |
+| Documentation tooling     | Databricks agent skills and Developer Hub Docs MCP, https://developers.databricks.com/api/mcp |
 
 Reffy is initialized locally with project_id and workspace_ids set to dapps-poc. No Reffy remote workspace is configured as part of this setup. Resource identifiers are configuration, not credentials; databricks.yml and verified workspace state are the sources for binding changes.

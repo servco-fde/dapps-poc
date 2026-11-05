@@ -45,9 +45,11 @@ Keep this managed block so `reffy init` can refresh the instructions.
 
 <!-- REFFYSPEC:END -->
 
-## Workstation onboarding
+## Reference scope and local app configuration
 
-When a user asks to prepare this repository for local development, follow `init.md`. Run the guide's read-only workstation check first. Keep Databricks profile/account selection explicit, obtain approval before repairs or login flows, preserve an existing `.env`, and do not create, start, or deploy cloud resources without an explicit request.
+This repository is an FDE reference for Databricks Apps, with Metric View Hub as its working example. Maintain app-specific architecture, configuration, resource bindings, permissions, validation, local proxy, deployment, and lifecycle guidance. General workstation preparation, editor/agent integrations, CI/CD, and development-environment certification belong to a separate colleague-led DevOps project; `dapps-env-setup.md` is the ownership handoff notice. Do not introduce a general setup checker or installer here.
+
+When a user asks to configure the app for local development, follow `init.md` and the app README on an already prepared workstation. Keep Databricks profile/account selection explicit, preserve an existing `.env`, report missing general prerequisites without installing them or initiating login, and do not create, start, or deploy cloud resources without an explicit request. App dependencies and project checks remain in scope. Historical setup material in the playbook and Reffy archives is evidence, not a current onboarding workflow.
 
 ## Metric View Hub local development
 

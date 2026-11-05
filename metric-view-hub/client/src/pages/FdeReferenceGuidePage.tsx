@@ -28,6 +28,7 @@ import {
   CUSTOMIZATION_STEPS,
   DOCUMENTATION_SECTION_IDS,
   PUBLIC_BINDINGS,
+  REFERENCE_SCOPE,
   REFERENCE_ITEMS,
   REPOSITORY_GUIDES,
   SOURCE_MAP,
@@ -49,6 +50,7 @@ export function FdeReferenceGuidePage() {
           <h3 id="fde-guide-title" className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             FDE Reference Guide
           </h3>
+          <p className="mt-3 max-w-4xl text-muted-foreground">{REFERENCE_SCOPE.purpose}</p>
           <p className="mt-3 max-w-4xl text-muted-foreground">
             Metric View Hub demonstrates Databricks primitives working together inside the tenant. Its Auto Retail
             domain, bound resources, application roles, and proposal workflow are preconfigured examples—not defaults
@@ -63,6 +65,10 @@ export function FdeReferenceGuidePage() {
             identity model, workflow, and user experience your own application requires.
           </AlertDescription>
         </Alert>
+        <div className="space-y-2 text-sm text-muted-foreground">
+          <p>{REFERENCE_SCOPE.operations}</p>
+          <p>{REFERENCE_SCOPE.handoff}</p>
+        </div>
       </section>
 
       <Separator />
@@ -254,6 +260,9 @@ export function FdeReferenceGuidePage() {
             </CardHeader>
             <CardContent className="space-y-2 text-sm text-muted-foreground">
               <p>AppKit runs the client and server locally while analytics and Lakebase remain remote services.</p>
+              <p>
+                Local app configuration assumes an already prepared workstation and preserves existing local settings.
+              </p>
               <p>Each FDE selects an explicit CLI profile and a unique validated Lakebase schema.</p>
               <p>
                 Analytics runs as the CLI-authenticated developer; deployed browser-user OBO requires separate proof.
@@ -307,7 +316,8 @@ export function FdeReferenceGuidePage() {
           <CardHeader>
             <CardTitle>Repository guides</CardTitle>
             <CardDescription>
-              In-app guidance summarizes the implementation; setup commands and build history remain in the repository.
+              In-app guidance summarizes the implementation; app configuration commands and build history remain in the
+              repository.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 md:grid-cols-3">

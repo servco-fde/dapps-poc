@@ -1,36 +1,24 @@
 # Building the Reference Databricks App POC
 
-This document records the key moves, prompts, decisions, commands, and troubleshooting lessons used to bootstrap this reference Databricks App proof of concept. It is intended to help other Forward Deployed Engineers repeat the same workflow with Codex on either a macOS or Windows company workstation. Workstation operating system is a developer choice; application access, Databricks identity, and the collaboration workflow must not depend on it.
+This playbook records how the reference Databricks App was built. Current guidance focuses on the app's architecture, resources, configuration, identity, and runtime behavior. Metric View Hub is a working example for other FDEs, rather than a general workstation or DevOps toolkit.
 
-## Workstation support and command conventions
+## Current scope and app command conventions
 
-Following the implementation review, this playbook treats macOS and Windows as equally supported workstation targets. Business users access the deployed app through a browser on either operating system. FDEs use the same repository, npm scripts, and Databricks workflow on either platform, with shell-specific setup where needed.
+On November 5, 2026, the repository narrowed its operational scope to Databricks Apps-specific resources and behavior. General workstation preparation, editor/agent integrations, development-environment certification, CI/CD, and broader DevOps tooling belong to a separate colleague-led project whose name/link has not yet been supplied. The [scope decision](./.reffy/artifacts/databricks-app-reference-scope-pivot.md) records the pivot; the [handoff notice](./dapps-env-setup.md) replaces the former setup guide.
 
-| Concern | macOS | Windows |
-| --- | --- | --- |
-| Terminal | Terminal with zsh or Bash | PowerShell |
-| Tool installation | Company-approved software portal or installers; Homebrew if permitted and available | Company-approved software portal or installers; WinGet if permitted and available |
-| Find an executable | `command -v databricks` | `Get-Command databricks` |
-| Create the local environment file, once from the app directory | `cp .env.example .env` | `Copy-Item .env.example .env` |
-| Home-directory notation | `$HOME` | `$HOME` or `$env:USERPROFILE` |
-| Shell environment assignment, when needed | `export NAME=value` | `$env:NAME = "value"` |
-| Multiline command continuation, when needed | Backslash (`\`) | Backtick (`` ` ``) |
+Start app-specific work from [init.md](./init.md) and the [app README](./metric-view-hub/README.md) on an already prepared workstation. App commands remain applicable across macOS and Windows; this is not a claim that either general environment or installer has been certified. Use an explicitly selected Databricks profile, preserve an existing ignored `.env`, and select a personal Lakebase schema for the full-stack local proxy. Deployed apps are shared environments and require separately authorized lifecycle operations.
 
-Shared command examples below use single-line invocations that can be pasted into either shell. OS-specific commands are labeled explicitly. Keep environment settings in the ignored local `.env` file where supported, and use project-relative paths so instructions do not depend on a developer's home directory or Windows drive letter. Create `.env` only if it does not already exist, then populate it for the selected workspace and developer identity without committing credentials.
-
-The common toolchain is VS Code with Codex, Git, GitHub CLI, the modern Databricks CLI, Node.js, and npm. Verify installed tools and company installation policy on each workstation; neither WinGet nor Homebrew is a prerequisite in itself. Authenticate locally on each computer and explicitly select a Databricks profile before workspace operations.
-
-The linked [`dapps-env-setup.md`](./dapps-env-setup.md) now covers the shared `setup.sh` workflow for macOS and Windows Git Bash. Its original Windows setup is retained as historical context in the moves below; current onboarding uses the setup guide. Windows-specific failures recorded below describe the original build sessions. They do not establish a Windows requirement or prove that the complete local development loop has been tested on macOS. Record local startup, validation, and browser smoke-test evidence separately for each OS.
+The chronological moves below preserve historical evidence, including commands for retired tooling. General setup/install, Git/editor/MCP diagnostics, and CI/CD advice in those historical sections are superseded and are not instructions to execute or a maintained recommendation. Use the current entry points above instead. App-specific deployment/resource observations remain useful evidence, subject to their recorded date and verification limits.
 
 ## Current state
 
-This POC has completed environment setup, product framing, architecture research, source-control setup, the first functional implementation slice, and its first successful Databricks Apps deployment. The application is running against dedicated development resources.
+This POC has completed environment setup, product framing, architecture research, source-control setup, the first functional implementation slice, and its first successful Databricks Apps deployment. The application uses dedicated development resources; live compute state must be checked for each authorized session. The dev app was stopped at the end of the November 5, 2026 session.
 
 | Artifact or capability             | Status                                                                |
 | ---------------------------------- | --------------------------------------------------------------------- |
 | Product seed                       | Captured in [`seed-1.md`](./seed-1.md)                                |
 | Architecture and delivery proposal | Captured in [`seed-1-proposal.md`](./seed-1-proposal.md)              |
-| FDE workstation setup guide        | Captured in [`dapps-env-setup.md`](./dapps-env-setup.md)              |
+| DevOps ownership handoff | Current scope notice in [`dapps-env-setup.md`](./dapps-env-setup.md); prior setup tooling retired |
 | Repository overview                | Captured in [`README.md`](./README.md)                                |
 | Databricks AI tools and skills     | Installed for Codex                                                   |
 | Developer Hub Docs MCP             | Installed and verified                                                |
@@ -43,12 +31,14 @@ This POC has completed environment setup, product framing, architecture research
 | Read identity                      | OBO authorized; live metric-view data verified                        |
 | Application roles                  | Reviewers collaborate; only configured admins can accept              |
 | Databricks App                     | Deployed; manually stopped outside development and demos              |
-| Current deployment                 | `01f1ad6867261d848551bfc47de19bd1` succeeded                          |
+| Earlier deployment evidence        | `01f1ad6867261d848551bfc47de19bd1` succeeded                          |
 | App URL                            | `https://metric-view-hub-4192082222593323.3.azure.databricksapps.com` |
 
 The deliberate stopping point matters: the proposal was written before any application code or Databricks resources were created.
 
-## Working method
+## Historical working method
+
+The following principles describe the original build sessions, not a maintained workstation or DevOps workflow.
 
 The POC followed five principles:
 
@@ -73,6 +63,8 @@ The seed focused on:
 This was intentionally a problem statement, not a technical specification. Codex was asked to research the implementation options rather than being told which stack to use.
 
 ## Move 2: Install the Databricks AI tools and agent skills
+
+> Historical and superseded for general setup/DevOps. See the [current app-specific entry point](./init.md) and [ownership handoff](./dapps-env-setup.md). Commands below record the original session.
 
 The initial prompt was:
 
@@ -102,6 +94,8 @@ Use the Databricks CLI to install the Databricks AI tools for Codex. Capture the
 ```
 
 ## Move 3: Install and verify the Developer Hub Docs MCP server
+
+> Historical and superseded for general setup/DevOps. See the [current app-specific entry point](./init.md) and [ownership handoff](./dapps-env-setup.md). Commands below record the original session.
 
 The original prompt supplied the documented command:
 
@@ -186,6 +180,8 @@ Do not scaffold an app, create workspace resources, run workspace queries, or de
 
 ## Move 5: Establish source control explicitly
 
+> Historical and superseded for general setup/DevOps. See the [current app-specific entry point](./init.md) and [ownership handoff](./dapps-env-setup.md). Commands below record the original session.
+
 The proposal referred to Git-based engineering handoff, but GitHub repository creation required a separate instruction:
 
 > You should have access to the `gh` CLI tool, and this computer should have SSH access to my account. Create a new repository, commit, and push.
@@ -264,9 +260,11 @@ This creates two practical paths:
 | Databricks deploys from a private Git repository      |                                    Yes | Shared test and production environments |
 | Automatic deployment on repository push               | Yes, plus provider integration/webhook | Mature CI/CD workflow                   |
 
-The emerging recommendation is to keep the agentic inner loop local and simple, while using an exact Git commit/tag and Git-backed or CI/CD deployment for controlled environments.
+The table records the original delivery discussion. CI/CD design is now outside this repository's maintained scope. App-specific source modes, service-principal access, and deployment commands remain documented in the app README.
 
 ## Move 7: Create the initial FDE environment setup guide
+
+> Historical and superseded for general setup/DevOps. See the [current app-specific entry point](./init.md) and [ownership handoff](./dapps-env-setup.md). Commands below record the original session.
 
 The guide began as a short checklist. The prompt was:
 
@@ -295,6 +293,8 @@ Read <guide-file> and update it directly into a repeatable guide for FDEs using 
 ```
 
 ## Move 8: Test assumptions on the original Windows company computer
+
+> Historical and superseded for general setup/DevOps. See the [current app-specific entry point](./init.md) and [ownership handoff](./dapps-env-setup.md). Commands below record the original session.
 
 The next prompt challenged whether the guide's package-manager commands would work under corporate controls:
 
@@ -618,6 +618,8 @@ AppKit reported that browser-user impersonation was skipped locally because the 
 
 ## Move 17: Add reusable FDE workstation setup
 
+> Historical and superseded for general setup/DevOps. See the [current app-specific entry point](./init.md) and [ownership handoff](./dapps-env-setup.md). Commands below record the original session.
+
 After the workstation assumption was corrected to support both macOS and Windows, the user requested a reusable `setup.sh` and reviewed a ReffySpec change before authorizing implementation. Proposal feedback accepted Git Bash for the Windows entry point and left SDD framework selection to each FDE. Reffy remains this repository's planning tool; setup does not check or install it.
 
 From the repository root, use macOS Terminal or Windows Git Bash:
@@ -653,9 +655,11 @@ Actual Windows check-mode evidence on 2026-09-14:
 - The initial run exposed that GitHub CLI 2.54.0 lacks the later `gh auth status --active` flag. Setup now verifies the selected GitHub account with the compatible `gh api --hostname github.com user` call and leaves `gh auth status` as the human account-review command.
 - Multiple Git and Codex executable paths remained manual PATH-review items. No installers, login flows, app compute, or database compute ran.
 
-All 27 isolated tests passed after adding the GitHub API compatibility assertion. Shell and Node syntax checks also passed. The tests use temporary homes and stub vendor commands to cover both platform adapters, check-mode non-mutation, repair authorization, explicit profile names with spaces, failure/timeout paths, rerun behavior, existing-editor discovery, and SDD independence. Actual package-install tests on approved workstations remain pending, so the change stays open.
+All 27 isolated tests passed after adding the GitHub API compatibility assertion. Shell and Node syntax checks also passed. The tests use temporary homes and stub vendor commands to cover both platform adapters, check-mode non-mutation, repair authorization, explicit profile names with spaces, failure/timeout paths, rerun behavior, existing-editor discovery, and SDD independence. Actual package-install tests on approved workstations remain outstanding; the user accepted that verification limit for archiving on 2026-09-28.
 
 ## Move 18: Make onboarding agent-driven
+
+> Historical and superseded for general setup/DevOps. See the [current app-specific entry point](./init.md) and [ownership handoff](./dapps-env-setup.md). Commands below record the original session.
 
 The desired FDE handoff is now one prompt: **“Read `init.md` and set up this repository for local development.”** The root [`init.md`](./init.md) tells the harness to read the canonical setup and app guides, detect the OS and shell, invoke the supported Bash runtime, run read-only checks, show Databricks profiles, and ask once the choices become identity- or mutation-sensitive. It then directs the agent to the app README for locked dependency installation, guarded `.env` creation, unique developer schema configuration, validation, and local startup.
 
@@ -689,27 +693,24 @@ When implementation is authorized:
 - report files changed, commands run, verification evidence, and remaining decisions.
 ```
 
-## Important lessons for other FDEs
+## Current app-specific lessons for FDEs
 
-1. **Install capability before asking for architecture.** The Databricks skills and live docs materially improved the proposal.
-2. **Verification should be functional.** A registered MCP entry is weaker evidence than a successful MCP tool call.
-3. **Use an explicit Databricks profile on every workspace command.** Multiple workspaces are common, and `DEFAULT` may be stale or invalid.
-4. **Inspect `databricks apps manifest` before scaffolding.** Plugin names, resource fields, permissions, and scaffolding rules can change.
-5. **Write the proposal before creating resources.** This exposes identity, persistence, governance, and deployment choices while changes are still inexpensive.
-6. **Create the repository before implementation.** Databricks Apps do not create or manage GitHub repositories for you.
-7. **SSH and `gh` authentication are separate.** A successful `ssh -T git@github.com` does not guarantee that GitHub CLI API calls are authenticated.
-8. **Use non-interactive installer flags with coding agents.** Interactive terminal UI can fail inside managed coding harnesses.
-9. **Treat local and Git-backed deployments as different workflows.** Private Git-backed deployments need a Git credential for the app service principal; local CLI uploads do not.
-10. **Support both macOS and Windows without assuming company-machine configuration.** Detect the OS and shell, use shared commands or label platform-specific variants, and verify the approved installation route. Package lookup, policy inspection, and executable verification provide useful evidence before attempting installation.
-11. **Never commit credentials or local environment files.** Review `.gitignore` and staged files before every initial push.
-12. **Separate build-time discovery from runtime OBO access.** A remote builder runs as the app service principal; committed generated types let the build succeed without granting that principal direct catalog access.
-13. **Enforce roles on the server.** Hiding an approval button improves the interface, but the API must independently reject unauthorized transitions.
-14. **Record the current stopping point.** A strong build journal distinguishes completed work from proposals and next steps.
-15. **Treat overflow as a component-level requirement.** Give flex and grid children permission to shrink, wrap long identifiers, constrain media, let tab strips scroll within their own bounds, and clip purely decorative spill at the card or page boundary.
+1. **Select a Databricks profile explicitly.** Keep app commands bound to the intended workspace and target.
+2. **Inspect app resource declarations.** Use current manifest/CLI contracts when adapting bindings and permissions.
+3. **Review app changes before creating resources.** Make identity, persistence, governance, and deployment choices explicit.
+4. **Distinguish local and deployed identity.** Local CLI developer access does not prove deployed browser-user OBO authorization.
+5. **Keep credentials out of source and documentation.** Use ignored local environment values or declared platform secret references.
+6. **Separate build-time discovery from runtime access.** Committed generated types let remote builds work without broad app-SP catalog access.
+7. **Enforce application roles on the server.** The API must reject unauthorized transitions independently of the UI.
+8. **Record verification limits.** A build pass is not proof of resource permissions, profile fields, persistence, or live runtime readiness.
+9. **Contain responsive content.** Let grid/flex children shrink, wrap long identifiers, and keep scrolling inside the relevant component.
+10. **Stop app compute after the session.** App compute, SQL warehouse, and Lakebase have separate lifecycle settings.
+
+The original machine/tooling lessons remain in the historical moves above; their general DevOps recommendations are superseded by the external ownership handoff.
 
 ## Next moves for this POC
 
-Workstation verification follow-up: run the new setup script on an actual Windows Git Bash workstation, verify real repair paths on approved test machines, and record full local app startup/validation evidence on both operating systems. The setup guide and both READMEs now describe the same macOS/Windows workflow.
+General workstation/installer verification is no longer a follow-up owned by this reference. The following app-specific review items are historical candidates, not evidence of current completion; reconcile them with current code/specs before acting.
 
 1. Visually review the Servco styling at desktop and narrow viewport widths, then stop the app after the review session.
 2. Verify that `roberto.delgado@servco.com` displays as `Admin`.

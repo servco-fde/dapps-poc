@@ -23,6 +23,14 @@ export const DOCUMENTATION_SECTION_IDS = {
   operatingModes: 'operating-modes',
 } as const;
 
+export const REFERENCE_SCOPE = {
+  purpose: 'An FDE reference for building and adapting Databricks Apps, with Metric View Hub as its working example.',
+  operations:
+    'Operational guidance covers app resources, configuration, identity and permissions, the local proxy, validation, deployment, readiness, and app lifecycle.',
+  handoff:
+    'General workstation preparation, editor and agent integration setup, local and remote development-environment certification, CI/CD, and broader DevOps tooling belong to a separate colleague-led project. Its name and link will be added when available.',
+} as const;
+
 export const REFERENCE_CLASSIFICATIONS = [
   'Databricks primitive',
   'Example implementation',
@@ -308,9 +316,9 @@ export const CUSTOMIZATION_STEPS: readonly CustomizationStep[] = [
     files: ['server/routes/proposals/', 'client/src/pages/ProposalBuilderPage.tsx'],
   },
   {
-    title: 'Apply the target brand and verify every environment',
+    title: 'Apply the target brand and verify app behavior',
     description:
-      'Use approved design tokens, responsive layouts, explicit profiles, automated checks, and separate local/deployed identity tests.',
+      'Use approved design tokens, responsive layouts, explicit profiles, app checks, and separate local/deployed identity tests. These checks do not certify the general development environment.',
     files: ['client/src/index.css', 'client/src/', 'README.md'],
   },
 ] as const;
@@ -368,8 +376,9 @@ export const REPOSITORY_GUIDES = [
     href: `${REPOSITORY_ROOT_URL}/reference-app-poc-playbook.md`,
   },
   {
-    title: 'Workstation onboarding',
-    description: 'The guarded entry point for preparing this repository for local development.',
+    title: 'Local app configuration',
+    description:
+      'App prerequisites, selected profile, preserved local settings, and full-stack startup on a prepared workstation.',
     href: `${REPOSITORY_ROOT_URL}/init.md`,
   },
 ] as const;

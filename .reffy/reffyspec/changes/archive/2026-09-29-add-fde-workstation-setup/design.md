@@ -123,7 +123,7 @@ After approval, implement the script and focused tests, update the four onboardi
 - Baselines: Node 22+, Git/GitHub CLI 2+, Databricks CLI 1.0+, plus successful command-surface checks. npm/Codex/editor versions are reported. Exact package and primary documentation references are recorded in `dapps-env-setup.md`.
 - `bash -n setup.sh` and `node --check scripts/setup-json.cjs` passed. All 27 isolated integration tests passed. The POSIX Python harness runs the Bash script with isolated homes, native Node parsing, and stub vendor CLIs; Python is not required by FDE setup.
 - Actual macOS Bash 3.2.57 check mode returned exit 0 with the explicitly selected development profile, and listed manual integration/project checks. See playbook Move 17 for tool versions and evidence.
-- Actual Windows Git Bash check mode passed with native Windows Node/Git/WinGet resolution and LF script input. GitHub authentication now uses `gh api` for compatibility with older supported GitHub CLI 2.x releases. Real package-install tests remain pending. No app or database compute was started for verification.
+- Actual Windows Git Bash check mode passed with native Windows Node/Git/WinGet resolution and LF script input. GitHub authentication now uses `gh api` for compatibility with older supported GitHub CLI 2.x releases. Real package-install tests remain outstanding and were explicitly accepted by the user as an archive limit on 2026-09-28. No app or database compute was started for verification.
 
 ## Reffy Inputs
 

@@ -13,6 +13,16 @@ test('renders both in-app documentation guides and the reference marker', async 
   await expect(page).toHaveURL(/\/docs\/fde$/);
   await expect(page.getByRole('heading', { name: 'FDE Reference Guide', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Primitive and adaptation map', exact: true })).toBeVisible();
+  await expect(page.getByText(/An FDE reference for building and adapting Databricks Apps/)).toBeVisible();
+  await expect(page.getByText(/General workstation preparation.*separate colleague-led project/)).toBeVisible();
+  await expect(page.getByRole('link', { name: /Local app configuration/ })).toHaveAttribute('href', /\/init\.md$/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByText(/General workstation preparation.*separate colleague-led project/)).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.getByRole('tab', { name: 'Metric View Hub Guide', exact: true }).click();
+  await expect(page).toHaveURL(/\/docs\/app$/);
+  await expect(page.getByRole('heading', { name: 'Metric View Hub Guide', exact: true })).toBeVisible();
 });
 
 test('renders the Microsoft profile page with the current-user profile response', async ({ page }) => {
@@ -85,7 +95,7 @@ test('switches catalog examples without mixing their queries or member lists', a
   const selector = page.getByRole('combobox', { name: 'Metric view', exact: true });
   await selector.focus();
   await page.keyboard.press('ArrowDown');
-  await page.getByRole('option', { name: 'Sample Orders', exact: true }).click();
+  await page.getByRole('option', { name: 'Sample Orders · Not Servco data', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Sample Orders sales performance' })).toBeVisible();
   await expect(page.getByText('hawaii_dev.testing.vw__sample_orders_test', { exact: true })).toBeVisible();
   await expect(page.getByText('12345', { exact: true }).first()).toBeVisible();
@@ -122,7 +132,7 @@ test('keeps catalog selection available when Sample Orders has errors or no rows
   });
   await page.goto('/');
   await page.getByRole('combobox', { name: 'Metric view', exact: true }).click();
-  await page.getByRole('option', { name: 'Sample Orders', exact: true }).click();
+  await page.getByRole('option', { name: 'Sample Orders · Not Servco data', exact: true }).click();
   await expect(page.getByText('Sample Orders query is unavailable', { exact: true })).toBeVisible();
   await expect(
     page.getByText('No data returned. Try another metric view or check source access.').first()

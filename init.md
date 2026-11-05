@@ -1,13 +1,14 @@
-# Initialize this repository for local development
+# Configure the reference Databricks App locally
 
-Codex: prepare this workstation and repository for local development of the Databricks App.
+Configure this app on an already prepared workstation. General workstation preparation, editor/agent integrations, CI/CD, and development-environment certification belong to the separate colleague-led DevOps project; see the [scope and handoff notice](./dapps-env-setup.md). This entry point does not install or certify the general toolchain.
 
-1. Read [`AGENTS.md`](./AGENTS.md), [`dapps-env-setup.md`](./dapps-env-setup.md), and [`metric-view-hub/README.md`](./metric-view-hub/README.md) before making changes.
-2. Detect the operating system and current shell. Run the non-mutating `setup.sh --check` workflow using macOS Bash or Windows Git Bash. If running from Windows PowerShell, invoke an existing Git Bash executable directly; do not use WSL.
-3. Show the configured Databricks profiles and ask the FDE to select the intended profile. Never infer an account or profile.
-4. Summarize missing prerequisites and obtain approval before running `setup.sh --install`, changing workstation software, or starting a login flow. The FDE's request to follow this file authorizes the repository-local dependency installation in the next step.
-5. After workstation checks pass, follow the app README to run `npm ci`, create `.env` from `.env.example` only when `.env` is absent, collect missing non-secret resource values, and configure a unique developer `METRIC_HUB_SCHEMA`.
-6. Treat that local app process and unique schema as the per-FDE isolation boundary. The deployed development and BA apps are shared environments, not per-FDE apps.
-7. Validate the app, start the full app locally, and report the local URL and any remaining manual checks.
+1. Read [`AGENTS.md`](./AGENTS.md) and [`metric-view-hub/README.md`](./metric-view-hub/README.md). The app requires Node.js 22+, npm, a modern Databricks CLI 1.0.0+, and an authenticated profile. If a general prerequisite is missing, report it and refer to the handoff notice rather than running an installer or broad readiness scanner.
+2. List configured Databricks profiles and hosts with `databricks auth profiles`. Obtain or reuse the FDE's explicit profile selection; never infer it from `DEFAULT`, environment settings, or a POC example. If the selected authentication fails, report the failure without switching identities or initiating login.
+3. From `metric-view-hub/`, run `npm ci` using the committed app lockfile. A request to follow this entry point authorizes this repository-local dependency installation, not changes to workstation software.
+4. Create `.env` from `.env.example` only when `.env` is absent. Preserve existing entries. Collect missing non-secret app resource values and confirm the selected workspace's SQL warehouse, metric-view access, and existing Lakebase bindings. Do not print or copy OAuth tokens. Optional Microsoft integration secrets belong in the ignored local environment or an authorized platform secret binding.
+5. Select a unique developer `METRIC_HUB_SCHEMA` and the developer's `LOCAL_DEV_EMAIL`. Treat the local process and personal schema as the per-FDE isolation boundary. The shared development and BA deployments are separate shared environments, not per-FDE apps.
+6. Run the app README's project validation commands appropriate to the work. Those checks verify the application, not the general workstation or deployed browser-user OBO permissions.
+7. Launch the complete client and API through `databricks apps run-local --entry-point app.local.yaml --profile <selected-profile> --env METRIC_HUB_SCHEMA=<developer-schema> --env LOCAL_DEV_EMAIL=<developer-email>`. Use the FDE's actual selected values. Do not substitute bare `npm run dev` or a client-only preview.
+8. Wait for the personal schema to be ready, confirm routes/server registration, and make a read-only request to `/api/proposals` before reporting <http://localhost:8001> as ready. Report any cache warning separately. Local metric queries use the CLI developer identity; deployed browser-user OBO requires separate verification.
 
-Never print credentials, overwrite an existing `.env`, change the selected identity, provision or reconfigure Databricks cloud resources, deploy the app, or explicitly start stopped remote compute without an explicit request.
+Local startup initializes or migrates the selected personal schema in the existing Lakebase project; it is not an offline development mode. Never print credentials, overwrite an existing `.env`, change the selected identity, provision or reconfigure Databricks cloud resources, deploy the app, or explicitly start stopped remote compute without an explicit request. If startup touches shared `metric_hub` proposal tables or reports ownership failures, stop and verify the schema argument rather than changing or dropping shared objects.

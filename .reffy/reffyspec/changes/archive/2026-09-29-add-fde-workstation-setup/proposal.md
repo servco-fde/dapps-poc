@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation approved by the user on 2026-09-14. Script, tests, and onboarding documentation are implemented. macOS and Windows Git Bash check-mode verification passed; real installer verification remains pending, so this change is not ready to archive.
+Implementation approved by the user on 2026-09-14. Script, tests, and onboarding documentation are implemented. macOS and Windows Git Bash check-mode verification passed. Real installer verification remains outstanding and was explicitly accepted by the user as an archive limit on 2026-09-28.
 
 ## Why
 

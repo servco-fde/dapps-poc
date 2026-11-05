@@ -166,6 +166,7 @@ export function MetricCatalogPage() {
             {Object.entries(examples).map(([key, example]) => (
               <SelectItem key={key} value={key}>
                 {example.label}
+                {key === 'sample_orders' ? ' · Not Servco data' : ''}
               </SelectItem>
             ))}
           </SelectContent>
@@ -200,12 +201,14 @@ function MetricExample({
     <div className="space-y-6">
       <Alert className="border-primary/30 bg-accent/40">
         <Info className="h-4 w-4" />
-        <AlertTitle>This is a reference implementation</AlertTitle>
+        <AlertTitle>
+          {metricKey === 'sample_orders' ? 'Sample data — not Servco data' : 'This is a reference implementation'}
+        </AlertTitle>
         <AlertDescription>
           <p className="max-w-4xl">
-            Metric View Hub demonstrates one configurable Databricks application. Its Auto Retail and Sample Orders
-            data, resource bindings, roles, and proposal workflow are preconfigured examples that should change with
-            your use case.
+            {metricKey === 'sample_orders'
+              ? 'Sample Orders uses demonstration data. Its orders, revenue, customers, and market segments do not represent Servco business activity.'
+              : 'Metric View Hub demonstrates one configurable Databricks application. Its Auto Retail and Sample Orders data, resource bindings, roles, and proposal workflow are preconfigured examples that should change with your use case.'}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button asChild size="sm" variant="outline">
@@ -223,7 +226,9 @@ function MetricExample({
       <section className="servco-hero flex flex-col gap-6 rounded-xl p-6 md:flex-row md:items-start md:justify-between md:p-8">
         <div className="min-w-0 space-y-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge className="border-white/25 bg-white text-primary">Published</Badge>
+            <Badge className="border-white/25 bg-white text-primary">
+              {metricKey === 'sample_orders' ? 'Sample data · Not Servco data' : 'Published'}
+            </Badge>
             <Badge
               asChild
               variant="outline"

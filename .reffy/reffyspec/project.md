@@ -27,7 +27,7 @@ The app-specific entry point assumes an already prepared workstation. The genera
 - Follow the typed ESLint configuration, React Hooks rules, and AppKit AST-grep checks. Validate external input with Zod; use parameterized SQL for values and validated identifiers for schema selection.
 - Keep UI code in client/src/, API code in server/, shared contracts in shared/, and metric definitions in config/metric-views/.
 - Use PascalCase for React components and descriptive names consistent with neighboring modules.
-- Follow style/SERVCO_STYLEGUIDE.pdf for UI changes. Preserve the established Makai/Nalu palette, responsive containment, and readable layouts. Do not invent or redistribute unavailable brand/font assets.
+- Use metric-view-hub/client/src/index.css as the reference for existing UI styling. Preserve the established Makai/Nalu palette, responsive containment, and readable layouts. Do not invent or redistribute unavailable brand/font assets.
 
 ### Architecture Patterns
 

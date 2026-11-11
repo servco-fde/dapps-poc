@@ -28,7 +28,6 @@ export function DocumentationLayout() {
   return (
     <div className="servco-page mx-auto max-w-7xl space-y-6">
       <div>
-        <div className="servco-eyebrow">Living documentation</div>
         <h2 className="servco-page-title">Documentation</h2>
         <p className="mt-2 max-w-3xl text-muted-foreground">
           Learn how to use Metric View Hub or inspect the Databricks reference architecture behind it.

@@ -18,20 +18,25 @@ The application SHALL identify Metric View Hub as a reference implementation in 
 
 ### Requirement: Layered reference guidance
 
-The application SHALL provide concise reference cues on working product screens and SHALL keep detailed explanations in the documentation pages. The metric catalog landing page SHALL explain that the Auto Retail domain, resource bindings, roles, and workflow are a preconfigured example and SHALL offer links to both guides.
+The application SHALL keep detailed reference explanations in its documentation pages and provide concise contextual reference links on product screens. The metric catalog SHALL lead from its selector directly into the selected metric view without an introductory information box. Shared Documentation navigation and the reference marker SHALL provide paths to the user and FDE guides. Sample Orders SHALL retain a visible disclosure that its sample data is not Servco data.
 
-#### Scenario: New FDE opens the metric catalog
+#### Scenario: User selects a metric view
 
-- **WHEN** a new FDE opens the metric catalog landing page
-- **THEN** an informational callout explains that Metric View Hub demonstrates one configurable implementation
-- **AND** the callout offers a path to the Metric View Hub Guide
-- **AND** the callout offers a path to the FDE Reference Guide
+- **WHEN** a user selects Auto Retail or Sample Orders
+- **THEN** the selected metric's hero, summaries, and charts appear without a preceding reference information box
+- **AND** shared navigation still provides access to the documentation guides
+
+#### Scenario: User selects Sample Orders
+
+- **WHEN** Sample Orders is selected
+- **THEN** its selector entry and hero badge identify the data as non-Servco sample data
+- **AND** the disclosure does not depend on an introductory information box
 
 #### Scenario: User follows a contextual cue
 
 - **WHEN** a user activates a reference cue associated with the domain, metric view, execution identity, or proposal workflow
-- **THEN** the application navigates to a stable visible section that explains that concept
-- **AND** the product screen does not duplicate the full guide content
+- **THEN** the application navigates to a stable visible section explaining that concept
+- **AND** product screens do not duplicate the full guide content
 
 ### Requirement: Addressable two-audience documentation
 

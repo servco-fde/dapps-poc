@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router';
 import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
   Badge,
   BarChart,
   Card,
@@ -11,7 +8,6 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Button,
   LineChart,
   Skeleton,
   Select,
@@ -31,7 +27,7 @@ import {
   useMetricView,
 } from '@databricks/appkit-ui/react';
 import { formatLabel, formatValue } from '@databricks/appkit-ui/js';
-import { BookOpen, Database, Info, ShieldCheck } from 'lucide-react';
+import { BookOpen, Database, ShieldCheck } from 'lucide-react';
 import metricDefinitions from '../../../config/metric-views/definitions.json';
 import metricMetadata from '../../../config/metric-views/metadata.generated.json';
 import { DOCUMENTATION_ROUTES, DOCUMENTATION_SECTION_IDS } from '../content/documentation';
@@ -51,7 +47,7 @@ const examples = {
     ],
     breakdown: {
       title: 'Deal volume by dealership',
-      description: 'Top eight dealerships by completed deal count.',
+      description: 'Top eight dealerships by completed deal count, highest to lowest.',
       dimension: 'dealership_name',
       measure: 'deal_count',
     },
@@ -69,9 +65,9 @@ const examples = {
     coverage: 'Sample orders from January 1995 onward',
     kpis: [
       ['order_count', 'Distinct orders'],
-      ['total_revenue', 'Total order revenue · source units'],
+      ['total_revenue', 'Total order revenue'],
       ['unique_customers', 'Distinct customers with orders'],
-      ['avg_order_value', 'Average revenue per order · source units'],
+      ['avg_order_value', 'Average revenue per order'],
     ],
     breakdown: {
       title: 'Orders by market segment',
@@ -89,6 +85,18 @@ const examples = {
 } as const;
 
 type ExampleKey = keyof typeof examples;
+
+const kpiFormats: Record<ExampleKey, Record<string, string>> = {
+  auto_retail: {
+    gpvr: '$#,##0.00',
+    finance_penetration: '0.0%',
+    total_product_penetration: '0.0%',
+  },
+  sample_orders: {
+    total_revenue: '$#,##0.00',
+    avg_order_value: '$#,##0.00',
+  },
+};
 
 function QueryEmpty() {
   return (
@@ -196,33 +204,11 @@ function MetricExample({
   const measures = Object.keys(members.measures);
   const dimensions = Object.keys(members.dimensions);
   const summaryRow = summary.data?.[0];
+  // Horizontal bars render the first category at the bottom, so reverse the descending dealership results.
+  const breakdownRows = metricKey === 'auto_retail' ? (breakdown.data ?? []).slice().reverse() : (breakdown.data ?? []);
 
   return (
     <div className="space-y-6">
-      <Alert className="border-primary/30 bg-accent/40">
-        <Info className="h-4 w-4" />
-        <AlertTitle>
-          {metricKey === 'sample_orders' ? 'Sample data — not Servco data' : 'This is a reference implementation'}
-        </AlertTitle>
-        <AlertDescription>
-          <p className="max-w-4xl">
-            {metricKey === 'sample_orders'
-              ? 'Sample Orders uses demonstration data. Its orders, revenue, customers, and market segments do not represent Servco business activity.'
-              : 'Metric View Hub demonstrates one configurable Databricks application. Its Auto Retail and Sample Orders data, resource bindings, roles, and proposal workflow are preconfigured examples that should change with your use case.'}
-          </p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Button asChild size="sm" variant="outline">
-              <Link to={DOCUMENTATION_ROUTES.app}>How Metric View Hub works</Link>
-            </Button>
-            <Button asChild size="sm">
-              <Link to={`${DOCUMENTATION_ROUTES.fde}#${DOCUMENTATION_SECTION_IDS.referenceStatus}`}>
-                Explore the FDE reference guide
-              </Link>
-            </Button>
-          </div>
-        </AlertDescription>
-      </Alert>
-
       <section className="servco-hero flex flex-col gap-6 rounded-xl p-6 md:flex-row md:items-start md:justify-between md:p-8">
         <div className="min-w-0 space-y-3">
           <div className="flex flex-wrap items-center gap-2">
@@ -298,7 +284,7 @@ function MetricExample({
               </CardHeader>
               <CardContent>
                 <div className="break-all text-2xl font-bold tabular-nums">
-                  {formatValue(summaryRow[field], summary.metadata?.[field]?.format)}
+                  {formatValue(summaryRow[field], kpiFormats[metricKey][field] ?? summary.metadata?.[field]?.format)}
                 </div>
                 <p className="mt-2 text-xs text-muted-foreground">
                   {context} · {example.coverage}
@@ -329,7 +315,7 @@ function MetricExample({
               {!breakdown.loading && !breakdown.error && !breakdown.data?.length && <QueryEmpty />}
               {!breakdown.loading && !breakdown.error && !!breakdown.data?.length && (
                 <BarChart
-                  data={breakdown.data}
+                  data={breakdownRows}
                   xKey={example.breakdown.dimension}
                   yKey={example.breakdown.measure}
                   orientation="horizontal"

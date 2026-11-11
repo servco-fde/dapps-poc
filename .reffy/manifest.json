@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-09-11T19:38:22.590Z",
-  "updated_at": "2026-11-05T21:41:39.659Z",
+  "updated_at": "2026-11-11T01:14:24.863Z",
   "project_id": "dapps-poc",
   "workspace_ids": [
     "dapps-poc"
@@ -212,6 +212,32 @@
         ".reffy/reffyspec/changes/archive/2026-11-05-refocus-databricks-app-reference/design.md",
         ".reffy/reffyspec/changes/archive/2026-11-05-refocus-databricks-app-reference/specs/refocus-databricks-app-reference/spec.md"
       ]
+    },
+    {
+      "id": "5e3b887f-1db1-41b5-81fe-2bd7020cdadf",
+      "name": "hawaii dev graph secret connection prompt",
+      "filename": "hawaii-dev-graph-secret-connection-prompt.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 8478,
+      "tags": [],
+      "created_at": "2026-11-09T20:47:35.182Z",
+      "updated_at": "2026-11-11T01:14:24.863Z",
+      "related_changes": [],
+      "derived_outputs": []
+    },
+    {
+      "id": "bf16aba4-4f87-4cab-a131-722bbb06ab79",
+      "name": "databricks app azure registration generic prompt",
+      "filename": "databricks-app-azure-registration-generic-prompt.md",
+      "kind": "note",
+      "mime_type": "text/markdown",
+      "size_bytes": 1618,
+      "tags": [],
+      "created_at": "2026-11-09T20:55:30.132Z",
+      "updated_at": "2026-11-11T01:14:24.863Z",
+      "related_changes": [],
+      "derived_outputs": []
     }
   ]
 }
